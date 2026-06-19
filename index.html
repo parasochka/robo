@@ -118,71 +118,37 @@ button{cursor:pointer;font-family:var(--font);}
 .market-btn.on{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
 .market-btn:hover{border-color:var(--blue-mid);}
 
-.segs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+/* One card per row — compact list */
+.segs-grid{display:flex;flex-direction:column;gap:12px;}
 
-/* Segment card */
-.seg-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border-left:5px solid transparent;transition:box-shadow .2s,transform .15s;position:relative;}
-.seg-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
-.seg-card-in{padding:20px 20px 18px;}
-.seg-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;}
-.seg-card-names{flex:1;}
-.seg-card-name{font-size:16px;font-weight:700;color:var(--text);line-height:1.2;}
-.seg-card-en{font-size:12px;color:var(--text-light);margin-top:1px;}
-.seg-track{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:3px 8px;border-radius:5px;margin-top:6px;}
-.seg-rate-pill{font-size:12px;font-weight:700;padding:6px 11px;border-radius:10px;white-space:nowrap;line-height:1.35;text-align:right;}
-.seg-rate-pill .yr{display:block;font-weight:500;font-size:10.5px;opacity:.85;}
+/* Compact segment card */
+.seg-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border-left:5px solid transparent;transition:box-shadow .2s,transform .15s;cursor:pointer;}
+.seg-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);}
+.seg-card-in{display:flex;align-items:center;gap:20px;padding:15px 20px;}
 
-/* THREE AXES spec — the heart of the segmentation, uniform units everywhere */
-.seg-axes{display:grid;grid-template-columns:1fr;gap:9px;margin:14px 0;padding:13px 14px;border-radius:10px;}
-.axis-row{display:grid;grid-template-columns:88px 1fr;align-items:center;gap:10px;}
-.axis-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-light);}
-.axis-val{font-size:13px;font-weight:600;color:var(--text);}
-.axis-val small{font-weight:400;color:var(--text-light);}
-.axis-bar{height:6px;border-radius:4px;background:#e2e8f0;overflow:hidden;margin-top:5px;}
-.axis-bar > i{display:block;height:100%;border-radius:4px;}
+/* Left: identity + brief description */
+.seg-main{flex:1 1 auto;min-width:0;}
+.seg-title-line{display:flex;align-items:center;gap:9px;margin-bottom:4px;flex-wrap:wrap;}
+.seg-card-name{font-size:15.5px;font-weight:700;color:var(--text);line-height:1.2;}
+.seg-track{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:2px 7px;border-radius:5px;}
+.seg-desc{font-size:12.5px;color:var(--text-mid);line-height:1.45;}
+.seg-instr-line{font-size:11.5px;color:var(--text-light);margin-top:3px;}
+.seg-instr-line b{color:var(--text-mid);font-weight:600;}
 
-/* instruments line (driven by market toggle) */
-.seg-instr{font-size:12.5px;color:var(--text-mid);margin:0 0 14px;padding:9px 12px;background:var(--bg);border-radius:8px;line-height:1.5;}
-.seg-instr b{color:var(--text);font-weight:600;}
+/* Rate */
+.seg-rate-col{flex:0 0 auto;text-align:center;min-width:92px;}
+.seg-rate-pill{display:inline-block;font-size:14px;font-weight:700;padding:5px 11px;border-radius:8px;white-space:nowrap;}
+.seg-rate-yr{font-size:10.5px;color:var(--text-light);margin-top:3px;}
 
-/* Growth box */
-.seg-growth{border-radius:8px;padding:13px 14px;margin-bottom:14px;}
-.seg-growth-top{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);margin-bottom:8px;}
-.seg-growth-row{display:flex;align-items:center;gap:8px;}
-.seg-growth-from{font-size:14px;color:var(--text-mid);}
-.seg-growth-arr{font-size:16px;color:var(--text-light);}
-.seg-growth-to{font-size:24px;font-weight:700;}
-.seg-growth-gain{font-size:12px;color:var(--text-light);margin-top:4px;}
-
-/* Description + why */
-.seg-desc{font-size:13.5px;color:var(--text-mid);line-height:1.6;margin-bottom:12px;}
-.seg-why{font-size:13px;color:var(--text-mid);line-height:1.55;margin-bottom:14px;padding:11px 13px;border-radius:8px;background:#fff;border:1px dashed var(--border);}
-.seg-why b{color:var(--text);font-weight:700;}
+/* Earnings — the headline of the card */
+.seg-earn{flex:0 0 auto;text-align:right;min-width:128px;}
+.seg-earn-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);margin-bottom:2px;}
+.seg-earn-amt{font-size:22px;font-weight:700;line-height:1.1;}
+.seg-earn-sub{font-size:11px;color:var(--text-light);margin-top:2px;}
 
 /* CTA */
-.seg-cta-btn{display:block;width:100%;text-align:center;padding:11px 16px;border-radius:8px;font-size:13.5px;font-weight:700;color:#fff;background:var(--green);border:none;text-decoration:none;transition:background .15s;margin-bottom:10px;}
+.seg-cta-btn{flex:0 0 auto;display:inline-block;text-align:center;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;color:#fff;background:var(--green);border:none;text-decoration:none;transition:background .15s;white-space:nowrap;}
 .seg-cta-btn:hover{background:var(--green-d);}
-
-/* View on chart link */
-.seg-chart-link{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;color:var(--text-light);background:none;border:none;width:100%;padding:6px;transition:color .15s;}
-.seg-chart-link:hover{color:var(--blue-mid);}
-
-/* Blog cards */
-.blog-sep{border-top:1px solid var(--border);margin:14px 0 12px;padding-top:12px;}
-.blog-sep-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-light);margin-bottom:8px;}
-.blog-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
-.blog-mini{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--bg);text-decoration:none;color:var(--text);border:1.5px solid transparent;transition:all .15s;}
-.blog-mini:hover{background:var(--blue-light);border-color:var(--border);}
-.blog-mini-ico{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
-.blog-mini-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.35;}
-.blog-mini-read{font-size:11px;color:var(--text-light);margin-top:2px;}
-
-/* Full width card */
-.seg-card.span2{grid-column:1/-1;}
-.seg-card.span2 .seg-card-in{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
-.seg-card.span2 .seg-card-head,
-.seg-card.span2 .seg-axes,
-.seg-card.span2 .seg-instr{grid-column:1/-1;}
 
 /* Pulse animation when focused from chart */
 @keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(24,62,140,.35),var(--shadow-lg);}70%{box-shadow:0 0 0 12px rgba(24,62,140,0),var(--shadow-lg);}100%{box-shadow:0 0 0 0 rgba(24,62,140,0),var(--shadow-lg);}}
@@ -197,9 +163,11 @@ button{cursor:pointer;font-family:var(--font);}
   .hero-title{font-size:27px;}
   .calc-card{grid-template-columns:1fr;}
   .inp-panel{border-right:none;border-bottom:1px solid var(--border);}
-  .segs-grid{grid-template-columns:1fr;}
-  .seg-card.span2{grid-column:auto;}
-  .seg-card.span2 .seg-card-in{grid-template-columns:1fr;}
+  .seg-card-in{flex-wrap:wrap;gap:12px;}
+  .seg-main{flex:1 1 100%;}
+  .seg-rate-col{text-align:left;min-width:0;}
+  .seg-earn{text-align:left;min-width:0;flex:1 1 auto;}
+  .seg-cta-btn{flex:1 1 100%;}
 }
 @media (prefers-reduced-motion: reduce){
   *{scroll-behavior:auto !important;animation:none !important;transition:none !important;}
@@ -289,7 +257,7 @@ button{cursor:pointer;font-family:var(--font);}
       <div class="chart-result-area">
         <p class="chart-label-sm">Projected total balance</p>
         <div id="chart-balance" class="chart-balance">$0</div>
-        <p id="chart-balance-sub" class="chart-balance-sub">after 5 years &middot; Full-time Trader</p>
+        <p id="chart-balance-sub" class="chart-balance-sub">after 5 years &middot; Part-time Trader</p>
       </div>
       <div class="chart-wrap">
         <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing five strategies"></canvas>
@@ -347,7 +315,7 @@ const SEGS = [
   {
     id:'depositor', name:'Вкладчик', en:'Passive Saver',
     track:'Saving', trackBg:'#f1f5f9', trackColor:'#475569',
-    rate:0.5, rMin:0.3, rMax:0.7,
+    rate:0.5, rMin:0.3, rMax:0.6,
     timeLabel:'0 hrs — money works itself', timeLevel:0,
     riskLabel:'0% — no open positions', riskLevel:0,
     instruments:{forex:'Not applicable — a saver holds cash, not positions.',
@@ -358,14 +326,14 @@ const SEGS = [
     cta:'Open Demo Account',
     ctaUrl:'https://my.roboforex.com/en/register-demo/?utm_source=calc&utm_content=seg_depositor',
     color:'#64748b', colorBg:'#f1f5f9',
-    desc:'You keep savings in a bank deposit or bonds. Safe and predictable — but growth barely beats inflation.',
+    desc:'Cash in a bank deposit or bonds. Safe, but growth barely beats inflation.',
     why:'Your 4–8%/year equals just 0.3–0.7%/month. Traders target 2–5%/month on the same capital. Try it risk-free on a demo and compare.',
     blogs:false,
   },
   {
     id:'copytrader', name:'Копи-трейдер', en:'Copy Trader',
     track:'Outsourced skill', trackBg:'#faf5ff', trackColor:'#7e22ce',
-    rate:3.5, rMin:2.0, rMax:5.0,
+    rate:1.2, rMin:0.8, rMax:1.8,
     timeLabel:'< 1 hr / week — pick a strategy', timeLevel:1,
     riskLabel:'Set by the strategy you copy', riskLevel:2,
     instruments:{forex:'CopyFX strategies trading Forex pairs.',
@@ -376,14 +344,14 @@ const SEGS = [
     cta:'Start with CopyFX',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_copytrader',
     color:'#a855f7', colorBg:'#faf5ff',
-    desc:'You don’t trade yourself — you automatically follow professional traders via CopyFX. The bridge from investor to active returns.',
+    desc:'Auto-copy verified pro traders via CopyFX — under an hour a week.',
     why:'High returns usually demand lots of time. Copy trading breaks that link: you outsource the skill, so you can earn trader-level results with under an hour a week.',
     blogs:false,
   },
   {
     id:'longinvestor', name:'Долгосрочный инвестор', en:'Long-term Investor',
     track:'Investing', trackBg:'#eff6ff', trackColor:'#1d4ed8',
-    rate:1.1, rMin:0.7, rMax:1.5,
+    rate:0.8, rMin:0.6, rMax:1.0,
     timeLabel:'1–2 hrs / week — rebalance', timeLevel:1,
     riskLabel:'Up to 5% of portfolio per position', riskLevel:1,
     instruments:{forex:'Long-term positions in major currency pairs.',
@@ -394,14 +362,14 @@ const SEGS = [
     cta:'Open R StocksTrader',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_longinvestor',
     color:'#3b82f6', colorBg:'#eff6ff',
-    desc:'You build a portfolio of indices, ETFs, dividend stocks or long-held crypto. Light, weekly involvement — buy, hold, rebalance.',
+    desc:'A buy-and-hold portfolio of ETFs, stocks or crypto. Light, weekly involvement.',
     why:'At 1%/month your $10k becomes $13.2k in 2 years. Step up to active trading at 3%/month and the same capital reaches $20.3k.',
     blogs:false,
   },
   {
     id:'parttime', name:'Part-time трейдер', en:'Part-time Trader',
     track:'Trading', trackBg:'#fffbeb', trackColor:'#b45309',
-    rate:2.75, rMin:1.5, rMax:4.0,
+    rate:1.5, rMin:1.0, rMax:2.2,
     timeLabel:'1–2 hrs / day — analyse & trade', timeLevel:2,
     riskLabel:'1–3% of portfolio per position', riskLevel:2,
     instruments:{forex:'Forex swing trades on major & minor pairs.',
@@ -412,14 +380,14 @@ const SEGS = [
     cta:'Open Pro Account',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_parttime',
     color:'#f59e0b', colorBg:'#fffbeb',
-    desc:'You trade alongside your main job. Swing strategies, defined entry/exit rules, steady risk management. Most of our traders start here.',
+    desc:'Swing trading alongside your main job. Where most of our traders start.',
     why:'3%/month turns $5k into $10.2k in 2 years. A disciplined, part-time routine compounds well without a full-time commitment.',
     blogs:true,
   },
   {
     id:'fulltime', name:'Full-time трейдер', en:'Full-time Trader',
     track:'Trading', trackBg:'#ecfdf5', trackColor:'#047857',
-    rate:7.0, rMin:4.0, rMax:10.0,
+    rate:2.5, rMin:1.5, rMax:3.5,
     timeLabel:'4–8 hrs / day — full occupation', timeLevel:4,
     riskLabel:'3–10% of portfolio per position', riskLevel:4,
     instruments:{forex:'Forex intraday & scalping on tight spreads.',
@@ -430,7 +398,7 @@ const SEGS = [
     cta:'Open Pro Account',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_fulltime',
     color:'#10b981', colorBg:'#ecfdf5',
-    desc:'Trading is your main income. Intraday and scalping across markets — you need raw spreads, speed and advanced order types. High potential, but it demands strict discipline.',
+    desc:'Intraday trading as your main income. High potential, strict discipline.',
     why:'6%/month takes $10k to $20.1k in a year. At this intensity, execution quality and risk discipline decide whether the compounding holds.',
     blogs:false,
     wide:true,
@@ -446,7 +414,7 @@ const BLOG_CARDS = [
 // =====================================================================
 //  STATE
 // =====================================================================
-let activeSeg = 'fulltime';
+let activeSeg = 'parttime';
 let growthChart = null;
 let contribFreq = 'monthly';
 let market = 'forex';
@@ -575,11 +543,6 @@ function renderChart(){
 // =====================================================================
 //  SEGMENT CARDS
 // =====================================================================
-function axisBar(level,color){
-  const pct = (level/4)*100;
-  return `<div class="axis-bar"><i style="width:${pct}%;background:${color}"></i></div>`;
-}
-
 function buildCards(){
   const {dep,yrs} = getInputs();
   const segDep = dep*0.1;
@@ -592,94 +555,37 @@ function buildCards(){
     const gain = finalBal-segDep;
     const gainPct = segDep>0?Math.round(gain/segDep*100):0;
 
-    const blogSection = s.blogs?`
-      <div class="blog-sep">
-        <p class="blog-sep-label">Learn more → From the blog</p>
-        <div class="blog-cards">
-          ${BLOG_CARDS.map(b=>`
-            <a class="blog-mini" href="${b.url}" target="_blank" rel="noopener">
-              <span class="blog-mini-ico" style="background:${b.bg}" aria-hidden="true">${b.ico}</span>
-              <span>
-                <span class="blog-mini-title">${b.title}</span>
-                <span class="blog-mini-read">${b.read}</span>
-              </span>
-            </a>`).join('')}
-        </div>
-      </div>`:'';
-
     return `
-      <article class="seg-card${s.wide?' span2':''}" id="sc-${s.id}" data-seg="${s.id}"
+      <article class="seg-card" id="sc-${s.id}" data-seg="${s.id}"
                style="border-left-color:${s.color}">
         <div class="seg-card-in">
-          <div class="seg-card-head">
-            <div class="seg-card-names">
+          <div class="seg-main">
+            <div class="seg-title-line">
               <h3 class="seg-card-name">${s.en}</h3>
-              <p class="seg-card-en">${s.name}</p>
               <span class="seg-track" style="background:${s.trackBg};color:${s.trackColor}">${s.track}</span>
             </div>
-            <div class="seg-rate-pill" style="background:${s.colorBg};color:${s.color}">
-              ${r.mo}<span class="yr">${r.yr}</span>
-            </div>
-          </div>
-
-          <div class="seg-axes" style="background:${s.colorBg}">
-            <div class="axis-row">
-              <span class="axis-name">📈 Return</span>
-              <span>
-                <span class="axis-val">${r.mo} <small>(${r.yr})</small></span>
-                ${axisBar(Math.min(4,Math.round(s.rate/2.5)),s.color)}
-              </span>
-            </div>
-            <div class="axis-row">
-              <span class="axis-name">⏱ Time</span>
-              <span>
-                <span class="axis-val">${s.timeLabel}</span>
-                ${axisBar(s.timeLevel,s.color)}
-              </span>
-            </div>
-            <div class="axis-row">
-              <span class="axis-name">🛡 Risk</span>
-              <span>
-                <span class="axis-val">${s.riskLabel}</span>
-                ${axisBar(s.riskLevel,s.color)}
-              </span>
-            </div>
-          </div>
-
-          <p class="seg-instr"><b>Instruments:</b> <span class="instr-text" id="instr-${s.id}">${s.instruments[market]}</span></p>
-
-          <div class="seg-growth" style="background:${s.colorBg}">
-            <p class="seg-growth-top">Potential growth on 10% of your deposit</p>
-            <div class="seg-growth-row">
-              <span class="seg-growth-from" id="sg-from-${s.id}">${fmtMoney(segDep)}</span>
-              <span class="seg-growth-arr" aria-hidden="true">→</span>
-              <span class="seg-growth-to" id="sg-to-${s.id}" style="color:${s.color}">${fmtMoney(finalBal)}</span>
-            </div>
-            <p class="seg-growth-gain" id="sg-gain-${s.id}">+${fmtMoney(gain)} gain (+${gainPct}%) over ${yrs} year${yrs!==1?'s':''}</p>
-          </div>
-
-          <div>
             <p class="seg-desc">${s.desc}</p>
-            <p class="seg-why"><b>Why it could fit you:</b> ${s.why}</p>
-            <p class="seg-why"><b>Why ${s.product}:</b> ${s.whyProduct}</p>
-            ${blogSection}
-            <a class="seg-cta-btn" href="${s.ctaUrl}" target="_blank" rel="noopener">${s.cta}</a>
-            <button class="seg-chart-link" data-view="${s.id}" type="button">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                <path d="M6 10V2M6 2L2 6M6 2l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              View on chart
-            </button>
+            <p class="seg-instr-line"><b>Instruments:</b> <span class="instr-text" id="instr-${s.id}">${s.instruments[market]}</span></p>
           </div>
+          <div class="seg-rate-col">
+            <span class="seg-rate-pill" style="background:${s.colorBg};color:${s.color}">${r.mo}</span>
+            <div class="seg-rate-yr">${r.yr}</div>
+          </div>
+          <div class="seg-earn">
+            <p class="seg-earn-label">You could earn</p>
+            <p class="seg-earn-amt" id="sg-gain-${s.id}" style="color:${s.color}">+${fmtMoney(gain)}</p>
+            <p class="seg-earn-sub" id="sg-sub-${s.id}">${fmtMoney(segDep)} → ${fmtMoney(finalBal)} · +${gainPct}%</p>
+          </div>
+          <a class="seg-cta-btn" href="${s.ctaUrl}" target="_blank" rel="noopener">${s.cta}</a>
         </div>
       </article>`;
   }).join('');
 
-  // "View on chart" buttons
-  grid.querySelectorAll('.seg-chart-link').forEach(btn=>{
-    btn.addEventListener('click',e=>{
-      e.stopPropagation();
-      setActive(btn.dataset.view);
+  // Click a card to highlight that strategy on the chart
+  grid.querySelectorAll('.seg-card').forEach(card=>{
+    card.addEventListener('click',e=>{
+      if(e.target.closest('.seg-cta-btn'))return;
+      setActive(card.dataset.seg);
       document.querySelector('.calc-wrap').scrollIntoView({behavior:'smooth',block:'start'});
     });
   });
@@ -712,16 +618,15 @@ function updateCardsGrowth(){
   document.getElementById('seg-dep-disp').textContent = fmtMoney(segDep);
   document.getElementById('seg-yr-disp').textContent = yrs;
   SEGS.forEach(s=>{
-    const toEl=document.getElementById('sg-to-'+s.id);
-    if(!toEl)return;
+    const gainEl=document.getElementById('sg-gain-'+s.id);
+    if(!gainEl)return;
     const balances = calcByYear(segDep,s.rate,yrs,0,'monthly');
     const finalBal = balances[balances.length-1];
     const gain = finalBal-segDep;
     const gainPct = segDep>0?Math.round(gain/segDep*100):0;
-    document.getElementById('sg-from-'+s.id).textContent = fmtMoney(segDep);
-    toEl.textContent = fmtMoney(finalBal);
-    document.getElementById('sg-gain-'+s.id).textContent =
-      '+'+fmtMoney(gain)+' gain (+'+gainPct+'%) over '+yrs+' year'+(yrs!==1?'s':'');
+    gainEl.textContent = '+'+fmtMoney(gain);
+    document.getElementById('sg-sub-'+s.id).textContent =
+      fmtMoney(segDep)+' → '+fmtMoney(finalBal)+' · +'+gainPct+'%';
   });
 }
 
