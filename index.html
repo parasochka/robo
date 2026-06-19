@@ -98,6 +98,10 @@ button{cursor:pointer;font-family:var(--font);}
 .chart-label-sm{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:3px;}
 .chart-balance{font-size:38px;font-weight:700;line-height:1.1;transition:color .3s;}
 .chart-balance-sub{font-size:13px;color:var(--text-light);margin-top:4px;}
+/* the funnel hook: how much more than a bank deposit */
+.chart-gap{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 13px;border-radius:999px;background:#eaf6e0;border:1px solid #cfe8b8;color:var(--green-d);font-size:12.5px;font-weight:700;}
+.chart-gap.is-deposit{background:var(--blue-light);border-color:#cfe0f2;color:var(--blue-mid);}
+.chart-gap b{font-weight:800;}
 .chart-wrap{flex:1;position:relative;min-height:300px;}
 .chart-foot{font-size:12px;color:var(--text-light);text-align:center;margin-top:10px;}
 .chart-foot b{color:var(--blue-mid);font-weight:600;}
@@ -145,6 +149,14 @@ button{cursor:pointer;font-family:var(--font);}
 .seg-earn-label{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);margin-bottom:2px;}
 .seg-earn-amt{font-size:22px;font-weight:700;line-height:1.1;}
 .seg-earn-sub{font-size:11px;color:var(--text-light);margin-top:2px;}
+.seg-vs{display:inline-block;margin-top:4px;font-size:10.5px;font-weight:700;color:var(--green-d);background:#eaf6e0;border-radius:5px;padding:2px 7px;}
+
+/* ladder badges — guide the eye up the funnel */
+.seg-badge{font-size:9.5px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;padding:2px 8px;border-radius:999px;}
+.seg-badge.now{background:var(--blue-light);color:var(--blue-mid);}
+.seg-badge.step{background:var(--green);color:#fff;}
+.seg-badge.pop{background:#fff4e0;color:#b45309;}
+.seg-card.is-rec{border-color:var(--green);box-shadow:0 0 0 1.5px var(--green),var(--shadow);}
 
 /* CTA */
 .seg-cta-btn{flex:0 0 auto;display:inline-block;text-align:center;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;color:#fff;background:var(--green);border:none;text-decoration:none;transition:background .15s;white-space:nowrap;}
@@ -193,13 +205,13 @@ button{cursor:pointer;font-family:var(--font);}
 <!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
-    <p class="hero-tag">Free Tool</p>
-    <h1 class="hero-title">Compounding Calculator</h1>
-    <p class="hero-sub">See how consistent returns compound over time across five real user strategies. Every strategy is sorted by the same three things — so you can compare them like for like.</p>
+    <p class="hero-tag">Free Calculator</p>
+    <h1 class="hero-title">Your savings can earn a lot more</h1>
+    <p class="hero-sub">A bank deposit pays you around 4–8% a year. See — side by side — how much the very same money could earn if you let it work a little harder, from a safe deposit all the way to active trading. Start where you are, move up when you're ready.</p>
     <div class="hero-axes" aria-hidden="true">
-      <span class="axis-chip">📈 <b>Target return</b> <span>% per month</span></span>
-      <span class="axis-chip">⏱ <b>Time you spend</b> <span>hours / week</span></span>
-      <span class="axis-chip">🛡 <b>Risk per position</b> <span>% of portfolio</span></span>
+      <span class="axis-chip">🏦 <b>Start from a deposit</b> <span>the rate you know</span></span>
+      <span class="axis-chip">📈 <b>See the upside</b> <span>step by step</span></span>
+      <span class="axis-chip">⏱ <b>Pick what fits</b> <span>your time &amp; comfort</span></span>
     </div>
   </div>
 </div>
@@ -247,7 +259,7 @@ button{cursor:pointer;font-family:var(--font);}
 
       <!-- Segment legend -->
       <div class="seg-legend">
-        <p class="seg-legend-title">Strategies compared</p>
+        <p class="seg-legend-title">Ways to grow your money</p>
         <div id="seg-leg-list" role="listbox" aria-label="Highlight a strategy on the chart"></div>
       </div>
     </div>
@@ -255,15 +267,16 @@ button{cursor:pointer;font-family:var(--font);}
     <!-- Right: Chart -->
     <div class="chart-panel">
       <div class="chart-result-area">
-        <p class="chart-label-sm">Projected total balance</p>
+        <p class="chart-label-sm">Your money could grow to</p>
         <div id="chart-balance" class="chart-balance">$0</div>
-        <p id="chart-balance-sub" class="chart-balance-sub">after 5 years &middot; Part-time Trader</p>
+        <p id="chart-balance-sub" class="chart-balance-sub">after 5 years &middot; Copy Trader</p>
+        <div id="chart-gap" class="chart-gap" aria-live="polite"></div>
       </div>
       <div class="chart-wrap">
         <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing five strategies"></canvas>
       </div>
       <p class="chart-foot">
-        <b>Click any line</b> to see that strategy in detail below. The bold line is your selected strategy; the rest are dimmed for comparison.
+        The flat grey line at the bottom is a <b>bank deposit</b>. <b>Click any line</b> to compare another way to grow the same money.
       </p>
     </div>
   </div>
@@ -272,11 +285,12 @@ button{cursor:pointer;font-family:var(--font);}
 <!-- SEGMENTS SECTION -->
 <div class="segs-wrap">
   <div class="segs-hdr">
-    <h2 class="segs-title">Find the strategy that fits your life</h2>
+    <h2 class="segs-title">From a bank deposit to your next step</h2>
     <p class="segs-sub">
-      Strategies are ordered by <strong>how much time</strong> they take — from zero to full-time.
-      Each one is modelled on <strong id="seg-dep-disp">$500</strong> (just 10% of your deposit) over
-      <strong id="seg-yr-disp">5</strong> years, so you can see meaningful growth without committing everything.
+      The top row is where most people start — a plain <strong>bank deposit</strong>. Each step down trades
+      a little more time or skill for higher potential. We've modelled every one on
+      <strong id="seg-dep-disp">$500</strong> (just 10% of your deposit) over <strong id="seg-yr-disp">5</strong> years,
+      so you can try the next step with money you'd barely miss.
     </p>
   </div>
 
@@ -313,7 +327,7 @@ button{cursor:pointer;font-family:var(--font);}
 // =====================================================================
 const SEGS = [
   {
-    id:'depositor', name:'Вкладчик', en:'Passive Saver',
+    id:'depositor', name:'Вкладчик', en:'Passive Saver', badge:'now', badgeText:'Where you are now',
     track:'Saving', trackBg:'#f1f5f9', trackColor:'#475569',
     rate:0.5, rMin:0.3, rMax:0.6,
     timeLabel:'0 hrs — money works itself', timeLevel:0,
@@ -331,7 +345,7 @@ const SEGS = [
     blogs:false,
   },
   {
-    id:'copytrader', name:'Копи-трейдер', en:'Copy Trader',
+    id:'copytrader', name:'Копи-трейдер', en:'Copy Trader', badge:'step', badgeText:'Easiest first step', rec:true,
     track:'Outsourced skill', trackBg:'#faf5ff', trackColor:'#7e22ce',
     rate:1.2, rMin:0.8, rMax:1.8,
     timeLabel:'< 1 hr / week — pick a strategy', timeLevel:1,
@@ -367,7 +381,7 @@ const SEGS = [
     blogs:false,
   },
   {
-    id:'parttime', name:'Part-time трейдер', en:'Part-time Trader',
+    id:'parttime', name:'Part-time трейдер', en:'Part-time Trader', badge:'pop', badgeText:'Most popular',
     track:'Trading', trackBg:'#fffbeb', trackColor:'#b45309',
     rate:1.5, rMin:1.0, rMax:2.2,
     timeLabel:'1–2 hrs / day — analyse & trade', timeLevel:2,
@@ -414,7 +428,7 @@ const BLOG_CARDS = [
 // =====================================================================
 //  STATE
 // =====================================================================
-let activeSeg = 'parttime';
+let activeSeg = 'copytrader';
 let growthChart = null;
 let contribFreq = 'monthly';
 let market = 'forex';
@@ -460,6 +474,15 @@ function calcByYear(P, rateMonthly, years, contrib, freq){
   }
   return res;
 }
+
+// Bank-deposit baseline — the rate the visitor came in expecting, used everywhere
+// as the anchor we measure the upside against.
+const DEPOSIT_SEG = SEGS.find(s=>s.id==='depositor');
+function depositFinal(P, yrs, contrib, freq){
+  const b = calcByYear(P, DEPOSIT_SEG.rate, yrs, contrib, freq);
+  return b[b.length-1];
+}
+function fmtMultiple(m){return (m>=10?Math.round(m):m.toFixed(1))+'×';}
 
 // =====================================================================
 //  LEGEND
@@ -555,14 +578,16 @@ function buildCards(){
     const gain = finalBal-segDep;
     const gainPct = segDep>0?Math.round(gain/segDep*100):0;
 
+    const badge = s.badge?`<span class="seg-badge ${s.badge}">${s.badgeText}</span>`:'';
     return `
-      <article class="seg-card" id="sc-${s.id}" data-seg="${s.id}"
+      <article class="seg-card${s.rec?' is-rec':''}" id="sc-${s.id}" data-seg="${s.id}"
                style="border-left-color:${s.color}">
         <div class="seg-card-in">
           <div class="seg-main">
             <div class="seg-title-line">
               <h3 class="seg-card-name">${s.en}</h3>
               <span class="seg-track" style="background:${s.trackBg};color:${s.trackColor}">${s.track}</span>
+              ${badge}
             </div>
             <p class="seg-desc">${s.desc}</p>
             <p class="seg-instr-line"><b>Instruments:</b> <span class="instr-text" id="instr-${s.id}">${s.instruments[market]}</span></p>
@@ -575,6 +600,7 @@ function buildCards(){
             <p class="seg-earn-label">You could earn</p>
             <p class="seg-earn-amt" id="sg-gain-${s.id}" style="color:${s.color}">+${fmtMoney(gain)}</p>
             <p class="seg-earn-sub" id="sg-sub-${s.id}">${fmtMoney(segDep)} → ${fmtMoney(finalBal)} · +${gainPct}%</p>
+            <span class="seg-vs" id="sg-vs-${s.id}"></span>
           </div>
           <a class="seg-cta-btn" href="${s.ctaUrl}" target="_blank" rel="noopener">${s.cta}</a>
         </div>
@@ -617,6 +643,7 @@ function updateCardsGrowth(){
   const segDep = dep*0.1;
   document.getElementById('seg-dep-disp').textContent = fmtMoney(segDep);
   document.getElementById('seg-yr-disp').textContent = yrs;
+  const depGain = depositFinal(segDep,yrs,0,'monthly') - segDep;
   SEGS.forEach(s=>{
     const gainEl=document.getElementById('sg-gain-'+s.id);
     if(!gainEl)return;
@@ -627,6 +654,11 @@ function updateCardsGrowth(){
     gainEl.textContent = '+'+fmtMoney(gain);
     document.getElementById('sg-sub-'+s.id).textContent =
       fmtMoney(segDep)+' → '+fmtMoney(finalBal)+' · +'+gainPct+'%';
+    const vsEl=document.getElementById('sg-vs-'+s.id);
+    if(vsEl){
+      if(s.id==='depositor'||depGain<=0){vsEl.style.display='none';}
+      else{vsEl.style.display='';vsEl.textContent=fmtMultiple(gain/depGain)+' a bank deposit';}
+    }
   });
 }
 
@@ -634,11 +666,23 @@ function updateChartTotal(){
   const {dep,yrs,contrib} = getInputs();
   const seg = SEGS.find(s=>s.id===activeSeg);
   const balances = calcByYear(dep,seg.rate,yrs,contrib,contribFreq);
+  const finalBal = balances[balances.length-1];
   const el = document.getElementById('chart-balance');
-  el.textContent = fmtMoney(balances[balances.length-1]);
+  el.textContent = fmtMoney(finalBal);
   el.style.color = seg.color;
   document.getElementById('chart-balance-sub').textContent =
     'after '+yrs+' year'+(yrs!==1?'s':'')+' · '+seg.en;
+
+  // The funnel hook: anchor the headline against the bank deposit they came for.
+  const gapEl = document.getElementById('chart-gap');
+  if(seg.id==='depositor'){
+    gapEl.className = 'chart-gap is-deposit';
+    gapEl.innerHTML = "That's a typical bank deposit — pick a step below to earn more ↓";
+  } else {
+    const more = finalBal - depositFinal(dep,yrs,contrib,contribFreq);
+    gapEl.className = 'chart-gap';
+    gapEl.innerHTML = '🚀 <b>'+fmtMoney(more)+' more</b> than a bank deposit over '+yrs+' year'+(yrs!==1?'s':'');
+  }
 }
 
 function setActive(segId){
