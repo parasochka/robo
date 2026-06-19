@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compounding Calculator | RoboForex</title>
+<meta name="description" content="See how consistent returns compound over time across five real user strategies — sorted by target return, time commitment and risk per position.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#183E8C;
+  --blue-mid:#1361A1;
+  --blue-light:#EBF2F9;
+  --green:#74B129;
+  --green-d:#5F951F;
+  --text:#1a2533;
+  --text-mid:#46566a;        /* darkened for contrast (AA) */
+  --text-light:#5d6b7d;      /* darkened for contrast (AA) */
+  --border:#dde4ed;
+  --bg:#f0f4fa;
+  --card:#ffffff;
+  --shadow:0 2px 12px rgba(9,44,80,0.08);
+  --shadow-lg:0 8px 32px rgba(9,44,80,0.14);
+  --r:12px;
+  --r-sm:8px;
+  --font:'Open Sans',-apple-system,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);color:var(--text);background:var(--bg);font-size:15px;line-height:1.6;}
+a{color:inherit;text-decoration:none;}
+button{cursor:pointer;font-family:var(--font);}
+:focus-visible{outline:3px solid var(--blue-mid);outline-offset:2px;border-radius:4px;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+
+/* ---- HEADER ---- */
+.hdr{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.hdr-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--blue);}
+.logo-mark{width:30px;height:30px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:800;}
+.hdr-nav{display:flex;align-items:center;gap:8px;}
+.btn-login{font-size:13px;font-weight:600;color:var(--blue-mid);background:none;border:1.5px solid var(--border);border-radius:6px;padding:7px 16px;transition:all .15s;}
+.btn-login:hover{border-color:var(--blue-mid);background:var(--blue-light);}
+.btn-open{font-size:13px;font-weight:700;color:#fff;background:var(--green);border:none;border-radius:6px;padding:8px 20px;transition:background .15s;}
+.btn-open:hover{background:var(--green-d);}
+
+/* ---- PAGE HERO ---- */
+.hero{background:linear-gradient(135deg,#0f2a5e 0%,var(--blue) 60%,#1d5fa8 100%);padding:44px 24px 64px;}
+.hero-inner{max-width:1200px;margin:0 auto;}
+.hero-tag{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:rgba(255,255,255,0.7);margin-bottom:10px;}
+.hero-title{font-size:34px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:10px;}
+.hero-sub{font-size:15.5px;color:rgba(255,255,255,0.85);max-width:620px;line-height:1.65;}
+
+/* axes explainer chips in hero */
+.hero-axes{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;}
+.axis-chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.22);border-radius:999px;padding:7px 14px;color:#fff;font-size:13px;font-weight:600;}
+.axis-chip b{font-weight:700;}
+.axis-chip span{color:rgba(255,255,255,0.75);font-weight:400;}
+
+/* ---- CALC SECTION ---- */
+.calc-wrap{max-width:1200px;margin:-30px auto 0;padding:0 24px;position:relative;z-index:10;}
+.calc-card{display:grid;grid-template-columns:360px 1fr;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-lg);overflow:hidden;}
+
+/* Input panel */
+.inp-panel{background:#f7f9fc;border-right:1px solid var(--border);padding:28px 24px 24px;display:flex;flex-direction:column;}
+.inp-section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.inp-grp{margin-bottom:16px;}
+.inp-label{font-size:12.5px;font-weight:600;color:var(--text-mid);margin-bottom:6px;display:block;}
+.inp-wrap{position:relative;}
+.inp-pre,.inp-suf{position:absolute;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-light);font-weight:500;pointer-events:none;}
+.inp-pre{left:12px;}
+.inp-suf{right:12px;}
+.inp-field{width:100%;height:44px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:15px;font-weight:600;color:var(--text);background:#fff;outline:none;transition:border-color .15s;}
+.inp-field:focus{border-color:var(--blue-mid);}
+.inp-field.p-pre{padding:0 14px 0 30px;}
+.inp-field.p-suf{padding:0 52px 0 14px;}
+.inp-field.p-plain{padding:0 14px;}
+.freq-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.freq-btn{padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:#fff;font-family:var(--font);font-size:13.5px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all .15s;text-align:center;}
+.freq-btn.on{border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
+
+/* Segment legend inside inputs */
+.seg-legend{margin-top:20px;padding-top:16px;border-top:1px solid var(--border);}
+.seg-legend-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:10px;}
+.seg-leg-item{display:flex;align-items:center;gap:8px;padding:8px;border-radius:6px;cursor:pointer;transition:background .12s;border:1.5px solid transparent;width:100%;text-align:left;background:none;}
+.seg-leg-item:hover{background:var(--bg);}
+.seg-leg-item.on{background:#fff;border-color:var(--border);box-shadow:var(--shadow);}
+.seg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.seg-leg-name{flex:1;font-size:12.5px;font-weight:600;color:var(--text-mid);}
+.seg-leg-item.on .seg-leg-name{color:var(--text);}
+.seg-leg-rate{font-size:11px;color:var(--text-light);white-space:nowrap;}
+
+/* Chart panel */
+.chart-panel{padding:28px 28px 20px;display:flex;flex-direction:column;min-height:520px;}
+.chart-result-area{margin-bottom:14px;}
+.chart-label-sm{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:3px;}
+.chart-balance{font-size:38px;font-weight:700;line-height:1.1;transition:color .3s;}
+.chart-balance-sub{font-size:13px;color:var(--text-light);margin-top:4px;}
+.chart-wrap{flex:1;position:relative;min-height:300px;}
+.chart-foot{font-size:12px;color:var(--text-light);text-align:center;margin-top:10px;}
+.chart-foot b{color:var(--blue-mid);font-weight:600;}
+
+/* ---- SEGMENTS SECTION ---- */
+.segs-wrap{max-width:1200px;margin:40px auto 0;padding:0 24px 16px;}
+.segs-hdr{margin-bottom:18px;}
+.segs-title{font-size:24px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.segs-sub{font-size:14.5px;color:var(--text-mid);max-width:760px;}
+.segs-sub strong{color:var(--text);font-weight:700;}
+
+/* market (instrument) toggle — proves market is an axis WITHIN a segment, not a segment */
+.market-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 22px;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);}
+.market-bar-label{font-size:13px;font-weight:600;color:var(--text-mid);}
+.market-bar-label .hint{display:block;font-size:11.5px;font-weight:400;color:var(--text-light);margin-top:2px;}
+.market-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.market-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--border);border-radius:999px;background:#fff;font-size:13px;font-weight:600;color:var(--text-mid);transition:all .15s;}
+.market-btn.on{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+.market-btn:hover{border-color:var(--blue-mid);}
+
+.segs-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* Segment card */
+.seg-card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);border-left:5px solid transparent;transition:box-shadow .2s,transform .15s;position:relative;}
+.seg-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-2px);}
+.seg-card-in{padding:20px 20px 18px;}
+.seg-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;}
+.seg-card-names{flex:1;}
+.seg-card-name{font-size:16px;font-weight:700;color:var(--text);line-height:1.2;}
+.seg-card-en{font-size:12px;color:var(--text-light);margin-top:1px;}
+.seg-track{display:inline-block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:3px 8px;border-radius:5px;margin-top:6px;}
+.seg-rate-pill{font-size:12px;font-weight:700;padding:6px 11px;border-radius:10px;white-space:nowrap;line-height:1.35;text-align:right;}
+.seg-rate-pill .yr{display:block;font-weight:500;font-size:10.5px;opacity:.85;}
+
+/* THREE AXES spec — the heart of the segmentation, uniform units everywhere */
+.seg-axes{display:grid;grid-template-columns:1fr;gap:9px;margin:14px 0;padding:13px 14px;border-radius:10px;}
+.axis-row{display:grid;grid-template-columns:88px 1fr;align-items:center;gap:10px;}
+.axis-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-light);}
+.axis-val{font-size:13px;font-weight:600;color:var(--text);}
+.axis-val small{font-weight:400;color:var(--text-light);}
+.axis-bar{height:6px;border-radius:4px;background:#e2e8f0;overflow:hidden;margin-top:5px;}
+.axis-bar > i{display:block;height:100%;border-radius:4px;}
+
+/* instruments line (driven by market toggle) */
+.seg-instr{font-size:12.5px;color:var(--text-mid);margin:0 0 14px;padding:9px 12px;background:var(--bg);border-radius:8px;line-height:1.5;}
+.seg-instr b{color:var(--text);font-weight:600;}
+
+/* Growth box */
+.seg-growth{border-radius:8px;padding:13px 14px;margin-bottom:14px;}
+.seg-growth-top{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);margin-bottom:8px;}
+.seg-growth-row{display:flex;align-items:center;gap:8px;}
+.seg-growth-from{font-size:14px;color:var(--text-mid);}
+.seg-growth-arr{font-size:16px;color:var(--text-light);}
+.seg-growth-to{font-size:24px;font-weight:700;}
+.seg-growth-gain{font-size:12px;color:var(--text-light);margin-top:4px;}
+
+/* Description + why */
+.seg-desc{font-size:13.5px;color:var(--text-mid);line-height:1.6;margin-bottom:12px;}
+.seg-why{font-size:13px;color:var(--text-mid);line-height:1.55;margin-bottom:14px;padding:11px 13px;border-radius:8px;background:#fff;border:1px dashed var(--border);}
+.seg-why b{color:var(--text);font-weight:700;}
+
+/* CTA */
+.seg-cta-btn{display:block;width:100%;text-align:center;padding:11px 16px;border-radius:8px;font-size:13.5px;font-weight:700;color:#fff;background:var(--green);border:none;text-decoration:none;transition:background .15s;margin-bottom:10px;}
+.seg-cta-btn:hover{background:var(--green-d);}
+
+/* View on chart link */
+.seg-chart-link{display:flex;align-items:center;justify-content:center;gap:5px;font-size:12px;color:var(--text-light);background:none;border:none;width:100%;padding:6px;transition:color .15s;}
+.seg-chart-link:hover{color:var(--blue-mid);}
+
+/* Blog cards */
+.blog-sep{border-top:1px solid var(--border);margin:14px 0 12px;padding-top:12px;}
+.blog-sep-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-light);margin-bottom:8px;}
+.blog-cards{display:flex;flex-direction:column;gap:8px;margin-bottom:14px;}
+.blog-mini{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--bg);text-decoration:none;color:var(--text);border:1.5px solid transparent;transition:all .15s;}
+.blog-mini:hover{background:var(--blue-light);border-color:var(--border);}
+.blog-mini-ico{width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.blog-mini-title{font-size:12.5px;font-weight:600;color:var(--text);line-height:1.35;}
+.blog-mini-read{font-size:11px;color:var(--text-light);margin-top:2px;}
+
+/* Full width card */
+.seg-card.span2{grid-column:1/-1;}
+.seg-card.span2 .seg-card-in{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
+.seg-card.span2 .seg-card-head,
+.seg-card.span2 .seg-axes,
+.seg-card.span2 .seg-instr{grid-column:1/-1;}
+
+/* Pulse animation when focused from chart */
+@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(24,62,140,.35),var(--shadow-lg);}70%{box-shadow:0 0 0 12px rgba(24,62,140,0),var(--shadow-lg);}100%{box-shadow:0 0 0 0 rgba(24,62,140,0),var(--shadow-lg);}}
+.seg-card.pulse{animation:pulse-ring .8s ease-out;}
+
+/* ---- DISCLAIMER ---- */
+.disclaimer{max-width:1200px;margin:32px auto 0;padding:0 24px 48px;}
+.disclaimer-inner{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:16px 20px;font-size:12.5px;color:var(--text-light);line-height:1.65;}
+.disclaimer-inner strong{color:var(--text-mid);}
+
+@media(max-width:900px){
+  .hero-title{font-size:27px;}
+  .calc-card{grid-template-columns:1fr;}
+  .inp-panel{border-right:none;border-bottom:1px solid var(--border);}
+  .segs-grid{grid-template-columns:1fr;}
+  .seg-card.span2{grid-column:auto;}
+  .seg-card.span2 .seg-card-in{grid-template-columns:1fr;}
+}
+@media (prefers-reduced-motion: reduce){
+  *{scroll-behavior:auto !important;animation:none !important;transition:none !important;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-inner">
+    <a href="#" class="logo">
+      <div class="logo-mark" aria-hidden="true">RF</div>
+      RoboForex
+    </a>
+    <nav class="hdr-nav" aria-label="Account">
+      <button class="btn-login">Log In</button>
+      <a href="https://my.roboforex.com/en/register/" class="btn-open">Open an account</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <p class="hero-tag">Free Tool</p>
+    <h1 class="hero-title">Compounding Calculator</h1>
+    <p class="hero-sub">See how consistent returns compound over time across five real user strategies. Every strategy is sorted by the same three things — so you can compare them like for like.</p>
+    <div class="hero-axes" aria-hidden="true">
+      <span class="axis-chip">📈 <b>Target return</b> <span>% per month</span></span>
+      <span class="axis-chip">⏱ <b>Time you spend</b> <span>hours / week</span></span>
+      <span class="axis-chip">🛡 <b>Risk per position</b> <span>% of portfolio</span></span>
+    </div>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<div class="calc-wrap">
+  <div class="calc-card">
+    <!-- Left: Inputs -->
+    <div class="inp-panel">
+      <h2 class="inp-section-title">Your money</h2>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-deposit">Initial deposit</label>
+        <div class="inp-wrap">
+          <span class="inp-pre">$</span>
+          <input type="text" id="inp-deposit" class="inp-field p-pre" value="5,000" inputmode="numeric" aria-describedby="dep-help">
+        </div>
+        <span id="dep-help" class="sr-only">Your total starting capital in US dollars.</span>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-years">Years of growth</label>
+        <div class="inp-wrap">
+          <input type="number" id="inp-years" class="inp-field p-suf" value="5" min="1" max="30">
+          <span class="inp-suf">Years</span>
+        </div>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-contrib">Regular contribution</label>
+        <div class="inp-wrap">
+          <span class="inp-pre">$</span>
+          <input type="text" id="inp-contrib" class="inp-field p-pre" value="0" inputmode="numeric">
+        </div>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" id="freq-label">Contribution frequency</label>
+        <div class="freq-grid" role="group" aria-labelledby="freq-label">
+          <button class="freq-btn on" data-freq="monthly" aria-pressed="true">Monthly</button>
+          <button class="freq-btn" data-freq="annually" aria-pressed="false">Annually</button>
+        </div>
+        <input type="hidden" id="inp-freq" value="monthly">
+      </div>
+
+      <!-- Segment legend -->
+      <div class="seg-legend">
+        <p class="seg-legend-title">Strategies compared</p>
+        <div id="seg-leg-list" role="listbox" aria-label="Highlight a strategy on the chart"></div>
+      </div>
+    </div>
+
+    <!-- Right: Chart -->
+    <div class="chart-panel">
+      <div class="chart-result-area">
+        <p class="chart-label-sm">Projected total balance</p>
+        <div id="chart-balance" class="chart-balance">$0</div>
+        <p id="chart-balance-sub" class="chart-balance-sub">after 5 years &middot; Full-time Trader</p>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing five strategies"></canvas>
+      </div>
+      <p class="chart-foot">
+        <b>Click any line</b> to see that strategy in detail below. The bold line is your selected strategy; the rest are dimmed for comparison.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- SEGMENTS SECTION -->
+<div class="segs-wrap">
+  <div class="segs-hdr">
+    <h2 class="segs-title">Find the strategy that fits your life</h2>
+    <p class="segs-sub">
+      Strategies are ordered by <strong>how much time</strong> they take — from zero to full-time.
+      Each one is modelled on <strong id="seg-dep-disp">$500</strong> (just 10% of your deposit) over
+      <strong id="seg-yr-disp">5</strong> years, so you can see meaningful growth without committing everything.
+    </p>
+  </div>
+
+  <!-- Market (instrument) toggle: same numbers, different instruments -->
+  <div class="market-bar">
+    <div class="market-bar-label">
+      Instrument
+      <span class="hint">Forex, crypto and stocks are <b>not</b> separate strategies — they're tools you can use inside any strategy. The projections don't change.</span>
+    </div>
+    <div class="market-btns" role="group" aria-label="Choose instrument examples">
+      <button class="market-btn on" data-market="forex" aria-pressed="true">💱 Forex</button>
+      <button class="market-btn" data-market="crypto" aria-pressed="false">₿ Crypto</button>
+      <button class="market-btn" data-market="stocks" aria-pressed="false">📊 Stocks</button>
+    </div>
+  </div>
+
+  <div class="segs-grid" id="segs-grid">
+    <!-- Built by JS -->
+  </div>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <div class="disclaimer-inner">
+    <strong>Risk disclaimer:</strong> Projections are illustrative estimates based on typical returns for each strategy type and assume consistent monthly performance with full reinvestment of profits. Annual figures are the mathematical equivalent of the monthly rate (compounded), shown only for comparison. Past performance does not guarantee future results. Trading leveraged products involves significant risk of loss. This calculator is for educational purposes only and is not financial advice.
+  </div>
+</div>
+
+<script>
+// =====================================================================
+//  DATA  — segmentation axes (uniform units): target return (%/month),
+//  time commitment (hours), risk per position (% of portfolio).
+//  Market (forex/crypto/stocks) is an instrument axis INSIDE each segment.
+// =====================================================================
+const SEGS = [
+  {
+    id:'depositor', name:'Вкладчик', en:'Passive Saver',
+    track:'Saving', trackBg:'#f1f5f9', trackColor:'#475569',
+    rate:0.5, rMin:0.3, rMax:0.7,
+    timeLabel:'0 hrs — money works itself', timeLevel:0,
+    riskLabel:'0% — no open positions', riskLevel:0,
+    instruments:{forex:'Not applicable — a saver holds cash, not positions.',
+                 crypto:'Not applicable — a saver holds cash, not positions.',
+                 stocks:'Bank deposits and government bonds.'},
+    product:'Demo Account',
+    whyProduct:'Start on a free <b>Demo</b> first — see the difference with zero risk before moving real money.',
+    cta:'Open Demo Account',
+    ctaUrl:'https://my.roboforex.com/en/register-demo/?utm_source=calc&utm_content=seg_depositor',
+    color:'#64748b', colorBg:'#f1f5f9',
+    desc:'You keep savings in a bank deposit or bonds. Safe and predictable — but growth barely beats inflation.',
+    why:'Your 4–8%/year equals just 0.3–0.7%/month. Traders target 2–5%/month on the same capital. Try it risk-free on a demo and compare.',
+    blogs:false,
+  },
+  {
+    id:'copytrader', name:'Копи-трейдер', en:'Copy Trader',
+    track:'Outsourced skill', trackBg:'#faf5ff', trackColor:'#7e22ce',
+    rate:3.5, rMin:2.0, rMax:5.0,
+    timeLabel:'< 1 hr / week — pick a strategy', timeLevel:1,
+    riskLabel:'Set by the strategy you copy', riskLevel:2,
+    instruments:{forex:'CopyFX strategies trading Forex pairs.',
+                 crypto:'CopyFX strategies trading crypto.',
+                 stocks:'CopyFX strategies trading stock CFDs.'},
+    product:'CopyFX',
+    whyProduct:'<b>CopyFX</b> lets you copy verified traders automatically — trader-level returns without the skill or the screen time.',
+    cta:'Start with CopyFX',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_copytrader',
+    color:'#a855f7', colorBg:'#faf5ff',
+    desc:'You don’t trade yourself — you automatically follow professional traders via CopyFX. The bridge from investor to active returns.',
+    why:'High returns usually demand lots of time. Copy trading breaks that link: you outsource the skill, so you can earn trader-level results with under an hour a week.',
+    blogs:false,
+  },
+  {
+    id:'longinvestor', name:'Долгосрочный инвестор', en:'Long-term Investor',
+    track:'Investing', trackBg:'#eff6ff', trackColor:'#1d4ed8',
+    rate:1.1, rMin:0.7, rMax:1.5,
+    timeLabel:'1–2 hrs / week — rebalance', timeLevel:1,
+    riskLabel:'Up to 5% of portfolio per position', riskLevel:1,
+    instruments:{forex:'Long-term positions in major currency pairs.',
+                 crypto:'Crypto HODL — buy and hold leading coins.',
+                 stocks:'Indices, ETFs and dividend stocks.'},
+    product:'R StocksTrader',
+    whyProduct:'<b>R StocksTrader</b> gives investors direct access to 12,000+ real stocks, ETFs and indices in one account — exactly the instruments long-term portfolios are built from.',
+    cta:'Open R StocksTrader',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_longinvestor',
+    color:'#3b82f6', colorBg:'#eff6ff',
+    desc:'You build a portfolio of indices, ETFs, dividend stocks or long-held crypto. Light, weekly involvement — buy, hold, rebalance.',
+    why:'At 1%/month your $10k becomes $13.2k in 2 years. Step up to active trading at 3%/month and the same capital reaches $20.3k.',
+    blogs:false,
+  },
+  {
+    id:'parttime', name:'Part-time трейдер', en:'Part-time Trader',
+    track:'Trading', trackBg:'#fffbeb', trackColor:'#b45309',
+    rate:2.75, rMin:1.5, rMax:4.0,
+    timeLabel:'1–2 hrs / day — analyse & trade', timeLevel:2,
+    riskLabel:'1–3% of portfolio per position', riskLevel:2,
+    instruments:{forex:'Forex swing trades on major & minor pairs.',
+                 crypto:'Crypto swing trades held days to weeks.',
+                 stocks:'Stock swing trades around earnings & trends.'},
+    product:'Pro Account',
+    whyProduct:'<b>Pro Account</b> gives active traders tight spreads and fast execution — so trading costs don’t eat your compounded gains.',
+    cta:'Open Pro Account',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_parttime',
+    color:'#f59e0b', colorBg:'#fffbeb',
+    desc:'You trade alongside your main job. Swing strategies, defined entry/exit rules, steady risk management. Most of our traders start here.',
+    why:'3%/month turns $5k into $10.2k in 2 years. A disciplined, part-time routine compounds well without a full-time commitment.',
+    blogs:true,
+  },
+  {
+    id:'fulltime', name:'Full-time трейдер', en:'Full-time Trader',
+    track:'Trading', trackBg:'#ecfdf5', trackColor:'#047857',
+    rate:7.0, rMin:4.0, rMax:10.0,
+    timeLabel:'4–8 hrs / day — full occupation', timeLevel:4,
+    riskLabel:'3–10% of portfolio per position', riskLevel:4,
+    instruments:{forex:'Forex intraday & scalping on tight spreads.',
+                 crypto:'Active crypto trading through the session.',
+                 stocks:'Stock day-trading on intraday moves.'},
+    product:'Pro Account',
+    whyProduct:'<b>Pro Account</b> delivers raw spreads from 0.0, fast execution and advanced orders — the infrastructure intraday & scalping strategies depend on.',
+    cta:'Open Pro Account',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_fulltime',
+    color:'#10b981', colorBg:'#ecfdf5',
+    desc:'Trading is your main income. Intraday and scalping across markets — you need raw spreads, speed and advanced order types. High potential, but it demands strict discipline.',
+    why:'6%/month takes $10k to $20.1k in a year. At this intensity, execution quality and risk discipline decide whether the compounding holds.',
+    blogs:false,
+    wide:true,
+  },
+];
+
+const BLOG_CARDS = [
+  {ico:'📈',bg:'#fef3c7',title:'What Is Swing Trading? A Practical Guide for Beginners',url:'https://roboforex.com/blog/',read:'5 min read'},
+  {ico:'🛡️',bg:'#dbeafe',title:'Risk Management: The 1–2% Rule Every Trader Should Know',url:'https://roboforex.com/blog/',read:'4 min read'},
+  {ico:'🔄',bg:'#f0fdf4',title:'How Compounding Works in Forex Trading — Step by Step',url:'https://roboforex.com/blog/',read:'6 min read'},
+];
+
+// =====================================================================
+//  STATE
+// =====================================================================
+let activeSeg = 'fulltime';
+let growthChart = null;
+let contribFreq = 'monthly';
+let market = 'forex';
+
+// =====================================================================
+//  HELPERS
+// =====================================================================
+function parseMoney(s){return parseFloat(String(s).replace(/[^0-9.]/g,''))||0;}
+function fmtNum(n){return n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function fmtMoney(n){return '$'+fmtNum(n);}
+function fmtK(n){
+  if(n>=1000000)return '$'+(n/1000000).toFixed(1)+'M';
+  if(n>=10000)return '$'+(n/1000).toFixed(0)+'k';
+  if(n>=1000)return '$'+(n/1000).toFixed(1)+'k';
+  return '$'+Math.round(n);
+}
+// monthly % -> equivalent compounded annual %
+function annualFromMonthly(m){return (Math.pow(1+m/100,12)-1)*100;}
+function fmtPct(p){return (p<10?p.toFixed(1):Math.round(p))+'%';}
+// "0.3–0.7% / mo · ~4–9% / yr"  (uniform, comparable dimensions)
+function rateLabel(s){
+  const aMin=annualFromMonthly(s.rMin), aMax=annualFromMonthly(s.rMax);
+  return {mo:`${s.rMin}–${s.rMax}% / mo`, yr:`≈ ${Math.round(aMin)}–${Math.round(aMax)}% / yr`};
+}
+
+function getInputs(){
+  const dep = parseMoney(document.getElementById('inp-deposit').value)||5000;
+  const yrs = parseInt(document.getElementById('inp-years').value)||5;
+  const contrib = parseMoney(document.getElementById('inp-contrib').value)||0;
+  return {dep,yrs,contrib};
+}
+
+// Compound month-by-month, return [Y0, Y1, ..., YN] balances
+function calcByYear(P, rateMonthly, years, contrib, freq){
+  let bal = P;
+  const res = [P];
+  const months = years*12;
+  for(let m=1;m<=months;m++){
+    if(freq==='monthly'&&contrib>0) bal+=contrib;
+    else if(freq==='annually'&&m%12===1&&m>1&&contrib>0) bal+=contrib;
+    bal*=(1+rateMonthly/100);
+    if(m%12===0) res.push(bal);
+  }
+  return res;
+}
+
+// =====================================================================
+//  LEGEND
+// =====================================================================
+function buildLegend(){
+  const el = document.getElementById('seg-leg-list');
+  el.innerHTML = SEGS.map(s=>{
+    const r=rateLabel(s);
+    return `
+    <button class="seg-leg-item${s.id===activeSeg?' on':''}" data-seg="${s.id}" id="leg-${s.id}"
+            role="option" aria-selected="${s.id===activeSeg}">
+      <span class="seg-dot" style="background:${s.color}"></span>
+      <span class="seg-leg-name">${s.en}</span>
+      <span class="seg-leg-rate">${r.mo}</span>
+    </button>`;
+  }).join('');
+  el.querySelectorAll('.seg-leg-item').forEach(b=>{
+    b.addEventListener('click',()=>setActive(b.dataset.seg));
+  });
+}
+
+// =====================================================================
+//  CHART
+// =====================================================================
+function renderChart(){
+  const {dep,yrs,contrib} = getInputs();
+  const labels = ['Now',...Array.from({length:yrs},(_,i)=>'Y'+(i+1))];
+  const datasets = SEGS.map(s=>{
+    const balances = calcByYear(dep,s.rate,yrs,contrib,contribFreq);
+    const isActive = s.id===activeSeg;
+    return {
+      label:s.en,
+      data:balances,
+      borderColor:isActive?s.color:s.color+'40',
+      backgroundColor:isActive?s.color+'14':'transparent',
+      borderWidth:isActive?3.5:1.5,
+      pointRadius:isActive?5:2,
+      pointHoverRadius:isActive?7:4,
+      pointBackgroundColor:s.color,
+      pointBorderColor:'#fff',
+      pointBorderWidth:isActive?2:1,
+      tension:0.35,
+      fill:isActive,
+      order:isActive?0:1,
+    };
+  });
+
+  const ctx = document.getElementById('growthChart').getContext('2d');
+  if(growthChart) growthChart.destroy();
+  growthChart = new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets},
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      onClick:(evt,elements)=>{
+        if(!elements.length)return;
+        const segId = SEGS[elements[0].datasetIndex].id;
+        setActive(segId);
+        focusCard(segId);
+      },
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'rgba(26,37,51,0.92)',
+          titleFont:{size:13,family:"'Open Sans',sans-serif"},
+          bodyFont:{size:12.5,family:"'Open Sans',sans-serif"},
+          padding:12, cornerRadius:8,
+          callbacks:{label:(c)=>' '+c.dataset.label+': '+fmtMoney(c.raw)},
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:12,family:"'Open Sans',sans-serif"},color:'#5d6b7d'}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:12,family:"'Open Sans',sans-serif"},color:'#5d6b7d',callback:v=>fmtK(v)}}
+      }
+    }
+  });
+}
+
+// =====================================================================
+//  SEGMENT CARDS
+// =====================================================================
+function axisBar(level,color){
+  const pct = (level/4)*100;
+  return `<div class="axis-bar"><i style="width:${pct}%;background:${color}"></i></div>`;
+}
+
+function buildCards(){
+  const {dep,yrs} = getInputs();
+  const segDep = dep*0.1;
+  const grid = document.getElementById('segs-grid');
+
+  grid.innerHTML = SEGS.map(s=>{
+    const r = rateLabel(s);
+    const balances = calcByYear(segDep,s.rate,yrs,0,'monthly');
+    const finalBal = balances[balances.length-1];
+    const gain = finalBal-segDep;
+    const gainPct = segDep>0?Math.round(gain/segDep*100):0;
+
+    const blogSection = s.blogs?`
+      <div class="blog-sep">
+        <p class="blog-sep-label">Learn more → From the blog</p>
+        <div class="blog-cards">
+          ${BLOG_CARDS.map(b=>`
+            <a class="blog-mini" href="${b.url}" target="_blank" rel="noopener">
+              <span class="blog-mini-ico" style="background:${b.bg}" aria-hidden="true">${b.ico}</span>
+              <span>
+                <span class="blog-mini-title">${b.title}</span>
+                <span class="blog-mini-read">${b.read}</span>
+              </span>
+            </a>`).join('')}
+        </div>
+      </div>`:'';
+
+    return `
+      <article class="seg-card${s.wide?' span2':''}" id="sc-${s.id}" data-seg="${s.id}"
+               style="border-left-color:${s.color}">
+        <div class="seg-card-in">
+          <div class="seg-card-head">
+            <div class="seg-card-names">
+              <h3 class="seg-card-name">${s.en}</h3>
+              <p class="seg-card-en">${s.name}</p>
+              <span class="seg-track" style="background:${s.trackBg};color:${s.trackColor}">${s.track}</span>
+            </div>
+            <div class="seg-rate-pill" style="background:${s.colorBg};color:${s.color}">
+              ${r.mo}<span class="yr">${r.yr}</span>
+            </div>
+          </div>
+
+          <div class="seg-axes" style="background:${s.colorBg}">
+            <div class="axis-row">
+              <span class="axis-name">📈 Return</span>
+              <span>
+                <span class="axis-val">${r.mo} <small>(${r.yr})</small></span>
+                ${axisBar(Math.min(4,Math.round(s.rate/2.5)),s.color)}
+              </span>
+            </div>
+            <div class="axis-row">
+              <span class="axis-name">⏱ Time</span>
+              <span>
+                <span class="axis-val">${s.timeLabel}</span>
+                ${axisBar(s.timeLevel,s.color)}
+              </span>
+            </div>
+            <div class="axis-row">
+              <span class="axis-name">🛡 Risk</span>
+              <span>
+                <span class="axis-val">${s.riskLabel}</span>
+                ${axisBar(s.riskLevel,s.color)}
+              </span>
+            </div>
+          </div>
+
+          <p class="seg-instr"><b>Instruments:</b> <span class="instr-text" id="instr-${s.id}">${s.instruments[market]}</span></p>
+
+          <div class="seg-growth" style="background:${s.colorBg}">
+            <p class="seg-growth-top">Potential growth on 10% of your deposit</p>
+            <div class="seg-growth-row">
+              <span class="seg-growth-from" id="sg-from-${s.id}">${fmtMoney(segDep)}</span>
+              <span class="seg-growth-arr" aria-hidden="true">→</span>
+              <span class="seg-growth-to" id="sg-to-${s.id}" style="color:${s.color}">${fmtMoney(finalBal)}</span>
+            </div>
+            <p class="seg-growth-gain" id="sg-gain-${s.id}">+${fmtMoney(gain)} gain (+${gainPct}%) over ${yrs} year${yrs!==1?'s':''}</p>
+          </div>
+
+          <div>
+            <p class="seg-desc">${s.desc}</p>
+            <p class="seg-why"><b>Why it could fit you:</b> ${s.why}</p>
+            <p class="seg-why"><b>Why ${s.product}:</b> ${s.whyProduct}</p>
+            ${blogSection}
+            <a class="seg-cta-btn" href="${s.ctaUrl}" target="_blank" rel="noopener">${s.cta}</a>
+            <button class="seg-chart-link" data-view="${s.id}" type="button">
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                <path d="M6 10V2M6 2L2 6M6 2l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              View on chart
+            </button>
+          </div>
+        </div>
+      </article>`;
+  }).join('');
+
+  // "View on chart" buttons
+  grid.querySelectorAll('.seg-chart-link').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      setActive(btn.dataset.view);
+      document.querySelector('.calc-wrap').scrollIntoView({behavior:'smooth',block:'start'});
+    });
+  });
+}
+
+function focusCard(segId){
+  setTimeout(()=>{
+    const card = document.getElementById('sc-'+segId);
+    if(card){
+      card.scrollIntoView({behavior:'smooth',block:'center'});
+      card.classList.add('pulse');
+      setTimeout(()=>card.classList.remove('pulse'),800);
+    }
+  },100);
+}
+
+// =====================================================================
+//  UPDATES
+// =====================================================================
+function updateInstruments(){
+  SEGS.forEach(s=>{
+    const el=document.getElementById('instr-'+s.id);
+    if(el) el.textContent=s.instruments[market];
+  });
+}
+
+function updateCardsGrowth(){
+  const {dep,yrs} = getInputs();
+  const segDep = dep*0.1;
+  document.getElementById('seg-dep-disp').textContent = fmtMoney(segDep);
+  document.getElementById('seg-yr-disp').textContent = yrs;
+  SEGS.forEach(s=>{
+    const toEl=document.getElementById('sg-to-'+s.id);
+    if(!toEl)return;
+    const balances = calcByYear(segDep,s.rate,yrs,0,'monthly');
+    const finalBal = balances[balances.length-1];
+    const gain = finalBal-segDep;
+    const gainPct = segDep>0?Math.round(gain/segDep*100):0;
+    document.getElementById('sg-from-'+s.id).textContent = fmtMoney(segDep);
+    toEl.textContent = fmtMoney(finalBal);
+    document.getElementById('sg-gain-'+s.id).textContent =
+      '+'+fmtMoney(gain)+' gain (+'+gainPct+'%) over '+yrs+' year'+(yrs!==1?'s':'');
+  });
+}
+
+function updateChartTotal(){
+  const {dep,yrs,contrib} = getInputs();
+  const seg = SEGS.find(s=>s.id===activeSeg);
+  const balances = calcByYear(dep,seg.rate,yrs,contrib,contribFreq);
+  const el = document.getElementById('chart-balance');
+  el.textContent = fmtMoney(balances[balances.length-1]);
+  el.style.color = seg.color;
+  document.getElementById('chart-balance-sub').textContent =
+    'after '+yrs+' year'+(yrs!==1?'s':'')+' · '+seg.en;
+}
+
+function setActive(segId){
+  activeSeg = segId;
+  document.querySelectorAll('.seg-leg-item').forEach(el=>{
+    const on = el.dataset.seg===segId;
+    el.classList.toggle('on',on);
+    el.setAttribute('aria-selected',on);
+  });
+  document.querySelectorAll('.seg-card').forEach(card=>{
+    const isOn = card.dataset.seg===segId;
+    card.style.boxShadow = isOn
+      ? '0 0 0 2px '+SEGS.find(s=>s.id===segId).color+', 0 8px 32px rgba(9,44,80,0.18)'
+      : '';
+  });
+  updateChartTotal();
+  renderChart();
+}
+
+function fullUpdate(){
+  updateChartTotal();
+  renderChart();
+  updateCardsGrowth();
+}
+
+// =====================================================================
+//  INIT
+// =====================================================================
+document.addEventListener('DOMContentLoaded',()=>{
+  buildLegend();
+  buildCards();
+  setActive(activeSeg);
+  fullUpdate();
+
+  ['inp-deposit','inp-years','inp-contrib'].forEach(id=>{
+    document.getElementById(id).addEventListener('input',fullUpdate);
+  });
+
+  ['inp-deposit','inp-contrib'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.addEventListener('blur',()=>{const n=parseMoney(el.value);if(n>0)el.value=fmtNum(n);});
+    el.addEventListener('focus',()=>{const n=parseMoney(el.value);if(n>0)el.value=String(n);});
+  });
+
+  document.querySelectorAll('.freq-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.freq-btn').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false');});
+      btn.classList.add('on');btn.setAttribute('aria-pressed','true');
+      contribFreq = btn.dataset.freq;
+      fullUpdate();
+    });
+  });
+
+  document.querySelectorAll('.market-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.market-btn').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false');});
+      btn.classList.add('on');btn.setAttribute('aria-pressed','true');
+      market = btn.dataset.market;
+      updateInstruments();
+    });
+  });
+});
+</script>
+</body>
+</html>
