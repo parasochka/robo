@@ -88,7 +88,16 @@ button{cursor:pointer;font-family:var(--font);}
 
 /* Chart panel */
 .chart-panel{padding:28px 28px 20px;display:flex;flex-direction:column;min-height:520px;}
-.chart-result-area{margin-bottom:14px;}
+.chart-head{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:14px;}
+.chart-result-area{margin-bottom:0;min-width:0;}
+
+/* profile indicator + quick switch (top-right of the chart) */
+.profile-pick{flex:0 0 auto;width:236px;background:var(--blue-light);border:1px solid #cfe0f2;border-radius:10px;padding:12px 14px;}
+.profile-pick-label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--blue-mid);margin-bottom:7px;}
+.profile-select{width:100%;height:38px;border:1.5px solid #cfe0f2;border-radius:7px;background:#fff;font-family:var(--font);font-size:13px;font-weight:700;color:var(--blue);padding:0 32px 0 12px;cursor:pointer;outline:none;appearance:none;-webkit-appearance:none;-moz-appearance:none;background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='12'%20height='8'%3E%3Cpath%20fill='%23183E8C'%20d='M0%200%20L12%200%20L6%208%20Z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;transition:border-color .15s;}
+.profile-select:focus{border-color:var(--blue-mid);}
+.profile-pick-note{font-size:11px;color:var(--text-mid);line-height:1.45;margin-top:8px;}
+.profile-pick-note b{color:var(--blue);font-weight:700;}
 .chart-label-sm{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:3px;}
 .chart-balance{font-size:38px;font-weight:700;line-height:1.1;transition:color .3s;}
 .chart-balance-sub{font-size:13px;color:var(--text-light);margin-top:4px;}
@@ -192,6 +201,8 @@ button{cursor:pointer;font-family:var(--font);}
   .hero-title{font-size:27px;}
   .calc-card{grid-template-columns:1fr;}
   .inp-panel{border-right:none;border-bottom:1px solid var(--border);}
+  .chart-head{flex-direction:column;}
+  .profile-pick{width:100%;}
   .seg-card-in{flex-wrap:wrap;gap:12px;}
   .seg-main{flex:1 1 100%;}
   .seg-earn{text-align:left;min-width:0;flex:1 1 auto;}
@@ -223,7 +234,7 @@ button{cursor:pointer;font-family:var(--font);}
 <!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
-    <h1 class="hero-title">Your savings can earn a lot more</h1>
+    <h1 class="hero-title">Compound Interest Calculator</h1>
     <p class="hero-sub">A bank deposit pays you around 4–8% a year. See — side by side — how much the very same money could earn if you let it work a little harder, from a safe deposit all the way to active trading. Start where you are, move up when you're ready.</p>
   </div>
 </div>
@@ -293,11 +304,18 @@ button{cursor:pointer;font-family:var(--font);}
 
     <!-- Right: Chart -->
     <div class="chart-panel">
-      <div class="chart-result-area">
-        <p class="chart-label-sm">Your money could grow to</p>
-        <div id="chart-balance" class="chart-balance">$0</div>
-        <p id="chart-balance-sub" class="chart-balance-sub">after 12 months</p>
-        <div id="chart-gap" class="chart-gap" aria-live="polite"></div>
+      <div class="chart-head">
+        <div class="chart-result-area">
+          <p class="chart-label-sm">Your money could grow to</p>
+          <div id="chart-balance" class="chart-balance">$0</div>
+          <p id="chart-balance-sub" class="chart-balance-sub">after 12 months</p>
+          <div id="chart-gap" class="chart-gap" aria-live="polite"></div>
+        </div>
+        <div class="profile-pick">
+          <label class="profile-pick-label" for="profile-select">These figures model</label>
+          <select id="profile-select" class="profile-select" aria-describedby="profile-pick-note"></select>
+          <p class="profile-pick-note" id="profile-pick-note"></p>
+        </div>
       </div>
       <div class="chart-wrap">
         <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing trader profiles over 12 months"></canvas>
@@ -529,6 +547,17 @@ function depositFinal(P, months, contrib, freq){
 }
 function fmtMultiple(m){return (m>=10?Math.round(m):m.toFixed(1))+'×';}
 
+// How many contributions calcSeriesMonthly actually adds over the period —
+// mirrors its loop so "invested" and "gain" stay honest when a contribution is set.
+function contribCount(months, freq){
+  let c=0;
+  for(let m=1;m<=months;m++){
+    if(freq==='monthly') c++;
+    else if(freq==='annually'&&m%12===1&&m>1) c++;
+  }
+  return c;
+}
+
 // =====================================================================
 //  CHART
 // =====================================================================
@@ -615,16 +644,18 @@ function renderChart(){
 //  SEGMENT CARDS
 // =====================================================================
 function buildCards(){
-  const {dep,months} = getInputs();
+  const {dep,months,contrib} = getInputs();
   const segDep = dep*0.1;
+  const segContrib = contrib*0.1;            // invest 10% of each top-up too
+  const invested = segDep + segContrib*contribCount(months,contribFreq);
   const grid = document.getElementById('segs-grid');
 
   grid.innerHTML = SEGS.map(s=>{
     const r = rateLabel(s);
-    const balances = calcSeriesMonthly(segDep,s.rate,months,0,'monthly');
+    const balances = calcSeriesMonthly(segDep,s.rate,months,segContrib,contribFreq);
     const finalBal = balances[balances.length-1];
-    const gain = finalBal-segDep;
-    const gainPct = segDep>0?Math.round(gain/segDep*100):0;
+    const gain = finalBal-invested;          // profit only — contributions excluded
+    const gainPct = invested>0?Math.round(gain/invested*100):0;
 
     const badge = s.badge?`<span class="seg-badge ${s.badge}">${s.badgeText}</span>`:'';
     return `
@@ -651,7 +682,7 @@ function buildCards(){
           <div class="seg-earn">
             <p class="seg-earn-label">You could earn</p>
             <p class="seg-earn-amt" id="sg-gain-${s.id}" style="color:${s.color}">+${fmtMoney(gain)}</p>
-            <p class="seg-earn-sub" id="sg-sub-${s.id}">${fmtMoney(segDep)} → ${fmtMoney(finalBal)} · +${gainPct}%</p>
+            <p class="seg-earn-sub" id="sg-sub-${s.id}">${fmtMoney(invested)} → ${fmtMoney(finalBal)} · +${gainPct}%</p>
             <span class="seg-vs" id="sg-vs-${s.id}"></span>
           </div>
           <a class="seg-cta-btn" href="${s.ctaUrl}" target="_blank" rel="noopener">${s.cta}</a>
@@ -685,19 +716,21 @@ function focusCard(segId){
 //  UPDATES
 // =====================================================================
 function updateCardsGrowth(){
-  const {dep,months} = getInputs();
+  const {dep,months,contrib} = getInputs();
   const segDep = dep*0.1;
-  const depGain = depositFinal(segDep,months,0,'monthly') - segDep;
+  const segContrib = contrib*0.1;
+  const invested = segDep + segContrib*contribCount(months,contribFreq);
+  const depGain = depositFinal(segDep,months,segContrib,contribFreq) - invested;
   SEGS.forEach(s=>{
     const gainEl=document.getElementById('sg-gain-'+s.id);
     if(!gainEl)return;
-    const balances = calcSeriesMonthly(segDep,s.rate,months,0,'monthly');
+    const balances = calcSeriesMonthly(segDep,s.rate,months,segContrib,contribFreq);
     const finalBal = balances[balances.length-1];
-    const gain = finalBal-segDep;
-    const gainPct = segDep>0?Math.round(gain/segDep*100):0;
+    const gain = finalBal-invested;
+    const gainPct = invested>0?Math.round(gain/invested*100):0;
     gainEl.textContent = '+'+fmtMoney(gain);
     document.getElementById('sg-sub-'+s.id).textContent =
-      fmtMoney(segDep)+' → '+fmtMoney(finalBal)+' · +'+gainPct+'%';
+      fmtMoney(invested)+' → '+fmtMoney(finalBal)+' · +'+gainPct+'%';
     const vsEl=document.getElementById('sg-vs-'+s.id);
     if(vsEl){
       if(s.id==='saver'||depGain<=0){vsEl.style.display='none';}
@@ -737,6 +770,13 @@ function setActive(segId){
     document.getElementById('inp-rate').value = Math.round(annualFromMonthly(seg.rate));
     document.getElementById('inp-compound').value = 'monthly';
     compoundFreq = 'monthly';
+    // Keep the profile indicator above the chart in sync, so it's clear the
+    // default figures belong to a specific investor profile (not a promise).
+    const sel = document.getElementById('profile-select');
+    if(sel) sel.value = segId;
+    const note = document.getElementById('profile-pick-note');
+    if(note) note.innerHTML = 'Default values are pre-filled for a <b>'+seg.en+
+      '</b> (≈'+Math.round(annualFromMonthly(seg.rate))+'%/yr). Switch profile to update the calculator.';
   }
   document.querySelectorAll('.seg-card').forEach(card=>{
     const isOn = card.dataset.seg===segId;
@@ -769,6 +809,14 @@ function fullUpdate(){
 // =====================================================================
 document.addEventListener('DOMContentLoaded',()=>{
   buildCards();
+
+  // Fill the profile quick-switch with every segment, labelled by yearly rate.
+  const profSel = document.getElementById('profile-select');
+  profSel.innerHTML = SEGS.map(s=>
+    `<option value="${s.id}">${s.en} · ≈${Math.round(annualFromMonthly(s.rate))}%/yr</option>`
+  ).join('');
+  profSel.addEventListener('change',e=>setActive(e.target.value));
+
   setActive(activeSeg);   // 'parttime' — default part-time Forex trader profile
   fullUpdate();
 
