@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Compounding Calculator | RoboForex</title>
-<meta name="description" content="See how consistent returns compound over time across five real user strategies — sorted by target return, time commitment and risk per position.">
+<meta name="description" content="See how the same money compounds across nine trader profiles — from a bank deposit through Forex trading to scalping — sorted by target return and risk.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -47,10 +47,10 @@ button{cursor:pointer;font-family:var(--font);}
 .btn-open:hover{background:var(--green-d);}
 
 /* ---- PAGE HERO ---- */
-.hero{background:linear-gradient(135deg,#0f2a5e 0%,var(--blue) 60%,#1d5fa8 100%);padding:26px 24px 46px;}
+.hero{background:linear-gradient(135deg,#0f2a5e 0%,var(--blue) 60%,#1d5fa8 100%);padding:40px 24px 60px;}
 .hero-inner{max-width:1200px;margin:0 auto;}
 .hero-title{font-size:28px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px;}
-.hero-sub{font-size:15.5px;color:rgba(255,255,255,0.85);max-width:none;line-height:1.6;}
+.hero-sub{font-size:15.5px;color:rgba(255,255,255,0.85);max-width:1152px;line-height:1.6;}
 
 /* ---- CALC SECTION ---- */
 .calc-wrap{max-width:1200px;margin:-30px auto 0;padding:0 24px;position:relative;z-index:10;}
@@ -107,7 +107,7 @@ button{cursor:pointer;font-family:var(--font);}
 .segs-sub{font-size:14.5px;color:var(--text-mid);max-width:760px;}
 .segs-sub strong{color:var(--text);font-weight:700;}
 
-/* market (instrument) toggle — proves market is an axis WITHIN a segment, not a segment */
+/* instrument (Forex/Crypto/Stocks) toggle — an axis INSIDE a segment, not a segment */
 .market-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 22px;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);}
 .market-bar-label{font-size:13px;font-weight:600;color:var(--text-mid);}
 .market-bar-label .hint{display:block;font-size:11.5px;font-weight:400;color:var(--text-light);margin-top:2px;}
@@ -130,13 +130,15 @@ button{cursor:pointer;font-family:var(--font);}
 .seg-card-name{font-size:15.5px;font-weight:700;color:var(--text);line-height:1.2;}
 .seg-track{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:2px 7px;border-radius:5px;}
 .seg-desc{font-size:12.5px;color:var(--text-mid);line-height:1.45;}
-.seg-instr-line{font-size:11.5px;color:var(--text-light);margin-top:3px;}
+.seg-instr-line{font-size:11.5px;color:var(--text-light);margin-top:6px;}
 .seg-instr-line b{color:var(--text-mid);font-weight:600;}
 
-/* Rate */
-.seg-rate-col{flex:0 0 auto;text-align:center;min-width:92px;}
-.seg-rate-pill{display:inline-block;font-size:14px;font-weight:700;padding:5px 11px;border-radius:8px;white-space:nowrap;}
-.seg-rate-yr{font-size:10.5px;color:var(--text-light);margin-top:3px;}
+/* uniform comparable axes: same units on every card (return / time / risk) */
+.seg-axes{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;}
+.seg-axis{display:flex;align-items:baseline;gap:6px;font-size:12px;color:var(--text-mid);}
+.seg-axis .ax-ico{font-size:12px;line-height:1;}
+.seg-axis b{font-weight:700;color:var(--text);}
+.seg-axis .ax-sub{color:var(--text-light);font-size:11px;}
 
 /* Earnings — the headline of the card */
 .seg-earn{flex:0 0 auto;text-align:right;min-width:128px;}
@@ -150,6 +152,7 @@ button{cursor:pointer;font-family:var(--font);}
 .seg-badge.now{background:var(--blue-light);color:var(--blue-mid);}
 .seg-badge.step{background:var(--green);color:#fff;}
 .seg-badge.pop{background:#fff4e0;color:#b45309;}
+.seg-badge.risk{background:#fde8e8;color:#c81e1e;}
 .seg-card.is-rec{border-color:var(--green);box-shadow:0 0 0 1.5px var(--green),var(--shadow);}
 
 /* CTA */
@@ -171,7 +174,6 @@ button{cursor:pointer;font-family:var(--font);}
   .inp-panel{border-right:none;border-bottom:1px solid var(--border);}
   .seg-card-in{flex-wrap:wrap;gap:12px;}
   .seg-main{flex:1 1 100%;}
-  .seg-rate-col{text-align:left;min-width:0;}
   .seg-earn{text-align:left;min-width:0;flex:1 1 auto;}
   .seg-cta-btn{flex:1 1 100%;}
 }
@@ -215,23 +217,23 @@ button{cursor:pointer;font-family:var(--font);}
         <label class="inp-label" for="inp-deposit">Initial deposit</label>
         <div class="inp-wrap">
           <span class="inp-pre">$</span>
-          <input type="text" id="inp-deposit" class="inp-field p-pre" value="5,000" inputmode="numeric" aria-describedby="dep-help">
+          <input type="text" id="inp-deposit" class="inp-field p-pre" value="10,000" inputmode="numeric" aria-describedby="dep-help">
         </div>
         <span id="dep-help" class="sr-only">Your total starting capital in US dollars.</span>
       </div>
 
       <div class="inp-grp">
-        <label class="inp-label" for="inp-years">Years of growth</label>
+        <label class="inp-label" for="inp-months">Time horizon</label>
         <div class="inp-wrap">
-          <input type="number" id="inp-years" class="inp-field p-suf" value="5" min="1" max="30">
-          <span class="inp-suf">Years</span>
+          <input type="number" id="inp-months" class="inp-field p-suf" value="12" min="1" max="120">
+          <span class="inp-suf">Months</span>
         </div>
       </div>
 
       <div class="inp-grp">
-        <label class="inp-label" for="inp-rate">Estimated rate of return</label>
+        <label class="inp-label" for="inp-rate">Estimated rate of return <span style="font-weight:400;color:var(--text-light)">(per year)</span></label>
         <div class="inp-wrap">
-          <input type="text" id="inp-rate" class="inp-field p-suf" value="20" inputmode="decimal">
+          <input type="text" id="inp-rate" class="inp-field p-suf" value="27" inputmode="decimal">
           <span class="inp-suf">%</span>
         </div>
       </div>
@@ -253,7 +255,7 @@ button{cursor:pointer;font-family:var(--font);}
         <label class="inp-label" for="inp-contrib">Contribution amount</label>
         <div class="inp-wrap">
           <span class="inp-pre">$</span>
-          <input type="text" id="inp-contrib" class="inp-field p-pre" value="100" inputmode="numeric">
+          <input type="text" id="inp-contrib" class="inp-field p-pre" value="0" inputmode="numeric">
         </div>
       </div>
 
@@ -272,14 +274,14 @@ button{cursor:pointer;font-family:var(--font);}
       <div class="chart-result-area">
         <p class="chart-label-sm">Your money could grow to</p>
         <div id="chart-balance" class="chart-balance">$0</div>
-        <p id="chart-balance-sub" class="chart-balance-sub">after 5 years</p>
+        <p id="chart-balance-sub" class="chart-balance-sub">after 12 months</p>
         <div id="chart-gap" class="chart-gap" aria-live="polite"></div>
       </div>
       <div class="chart-wrap">
-        <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing five strategies"></canvas>
+        <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing trader profiles over 12 months"></canvas>
       </div>
       <p class="chart-foot">
-        The flat grey line at the bottom is a <b>bank deposit</b>. <b>Click any line</b> to compare another way to grow the same money.
+        The bold line is your default profile — a <b>part-time Forex trader</b>. The flat line at the bottom is a <b>bank deposit</b>. <b>Click any line</b> to compare another profile on the same money.
       </p>
     </div>
   </div>
@@ -288,22 +290,23 @@ button{cursor:pointer;font-family:var(--font);}
 <!-- SEGMENTS SECTION -->
 <div class="segs-wrap">
   <div class="segs-hdr">
-    <h2 class="segs-title">From a bank deposit to your next step</h2>
+    <h2 class="segs-title">You don't have to invest it all — pick your profile</h2>
     <p class="segs-sub">
-      The top row is where most people start — a plain <strong>bank deposit</strong>. Each step down trades
-      a little more time or skill for higher potential. We've modelled every one on
-      <strong id="seg-dep-disp">$500</strong> (just 10% of your deposit) over <strong id="seg-yr-disp">5</strong> years,
-      so you can try the next step with money you'd barely miss.
+      Every profile is compared on the <strong>same three units</strong>: target return (% per month),
+      <strong>time</strong> you put in (hours per week) and <strong>risk</strong> (% of your money on the line).
+      The top row is where most people start — a plain <strong>bank deposit</strong>. Each step down asks a little
+      more time or risk for higher potential. To show you needn't risk everything, we've modelled every profile on
+      just <strong id="seg-dep-disp">$1,000</strong> — a tenth of your deposit — over <strong id="seg-yr-disp">12 months</strong>.
     </p>
   </div>
 
-  <!-- Market (instrument) toggle: same numbers, different instruments -->
+  <!-- Instrument toggle: same profile, different market. It's an axis, not a segment. -->
   <div class="market-bar">
     <div class="market-bar-label">
-      Instrument
-      <span class="hint">Forex, crypto and stocks are <b>not</b> separate strategies — they're tools you can use inside any strategy. The projections don't change.</span>
+      What you trade
+      <span class="hint">Forex, crypto and stocks aren't separate profiles — they're <b>markets you can trade inside any profile</b>. The time, risk and return targets stay the same.</span>
     </div>
-    <div class="market-btns" role="group" aria-label="Choose instrument examples">
+    <div class="market-btns" role="group" aria-label="Choose which market to trade">
       <button class="market-btn on" data-market="forex" aria-pressed="true">💱 Forex</button>
       <button class="market-btn" data-market="crypto" aria-pressed="false">₿ Crypto</button>
       <button class="market-btn" data-market="stocks" aria-pressed="false">📊 Stocks</button>
@@ -328,97 +331,109 @@ button{cursor:pointer;font-family:var(--font);}
 //  time commitment (hours), risk per position (% of portfolio).
 //  Market (forex/crypto/stocks) is an instrument axis INSIDE each segment.
 // =====================================================================
+// Segments are defined by THREE uniform, comparable axes only:
+//   • target return  — always %/month (and its ≈ %/year equivalent)
+//   • time commitment — always hours / week
+//   • risk exposure   — always % of portfolio at risk per position
+// Instrument (Forex / Crypto / Stocks) and trading style (swing/day/scalp) are
+// NOT segments — they're axes that live INSIDE a segment (see the toggle + the
+// "What you trade" line). Ordered top→bottom by how much time the profile asks of you.
 const SEGS = [
   {
-    id:'depositor', name:'Вкладчик', en:'Passive Saver', badge:'now', badgeText:'Where you are now',
+    id:'saver', en:'Bank Saver', badge:'now', badgeText:'Where you are now',
     track:'Saving', trackBg:'#f1f5f9', trackColor:'#475569',
     rate:0.5, rMin:0.3, rMax:0.6,
-    timeLabel:'0 hrs — money works itself', timeLevel:0,
-    riskLabel:'0% — no open positions', riskLevel:0,
-    instruments:{forex:'Not applicable — a saver holds cash, not positions.',
-                 crypto:'Not applicable — a saver holds cash, not positions.',
-                 stocks:'Bank deposits and government bonds.'},
+    time:'0 hrs / week', timeNote:'money just sits there',
+    risk:'0% exposure', riskNote:'no open positions',
+    instruments:{forex:'Cash — no currency positions held.',
+                 crypto:'Cash — no crypto held.',
+                 stocks:'Bank deposits & government bonds.'},
     product:'Demo Account',
-    whyProduct:'Start on a free <b>Demo</b> first — see the difference with zero risk before moving real money.',
-    cta:'Open Demo Account',
-    ctaUrl:'https://my.roboforex.com/en/register-demo/?utm_source=calc&utm_content=seg_depositor',
+    cta:'Try a free Demo',
+    ctaUrl:'https://my.roboforex.com/en/register-demo/?utm_source=calc&utm_content=seg_saver',
     color:'#64748b', colorBg:'#f1f5f9',
     desc:'Cash in a bank deposit or bonds. Safe, but growth barely beats inflation.',
-    why:'Your 4–8%/year equals just 0.3–0.7%/month. Traders target 2–5%/month on the same capital. Try it risk-free on a demo and compare.',
     blogs:false,
   },
   {
-    id:'copytrader', name:'Копи-трейдер', en:'Copy Trader', badge:'step', badgeText:'Easiest first step', rec:true,
+    id:'copytrader', en:'Copy Trader', badge:'step', badgeText:'Easiest first step',
     track:'Outsourced skill', trackBg:'#faf5ff', trackColor:'#7e22ce',
     rate:1.2, rMin:0.8, rMax:1.8,
-    timeLabel:'< 1 hr / week — pick a strategy', timeLevel:1,
-    riskLabel:'Set by the strategy you copy', riskLevel:2,
+    time:'< 1 hr / week', timeNote:'pick & monitor a strategy',
+    risk:'Set by the strategy', riskNote:'you choose how much to copy',
     instruments:{forex:'CopyFX strategies trading Forex pairs.',
-                 crypto:'CopyFX strategies trading crypto.',
+                 crypto:'CopyFX strategies trading crypto CFDs.',
                  stocks:'CopyFX strategies trading stock CFDs.'},
     product:'CopyFX',
-    whyProduct:'<b>CopyFX</b> lets you copy verified traders automatically — trader-level returns without the skill or the screen time.',
     cta:'Start with CopyFX',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_copytrader',
-    color:'#a855f7', colorBg:'#faf5ff',
+    color:'#8b5cf6', colorBg:'#f5f3ff',
     desc:'Auto-copy verified pro traders via CopyFX — under an hour a week.',
-    why:'High returns usually demand lots of time. Copy trading breaks that link: you outsource the skill, so you can earn trader-level results with under an hour a week.',
     blogs:false,
   },
   {
-    id:'longinvestor', name:'Долгосрочный инвестор', en:'Long-term Investor',
-    track:'Investing', trackBg:'#eff6ff', trackColor:'#1d4ed8',
-    rate:0.8, rMin:0.6, rMax:1.0,
-    timeLabel:'1–2 hrs / week — rebalance', timeLevel:1,
-    riskLabel:'Up to 5% of portfolio per position', riskLevel:1,
-    instruments:{forex:'Long-term positions in major currency pairs.',
-                 crypto:'Crypto HODL — buy and hold leading coins.',
-                 stocks:'Indices, ETFs and dividend stocks.'},
-    product:'R StocksTrader',
-    whyProduct:'<b>R StocksTrader</b> gives investors direct access to 12,000+ real stocks, ETFs and indices in one account — exactly the instruments long-term portfolios are built from.',
-    cta:'Open R StocksTrader',
-    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_longinvestor',
-    color:'#3b82f6', colorBg:'#eff6ff',
-    desc:'A buy-and-hold portfolio of ETFs, stocks or crypto. Light, weekly involvement.',
-    why:'At 1%/month your $10k becomes $13.2k in 2 years. Step up to active trading at 3%/month and the same capital reaches $20.3k.',
-    blogs:false,
-  },
-  {
-    id:'parttime', name:'Part-time трейдер', en:'Part-time Trader', badge:'pop', badgeText:'Most popular',
-    track:'Trading', trackBg:'#fffbeb', trackColor:'#b45309',
-    rate:1.5, rMin:1.0, rMax:2.2,
-    timeLabel:'1–2 hrs / day — analyse & trade', timeLevel:2,
-    riskLabel:'1–3% of portfolio per position', riskLevel:2,
-    instruments:{forex:'Forex swing trades on major & minor pairs.',
-                 crypto:'Crypto swing trades held days to weeks.',
-                 stocks:'Stock swing trades around earnings & trends.'},
+    id:'robotrader', en:'Robo Trader', badge:'', badgeText:'',
+    track:'Automated', trackBg:'#ecfeff', trackColor:'#0e7490',
+    rate:1.5, rMin:1.0, rMax:2.0,
+    time:'~1 hr / week', timeNote:'set up & supervise the robot',
+    risk:'Set by the robot', riskNote:'limits you configure once',
+    instruments:{forex:'Expert Advisors trading Forex pairs on MT4 / MT5.',
+                 crypto:'Expert Advisors trading crypto CFDs on MT5.',
+                 stocks:'Expert Advisors trading stock & index CFDs on MT5.'},
     product:'Pro Account',
-    whyProduct:'<b>Pro Account</b> gives active traders tight spreads and fast execution — so trading costs don’t eat your compounded gains.',
+    cta:'Open Pro Account',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_robotrader',
+    color:'#0891b2', colorBg:'#ecfeff',
+    desc:'Trading robots (Expert Advisors) trade for you 24/5 — set the rules once, let them run.',
+    blogs:false,
+  },
+  {
+    id:'investor', en:'Investor', badge:'', badgeText:'',
+    track:'Investing', trackBg:'#eff6ff', trackColor:'#1d4ed8',
+    rate:1.0, rMin:0.6, rMax:1.2,
+    time:'1–3 hrs / week', timeNote:'review & rebalance',
+    risk:'≤ 5% per position', riskNote:'diversified, long holds',
+    instruments:{forex:'Long-term positions in major currency pairs.',
+                 crypto:'Buy-and-hold leading coins.',
+                 stocks:'Shares, ETFs & indices — held for the long run.'},
+    product:'R StocksTrader',
+    cta:'Open R StocksTrader',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_investor',
+    color:'#2563eb', colorBg:'#eff6ff',
+    desc:'A buy-and-hold portfolio of stocks, ETFs or indices. Light, weekly involvement.',
+    blogs:false,
+  },
+  {
+    id:'parttime', en:'Part-time Trader', badge:'pop', badgeText:'Most popular', rec:true,
+    track:'Trading', trackBg:'#ecfdf5', trackColor:'#047857',
+    rate:2.0, rMin:1.2, rMax:3.0,
+    time:'7–10 hrs / week', timeNote:'≈ 1–2 hrs a day',
+    risk:'1–3% per trade', riskNote:'disciplined position sizing',
+    instruments:{forex:'Swing & intraday trades on major & minor Forex pairs.',
+                 crypto:'Swing trades on Bitcoin, Ethereum & altcoin CFDs.',
+                 stocks:'Swing trades on stocks & indices around trends.'},
+    product:'Pro Account',
     cta:'Open Pro Account',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_parttime',
-    color:'#f59e0b', colorBg:'#fffbeb',
-    desc:'Swing trading alongside your main job. Where most of our traders start.',
-    why:'3%/month turns $5k into $10.2k in 2 years. A disciplined, part-time routine compounds well without a full-time commitment.',
+    color:'#16a34a', colorBg:'#ecfdf5',
+    desc:'Trading alongside your main job — about an hour or two a day. Where most traders start.',
     blogs:true,
   },
   {
-    id:'fulltime', name:'Full-time трейдер', en:'Full-time Trader',
-    track:'Trading', trackBg:'#ecfdf5', trackColor:'#047857',
-    rate:2.5, rMin:1.5, rMax:3.5,
-    timeLabel:'4–8 hrs / day — full occupation', timeLevel:4,
-    riskLabel:'3–10% of portfolio per position', riskLevel:4,
-    instruments:{forex:'Forex intraday & scalping on tight spreads.',
-                 crypto:'Active crypto trading through the session.',
-                 stocks:'Stock day-trading on intraday moves.'},
+    id:'fulltime', en:'Full-time Trader', badge:'', badgeText:'',
+    track:'Trading', trackBg:'#fffbeb', trackColor:'#b45309',
+    rate:3.0, rMin:1.8, rMax:4.5,
+    time:'35+ hrs / week', timeNote:'your main occupation',
+    risk:'3–10% per trade', riskNote:'aggressive, tightly managed',
+    instruments:{forex:'Intraday & scalping on Forex with raw spreads.',
+                 crypto:'Active crypto-CFD trading through the session.',
+                 stocks:'Day-trading stocks & indices on intraday moves.'},
     product:'Pro Account',
-    whyProduct:'<b>Pro Account</b> delivers raw spreads from 0.0, fast execution and advanced orders — the infrastructure intraday & scalping strategies depend on.',
     cta:'Open Pro Account',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_fulltime',
-    color:'#10b981', colorBg:'#ecfdf5',
-    desc:'Intraday trading as your main income. High potential, strict discipline.',
-    why:'6%/month takes $10k to $20.1k in a year. At this intensity, execution quality and risk discipline decide whether the compounding holds.',
+    color:'#d97706', colorBg:'#fffbeb',
+    desc:'Trading as your main income — full days at the screen. Highest potential, highest demands.',
     blogs:false,
-    wide:true,
   },
 ];
 
@@ -431,11 +446,11 @@ const BLOG_CARDS = [
 // =====================================================================
 //  STATE
 // =====================================================================
-let activeSeg = 'parttime';      // moderate trader = default highlight
+let activeSeg = 'parttime';      // default profile: a part-time trader, trading Forex
 let growthChart = null;
 let contribFreq = 'monthly';
 let compoundFreq = 'monthly';
-let market = 'forex';
+let market = 'forex';            // default instrument axis = Forex
 
 // compounding periods per year for each frequency option
 const COMPOUNDS = {annually:1, semiannually:2, quarterly:4, monthly:12, daily:365};
@@ -462,51 +477,50 @@ function rateLabel(s){
 }
 
 function getInputs(){
-  const dep = parseMoney(document.getElementById('inp-deposit').value)||5000;
-  const yrs = parseInt(document.getElementById('inp-years').value)||5;
+  const dep = parseMoney(document.getElementById('inp-deposit').value)||10000;
+  const months = parseInt(document.getElementById('inp-months').value)||12;
   const contrib = parseMoney(document.getElementById('inp-contrib').value)||0;
   const rate = parseFloat(String(document.getElementById('inp-rate').value).replace(/[^0-9.]/g,''))||0;
-  return {dep,yrs,contrib,rate};
+  return {dep,months,contrib,rate};
 }
 
 // Compound a user-supplied ANNUAL rate at the chosen compound frequency,
-// adding contributions at the contribution frequency. Returns yearly balances.
-function calcByYearRate(P, annualPct, years, contrib, cFreq, compFreq){
+// adding contributions at the contribution frequency. Returns ONE point per
+// month: [M0, M1, ..., M_months] — a 1-month interval on the chart.
+function calcSeriesRate(P, annualPct, months, contrib, cFreq, compFreq){
   const n = COMPOUNDS[compFreq]||12;
   const r = annualPct/100;
   // growth factor applied each month that reproduces the stated compounding
   const monthlyFactor = Math.pow(1 + r/n, n/12);
   let bal = P;
   const res = [P];
-  const months = years*12;
   for(let m=1;m<=months;m++){
     if(cFreq==='monthly'&&contrib>0) bal+=contrib;
     else if(cFreq==='annually'&&m%12===1&&m>1&&contrib>0) bal+=contrib;
     bal*=monthlyFactor;
-    if(m%12===0) res.push(bal);
+    res.push(bal);
   }
   return res;
 }
 
-// Compound month-by-month, return [Y0, Y1, ..., YN] balances
-function calcByYear(P, rateMonthly, years, contrib, freq){
+// Compound month-by-month at a MONTHLY rate, one point per month.
+function calcSeriesMonthly(P, rateMonthly, months, contrib, freq){
   let bal = P;
   const res = [P];
-  const months = years*12;
   for(let m=1;m<=months;m++){
     if(freq==='monthly'&&contrib>0) bal+=contrib;
     else if(freq==='annually'&&m%12===1&&m>1&&contrib>0) bal+=contrib;
     bal*=(1+rateMonthly/100);
-    if(m%12===0) res.push(bal);
+    res.push(bal);
   }
   return res;
 }
 
 // Bank-deposit baseline — the rate the visitor came in expecting, used everywhere
 // as the anchor we measure the upside against.
-const DEPOSIT_SEG = SEGS.find(s=>s.id==='depositor');
-function depositFinal(P, yrs, contrib, freq){
-  const b = calcByYear(P, DEPOSIT_SEG.rate, yrs, contrib, freq);
+const DEPOSIT_SEG = SEGS.find(s=>s.id==='saver');
+function depositFinal(P, months, contrib, freq){
+  const b = calcSeriesMonthly(P, DEPOSIT_SEG.rate, months, contrib, freq);
   return b[b.length-1];
 }
 function fmtMultiple(m){return (m>=10?Math.round(m):m.toFixed(1))+'×';}
@@ -515,13 +529,13 @@ function fmtMultiple(m){return (m>=10?Math.round(m):m.toFixed(1))+'×';}
 //  CHART
 // =====================================================================
 function renderChart(){
-  const {dep,yrs,contrib,rate} = getInputs();
-  const labels = ['Now',...Array.from({length:yrs},(_,i)=>'Y'+(i+1))];
+  const {dep,months,contrib,rate} = getInputs();
+  const labels = ['Now',...Array.from({length:months},(_,i)=>'M'+(i+1))];
 
   // Bold line: the user's own projection from the rate-of-return input.
   const userLine = {
     label:'Your projection',
-    data:calcByYearRate(dep,rate,yrs,contrib,contribFreq,compoundFreq),
+    data:calcSeriesRate(dep,rate,months,contrib,contribFreq,compoundFreq),
     borderColor:'#183E8C',
     backgroundColor:'#183E8C14',
     borderWidth:3.5,
@@ -538,7 +552,7 @@ function renderChart(){
   // Faded reference lines: the preset strategies, for comparison.
   const segLines = SEGS.map(s=>({
     label:s.en,
-    data:calcByYear(dep,s.rate,yrs,contrib,contribFreq),
+    data:calcSeriesMonthly(dep,s.rate,months,contrib,contribFreq),
     borderColor:s.color+'55',
     backgroundColor:'transparent',
     borderWidth:1.5,
@@ -593,13 +607,13 @@ function renderChart(){
 //  SEGMENT CARDS
 // =====================================================================
 function buildCards(){
-  const {dep,yrs} = getInputs();
+  const {dep,months} = getInputs();
   const segDep = dep*0.1;
   const grid = document.getElementById('segs-grid');
 
   grid.innerHTML = SEGS.map(s=>{
     const r = rateLabel(s);
-    const balances = calcByYear(segDep,s.rate,yrs,0,'monthly');
+    const balances = calcSeriesMonthly(segDep,s.rate,months,0,'monthly');
     const finalBal = balances[balances.length-1];
     const gain = finalBal-segDep;
     const gainPct = segDep>0?Math.round(gain/segDep*100):0;
@@ -616,11 +630,12 @@ function buildCards(){
               ${badge}
             </div>
             <p class="seg-desc">${s.desc}</p>
-            <p class="seg-instr-line"><b>Instruments:</b> <span class="instr-text" id="instr-${s.id}">${s.instruments[market]}</span></p>
-          </div>
-          <div class="seg-rate-col">
-            <span class="seg-rate-pill" style="background:${s.colorBg};color:${s.color}">${r.mo}</span>
-            <div class="seg-rate-yr">${r.yr}</div>
+            <div class="seg-axes">
+              <span class="seg-axis"><span class="ax-ico">🎯</span><span><b style="color:${s.color}">${r.mo}</b> <span class="ax-sub">${r.yr}</span></span></span>
+              <span class="seg-axis"><span class="ax-ico">⏱</span><span><b>${s.time}</b> <span class="ax-sub">${s.timeNote}</span></span></span>
+              <span class="seg-axis"><span class="ax-ico">🛡</span><span><b>${s.risk}</b> <span class="ax-sub">${s.riskNote}</span></span></span>
+            </div>
+            <p class="seg-instr-line"><b>What you trade:</b> <span class="instr-text" id="instr-${s.id}">${s.instruments[market]}</span></p>
           </div>
           <div class="seg-earn">
             <p class="seg-earn-label">You could earn</p>
@@ -665,15 +680,15 @@ function updateInstruments(){
 }
 
 function updateCardsGrowth(){
-  const {dep,yrs} = getInputs();
+  const {dep,months} = getInputs();
   const segDep = dep*0.1;
   document.getElementById('seg-dep-disp').textContent = fmtMoney(segDep);
-  document.getElementById('seg-yr-disp').textContent = yrs;
-  const depGain = depositFinal(segDep,yrs,0,'monthly') - segDep;
+  document.getElementById('seg-yr-disp').textContent = months+' month'+(months!==1?'s':'');
+  const depGain = depositFinal(segDep,months,0,'monthly') - segDep;
   SEGS.forEach(s=>{
     const gainEl=document.getElementById('sg-gain-'+s.id);
     if(!gainEl)return;
-    const balances = calcByYear(segDep,s.rate,yrs,0,'monthly');
+    const balances = calcSeriesMonthly(segDep,s.rate,months,0,'monthly');
     const finalBal = balances[balances.length-1];
     const gain = finalBal-segDep;
     const gainPct = segDep>0?Math.round(gain/segDep*100):0;
@@ -682,28 +697,28 @@ function updateCardsGrowth(){
       fmtMoney(segDep)+' → '+fmtMoney(finalBal)+' · +'+gainPct+'%';
     const vsEl=document.getElementById('sg-vs-'+s.id);
     if(vsEl){
-      if(s.id==='depositor'||depGain<=0){vsEl.style.display='none';}
+      if(s.id==='saver'||depGain<=0){vsEl.style.display='none';}
       else{vsEl.style.display='';vsEl.textContent=fmtMultiple(gain/depGain)+' a bank deposit';}
     }
   });
 }
 
 function updateChartTotal(){
-  const {dep,yrs,contrib,rate} = getInputs();
-  const balances = calcByYearRate(dep,rate,yrs,contrib,contribFreq,compoundFreq);
+  const {dep,months,contrib,rate} = getInputs();
+  const balances = calcSeriesRate(dep,rate,months,contrib,contribFreq,compoundFreq);
   const finalBal = balances[balances.length-1];
   const el = document.getElementById('chart-balance');
   el.textContent = fmtMoney(finalBal);
   el.style.color = '#183E8C';
   document.getElementById('chart-balance-sub').textContent =
-    'after '+yrs+' year'+(yrs!==1?'s':'');
+    'after '+months+' month'+(months!==1?'s':'');
 
   // The funnel hook: anchor the headline against the bank deposit they came for.
   const gapEl = document.getElementById('chart-gap');
-  const more = finalBal - depositFinal(dep,yrs,contrib,contribFreq);
+  const more = finalBal - depositFinal(dep,months,contrib,contribFreq);
   if(more>0){
     gapEl.className = 'chart-gap';
-    gapEl.innerHTML = '🚀 <b>'+fmtMoney(more)+' more</b> than a bank deposit over '+yrs+' year'+(yrs!==1?'s':'');
+    gapEl.innerHTML = '🚀 <b>'+fmtMoney(more)+' more</b> than a bank deposit over '+months+' month'+(months!==1?'s':'');
   } else {
     gapEl.className = 'chart-gap is-deposit';
     gapEl.innerHTML = "That's around a bank deposit — raise the rate of return to see the upside ↑";
@@ -740,10 +755,10 @@ function fullUpdate(){
 // =====================================================================
 document.addEventListener('DOMContentLoaded',()=>{
   buildCards();
-  setActive(activeSeg);   // 'parttime' — moderate trader defaults
+  setActive(activeSeg);   // 'parttime' — default part-time Forex trader profile
   fullUpdate();
 
-  ['inp-deposit','inp-years','inp-contrib','inp-rate'].forEach(id=>{
+  ['inp-deposit','inp-months','inp-contrib','inp-rate'].forEach(id=>{
     document.getElementById(id).addEventListener('input',fullUpdate);
   });
 
