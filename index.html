@@ -100,6 +100,29 @@ button{cursor:pointer;font-family:var(--font);}
 .chart-foot{font-size:12px;color:var(--text-light);text-align:center;margin-top:10px;}
 .chart-foot b{color:var(--blue-mid);font-weight:600;}
 
+/* ---- "INVEST ONLY 10%" ALLOCATION BAND ---- */
+.allocate{max-width:1200px;margin:34px auto 0;padding:0 24px;}
+.allocate-card{position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2a5e 0%,var(--blue) 55%,#1d5fa8 100%);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:26px 28px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;}
+.allocate-text{min-width:0;}
+.allocate-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ec5ee;margin-bottom:6px;}
+.allocate-title{font-size:22px;font-weight:700;line-height:1.25;color:#fff;margin-bottom:8px;}
+.allocate-title b{color:#a6e26a;}
+.allocate-sub{font-size:14px;color:rgba(255,255,255,0.85);max-width:600px;line-height:1.55;}
+.allocate-sub b{color:#fff;font-weight:700;}
+
+/* the 90 / 10 split visual */
+.split-bar{display:flex;height:48px;border-radius:9px;overflow:hidden;margin-top:16px;border:1px solid rgba(255,255,255,0.18);}
+.split-keep{flex:0 0 90%;background:rgba(255,255,255,0.12);display:flex;flex-direction:column;justify-content:center;padding:0 14px;min-width:0;}
+.split-invest{flex:0 0 10%;background:var(--green);display:flex;flex-direction:column;justify-content:center;padding:0 12px;min-width:96px;}
+.split-pct{font-size:13.5px;font-weight:800;color:#fff;line-height:1;}
+.split-lbl{font-size:10.5px;line-height:1.3;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.split-keep .split-lbl{color:rgba(255,255,255,0.78);}
+.split-invest .split-lbl{color:rgba(255,255,255,0.95);}
+.split-invest .split-lbl b{font-weight:700;}
+
+.allocate-cta{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--blue);font-size:14px;font-weight:700;padding:14px 24px;border-radius:8px;border:none;white-space:nowrap;transition:transform .15s,box-shadow .15s;}
+.allocate-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,0.28);}
+
 /* ---- SEGMENTS SECTION ---- */
 .segs-wrap{max-width:1200px;margin:40px auto 0;padding:0 24px 16px;}
 
@@ -173,6 +196,8 @@ button{cursor:pointer;font-family:var(--font);}
   .seg-main{flex:1 1 100%;}
   .seg-earn{text-align:left;min-width:0;flex:1 1 auto;}
   .seg-cta-btn{flex:1 1 100%;}
+  .allocate-card{grid-template-columns:1fr;gap:18px;padding:22px;}
+  .allocate-cta{width:100%;justify-content:center;}
 }
 @media (prefers-reduced-motion: reduce){
   *{scroll-behavior:auto !important;animation:none !important;transition:none !important;}
@@ -278,6 +303,28 @@ button{cursor:pointer;font-family:var(--font);}
         <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing trader profiles over 12 months"></canvas>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- "INVEST ONLY 10%" ALLOCATION BAND -->
+<div class="allocate">
+  <div class="allocate-card">
+    <div class="allocate-text">
+      <p class="allocate-eyebrow">You stay in control</p>
+      <h2 class="allocate-title">You don't have to invest it all — start with just <b>10%</b></h2>
+      <p class="allocate-sub">Keep the rest where it feels safe. Putting only <b id="alloc-invest">$1,000</b> of your <b id="alloc-total">$10,000</b> to work is enough to start earning — that's the figure every profile below is built on.</p>
+      <div class="split-bar" aria-hidden="true">
+        <div class="split-keep">
+          <span class="split-pct">90% stays put</span>
+          <span class="split-lbl"><span id="alloc-keep">$9,000</span> untouched</span>
+        </div>
+        <div class="split-invest">
+          <span class="split-pct">10%</span>
+          <span class="split-lbl"><b id="alloc-invest2">$1,000</b> at work</span>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="allocate-cta" id="alloc-cta">See what your 10% can do →</button>
   </div>
 </div>
 
@@ -700,10 +747,21 @@ function setActive(segId){
   fullUpdate();
 }
 
+// Keep the "invest only 10%" band in sync with the deposit the visitor typed.
+function updateAllocate(){
+  const {dep} = getInputs();
+  const invest = fmtMoney(dep*0.1);
+  document.getElementById('alloc-invest').textContent = invest;
+  document.getElementById('alloc-invest2').textContent = invest;
+  document.getElementById('alloc-total').textContent = fmtMoney(dep);
+  document.getElementById('alloc-keep').textContent = fmtMoney(dep*0.9);
+}
+
 function fullUpdate(){
   updateChartTotal();
   renderChart();
   updateCardsGrowth();
+  updateAllocate();
 }
 
 // =====================================================================
@@ -716,6 +774,10 @@ document.addEventListener('DOMContentLoaded',()=>{
 
   ['inp-deposit','inp-months','inp-contrib','inp-rate'].forEach(id=>{
     document.getElementById(id).addEventListener('input',fullUpdate);
+  });
+
+  document.getElementById('alloc-cta').addEventListener('click',()=>{
+    document.getElementById('segs-grid').scrollIntoView({behavior:'smooth',block:'start'});
   });
 
   document.getElementById('inp-compound').addEventListener('change',e=>{
