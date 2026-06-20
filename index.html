@@ -77,6 +77,7 @@ button{cursor:pointer;font-family:var(--font);}
 .inp-field.p-pre{padding:0 14px 0 30px;}
 .inp-field.p-suf{padding:0 52px 0 14px;}
 .inp-field.p-plain{padding:0 14px;}
+.inp-select{appearance:none;-webkit-appearance:none;-moz-appearance:none;padding:0 38px 0 14px;cursor:pointer;background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='12'%20height='8'%3E%3Cpath%20fill='%231a2533'%20d='M0%200%20L12%200%20L6%208%20Z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
 .freq-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .freq-btn{padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:#fff;font-family:var(--font);font-size:13.5px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all .15s;text-align:center;}
 .freq-btn.on{border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
@@ -219,9 +220,9 @@ button{cursor:pointer;font-family:var(--font);}
 <!-- CALCULATOR -->
 <div class="calc-wrap">
   <div class="calc-card">
-    <!-- Left: Inputs -->
+    <!-- Left: Inputs (modelled on NerdWallet's "Investment details") -->
     <div class="inp-panel">
-      <h2 class="inp-section-title">Your money</h2>
+      <h2 class="inp-section-title">Investment details</h2>
 
       <div class="inp-grp">
         <label class="inp-label" for="inp-deposit">Initial deposit</label>
@@ -241,10 +242,31 @@ button{cursor:pointer;font-family:var(--font);}
       </div>
 
       <div class="inp-grp">
-        <label class="inp-label" for="inp-contrib">Regular contribution</label>
+        <label class="inp-label" for="inp-rate">Estimated rate of return</label>
+        <div class="inp-wrap">
+          <input type="text" id="inp-rate" class="inp-field p-suf" value="20" inputmode="decimal">
+          <span class="inp-suf">%</span>
+        </div>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-compound">Compound frequency</label>
+        <div class="inp-wrap">
+          <select id="inp-compound" class="inp-field inp-select">
+            <option value="annually">Annually</option>
+            <option value="semiannually">Semiannually</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="daily">Daily</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-contrib">Contribution amount</label>
         <div class="inp-wrap">
           <span class="inp-pre">$</span>
-          <input type="text" id="inp-contrib" class="inp-field p-pre" value="0" inputmode="numeric">
+          <input type="text" id="inp-contrib" class="inp-field p-pre" value="100" inputmode="numeric">
         </div>
       </div>
 
@@ -256,12 +278,6 @@ button{cursor:pointer;font-family:var(--font);}
         </div>
         <input type="hidden" id="inp-freq" value="monthly">
       </div>
-
-      <!-- Segment legend -->
-      <div class="seg-legend">
-        <p class="seg-legend-title">Ways to grow your money</p>
-        <div id="seg-leg-list" role="listbox" aria-label="Highlight a strategy on the chart"></div>
-      </div>
     </div>
 
     <!-- Right: Chart -->
@@ -269,7 +285,7 @@ button{cursor:pointer;font-family:var(--font);}
       <div class="chart-result-area">
         <p class="chart-label-sm">Your money could grow to</p>
         <div id="chart-balance" class="chart-balance">$0</div>
-        <p id="chart-balance-sub" class="chart-balance-sub">after 5 years &middot; Copy Trader</p>
+        <p id="chart-balance-sub" class="chart-balance-sub">after 5 years</p>
         <div id="chart-gap" class="chart-gap" aria-live="polite"></div>
       </div>
       <div class="chart-wrap">
@@ -428,10 +444,14 @@ const BLOG_CARDS = [
 // =====================================================================
 //  STATE
 // =====================================================================
-let activeSeg = 'copytrader';
+let activeSeg = 'parttime';      // moderate trader = default highlight
 let growthChart = null;
 let contribFreq = 'monthly';
+let compoundFreq = 'monthly';
 let market = 'forex';
+
+// compounding periods per year for each frequency option
+const COMPOUNDS = {annually:1, semiannually:2, quarterly:4, monthly:12, daily:365};
 
 // =====================================================================
 //  HELPERS
@@ -458,7 +478,27 @@ function getInputs(){
   const dep = parseMoney(document.getElementById('inp-deposit').value)||5000;
   const yrs = parseInt(document.getElementById('inp-years').value)||5;
   const contrib = parseMoney(document.getElementById('inp-contrib').value)||0;
-  return {dep,yrs,contrib};
+  const rate = parseFloat(String(document.getElementById('inp-rate').value).replace(/[^0-9.]/g,''))||0;
+  return {dep,yrs,contrib,rate};
+}
+
+// Compound a user-supplied ANNUAL rate at the chosen compound frequency,
+// adding contributions at the contribution frequency. Returns yearly balances.
+function calcByYearRate(P, annualPct, years, contrib, cFreq, compFreq){
+  const n = COMPOUNDS[compFreq]||12;
+  const r = annualPct/100;
+  // growth factor applied each month that reproduces the stated compounding
+  const monthlyFactor = Math.pow(1 + r/n, n/12);
+  let bal = P;
+  const res = [P];
+  const months = years*12;
+  for(let m=1;m<=months;m++){
+    if(cFreq==='monthly'&&contrib>0) bal+=contrib;
+    else if(cFreq==='annually'&&m%12===1&&m>1&&contrib>0) bal+=contrib;
+    bal*=monthlyFactor;
+    if(m%12===0) res.push(bal);
+  }
+  return res;
 }
 
 // Compound month-by-month, return [Y0, Y1, ..., YN] balances
@@ -485,50 +525,47 @@ function depositFinal(P, yrs, contrib, freq){
 function fmtMultiple(m){return (m>=10?Math.round(m):m.toFixed(1))+'×';}
 
 // =====================================================================
-//  LEGEND
-// =====================================================================
-function buildLegend(){
-  const el = document.getElementById('seg-leg-list');
-  el.innerHTML = SEGS.map(s=>{
-    const r=rateLabel(s);
-    return `
-    <button class="seg-leg-item${s.id===activeSeg?' on':''}" data-seg="${s.id}" id="leg-${s.id}"
-            role="option" aria-selected="${s.id===activeSeg}">
-      <span class="seg-dot" style="background:${s.color}"></span>
-      <span class="seg-leg-name">${s.en}</span>
-      <span class="seg-leg-rate">${r.mo}</span>
-    </button>`;
-  }).join('');
-  el.querySelectorAll('.seg-leg-item').forEach(b=>{
-    b.addEventListener('click',()=>setActive(b.dataset.seg));
-  });
-}
-
-// =====================================================================
 //  CHART
 // =====================================================================
 function renderChart(){
-  const {dep,yrs,contrib} = getInputs();
+  const {dep,yrs,contrib,rate} = getInputs();
   const labels = ['Now',...Array.from({length:yrs},(_,i)=>'Y'+(i+1))];
-  const datasets = SEGS.map(s=>{
-    const balances = calcByYear(dep,s.rate,yrs,contrib,contribFreq);
-    const isActive = s.id===activeSeg;
-    return {
-      label:s.en,
-      data:balances,
-      borderColor:isActive?s.color:s.color+'40',
-      backgroundColor:isActive?s.color+'14':'transparent',
-      borderWidth:isActive?3.5:1.5,
-      pointRadius:isActive?5:2,
-      pointHoverRadius:isActive?7:4,
-      pointBackgroundColor:s.color,
-      pointBorderColor:'#fff',
-      pointBorderWidth:isActive?2:1,
-      tension:0.35,
-      fill:isActive,
-      order:isActive?0:1,
-    };
-  });
+
+  // Bold line: the user's own projection from the rate-of-return input.
+  const userLine = {
+    label:'Your projection',
+    data:calcByYearRate(dep,rate,yrs,contrib,contribFreq,compoundFreq),
+    borderColor:'#183E8C',
+    backgroundColor:'#183E8C14',
+    borderWidth:3.5,
+    pointRadius:5,
+    pointHoverRadius:7,
+    pointBackgroundColor:'#183E8C',
+    pointBorderColor:'#fff',
+    pointBorderWidth:2,
+    tension:0.35,
+    fill:true,
+    order:0,
+  };
+
+  // Faded reference lines: the preset strategies, for comparison.
+  const segLines = SEGS.map(s=>({
+    label:s.en,
+    data:calcByYear(dep,s.rate,yrs,contrib,contribFreq),
+    borderColor:s.color+'55',
+    backgroundColor:'transparent',
+    borderWidth:1.5,
+    borderDash:[4,4],
+    pointRadius:2,
+    pointHoverRadius:4,
+    pointBackgroundColor:s.color,
+    pointBorderColor:'#fff',
+    pointBorderWidth:1,
+    tension:0.35,
+    fill:false,
+    order:1,
+  }));
+  const datasets = [userLine,...segLines];
 
   const ctx = document.getElementById('growthChart').getContext('2d');
   if(growthChart) growthChart.destroy();
@@ -541,7 +578,9 @@ function renderChart(){
       interaction:{mode:'index',intersect:false},
       onClick:(evt,elements)=>{
         if(!elements.length)return;
-        const segId = SEGS[elements[0].datasetIndex].id;
+        const di = elements[0].datasetIndex;
+        if(di===0)return;                 // the bold "Your projection" line
+        const segId = SEGS[di-1].id;      // offset for the user line at index 0
         setActive(segId);
         focusCard(segId);
       },
@@ -663,43 +702,44 @@ function updateCardsGrowth(){
 }
 
 function updateChartTotal(){
-  const {dep,yrs,contrib} = getInputs();
-  const seg = SEGS.find(s=>s.id===activeSeg);
-  const balances = calcByYear(dep,seg.rate,yrs,contrib,contribFreq);
+  const {dep,yrs,contrib,rate} = getInputs();
+  const balances = calcByYearRate(dep,rate,yrs,contrib,contribFreq,compoundFreq);
   const finalBal = balances[balances.length-1];
   const el = document.getElementById('chart-balance');
   el.textContent = fmtMoney(finalBal);
-  el.style.color = seg.color;
+  el.style.color = '#183E8C';
   document.getElementById('chart-balance-sub').textContent =
-    'after '+yrs+' year'+(yrs!==1?'s':'')+' · '+seg.en;
+    'after '+yrs+' year'+(yrs!==1?'s':'');
 
   // The funnel hook: anchor the headline against the bank deposit they came for.
   const gapEl = document.getElementById('chart-gap');
-  if(seg.id==='depositor'){
-    gapEl.className = 'chart-gap is-deposit';
-    gapEl.innerHTML = "That's a typical bank deposit — pick a step below to earn more ↓";
-  } else {
-    const more = finalBal - depositFinal(dep,yrs,contrib,contribFreq);
+  const more = finalBal - depositFinal(dep,yrs,contrib,contribFreq);
+  if(more>0){
     gapEl.className = 'chart-gap';
     gapEl.innerHTML = '🚀 <b>'+fmtMoney(more)+' more</b> than a bank deposit over '+yrs+' year'+(yrs!==1?'s':'');
+  } else {
+    gapEl.className = 'chart-gap is-deposit';
+    gapEl.innerHTML = "That's around a bank deposit — raise the rate of return to see the upside ↑";
   }
 }
 
 function setActive(segId){
   activeSeg = segId;
-  document.querySelectorAll('.seg-leg-item').forEach(el=>{
-    const on = el.dataset.seg===segId;
-    el.classList.toggle('on',on);
-    el.setAttribute('aria-selected',on);
-  });
+  const seg = SEGS.find(s=>s.id===segId);
+  // Selecting a preset loads its rate into the NerdWallet-style rate field,
+  // and resets compounding to monthly to match the strategy model.
+  if(seg){
+    document.getElementById('inp-rate').value = Math.round(annualFromMonthly(seg.rate));
+    document.getElementById('inp-compound').value = 'monthly';
+    compoundFreq = 'monthly';
+  }
   document.querySelectorAll('.seg-card').forEach(card=>{
     const isOn = card.dataset.seg===segId;
     card.style.boxShadow = isOn
-      ? '0 0 0 2px '+SEGS.find(s=>s.id===segId).color+', 0 8px 32px rgba(9,44,80,0.18)'
+      ? '0 0 0 2px '+seg.color+', 0 8px 32px rgba(9,44,80,0.18)'
       : '';
   });
-  updateChartTotal();
-  renderChart();
+  fullUpdate();
 }
 
 function fullUpdate(){
@@ -712,13 +752,17 @@ function fullUpdate(){
 //  INIT
 // =====================================================================
 document.addEventListener('DOMContentLoaded',()=>{
-  buildLegend();
   buildCards();
-  setActive(activeSeg);
+  setActive(activeSeg);   // 'parttime' — moderate trader defaults
   fullUpdate();
 
-  ['inp-deposit','inp-years','inp-contrib'].forEach(id=>{
+  ['inp-deposit','inp-years','inp-contrib','inp-rate'].forEach(id=>{
     document.getElementById(id).addEventListener('input',fullUpdate);
+  });
+
+  document.getElementById('inp-compound').addEventListener('change',e=>{
+    compoundFreq = e.target.value;
+    fullUpdate();
   });
 
   ['inp-deposit','inp-contrib'].forEach(id=>{
