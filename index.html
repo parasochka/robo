@@ -102,19 +102,8 @@ button{cursor:pointer;font-family:var(--font);}
 
 /* ---- SEGMENTS SECTION ---- */
 .segs-wrap{max-width:1200px;margin:40px auto 0;padding:0 24px 16px;}
-.segs-hdr{margin-bottom:18px;}
-.segs-title{font-size:24px;font-weight:700;color:var(--text);margin-bottom:6px;}
-.segs-sub{font-size:14.5px;color:var(--text-mid);max-width:760px;}
-.segs-sub strong{color:var(--text);font-weight:700;}
 
 /* instrument (Forex/Crypto/Stocks) toggle — an axis INSIDE a segment, not a segment */
-.market-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:18px 0 22px;padding:14px 16px;background:#fff;border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow);}
-.market-bar-label{font-size:13px;font-weight:600;color:var(--text-mid);}
-.market-bar-label .hint{display:block;font-size:11.5px;font-weight:400;color:var(--text-light);margin-top:2px;}
-.market-btns{display:flex;gap:6px;flex-wrap:wrap;}
-.market-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border:1.5px solid var(--border);border-radius:999px;background:#fff;font-size:13px;font-weight:600;color:var(--text-mid);transition:all .15s;}
-.market-btn.on{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
-.market-btn:hover{border-color:var(--blue-mid);}
 
 /* One card per row — compact list */
 .segs-grid{display:flex;flex-direction:column;gap:12px;}
@@ -132,6 +121,14 @@ button{cursor:pointer;font-family:var(--font);}
 .seg-desc{font-size:12.5px;color:var(--text-mid);line-height:1.45;}
 .seg-instr-line{font-size:11.5px;color:var(--text-light);margin-top:6px;}
 .seg-instr-line b{color:var(--text-mid);font-weight:600;}
+
+/* collapsible details on each card */
+.seg-more{margin-top:6px;}
+.seg-more>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--blue);width:fit-content;}
+.seg-more>summary::-webkit-details-marker{display:none;}
+.seg-more>summary::after{content:'▾';font-size:10px;transition:transform .15s;}
+.seg-more[open]>summary::after{transform:rotate(180deg);}
+.seg-more[open]>summary{margin-bottom:4px;}
 
 /* uniform comparable axes: same units on every card (return / time / risk) */
 .seg-axes{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;}
@@ -280,39 +277,12 @@ button{cursor:pointer;font-family:var(--font);}
       <div class="chart-wrap">
         <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing trader profiles over 12 months"></canvas>
       </div>
-      <p class="chart-foot">
-        The bold line is your default profile — a <b>part-time Forex trader</b>. The flat line at the bottom is a <b>bank deposit</b>. <b>Click any line</b> to compare another profile on the same money.
-      </p>
     </div>
   </div>
 </div>
 
 <!-- SEGMENTS SECTION -->
 <div class="segs-wrap">
-  <div class="segs-hdr">
-    <h2 class="segs-title">You don't have to invest it all — pick your profile</h2>
-    <p class="segs-sub">
-      Every profile is compared on the <strong>same three units</strong>: target return (% per month),
-      <strong>time</strong> you put in (hours per week) and <strong>risk</strong> (% of your money on the line).
-      The top row is where most people start — a plain <strong>bank deposit</strong>. Each step down asks a little
-      more time or risk for higher potential. To show you needn't risk everything, we've modelled every profile on
-      just <strong id="seg-dep-disp">$1,000</strong> — a tenth of your deposit — over <strong id="seg-yr-disp">12 months</strong>.
-    </p>
-  </div>
-
-  <!-- Instrument toggle: same profile, different market. It's an axis, not a segment. -->
-  <div class="market-bar">
-    <div class="market-bar-label">
-      What you trade
-      <span class="hint">Forex, crypto and stocks aren't separate profiles — they're <b>markets you can trade inside any profile</b>. The time, risk and return targets stay the same.</span>
-    </div>
-    <div class="market-btns" role="group" aria-label="Choose which market to trade">
-      <button class="market-btn on" data-market="forex" aria-pressed="true">💱 Forex</button>
-      <button class="market-btn" data-market="crypto" aria-pressed="false">₿ Crypto</button>
-      <button class="market-btn" data-market="stocks" aria-pressed="false">📊 Stocks</button>
-    </div>
-  </div>
-
   <div class="segs-grid" id="segs-grid">
     <!-- Built by JS -->
   </div>
@@ -345,9 +315,7 @@ const SEGS = [
     rate:0.5, rMin:0.3, rMax:0.6,
     time:'0 hrs / week', timeNote:'money just sits there',
     risk:'0% exposure', riskNote:'no open positions',
-    instruments:{forex:'Cash — no currency positions held.',
-                 crypto:'Cash — no crypto held.',
-                 stocks:'Bank deposits & government bonds.'},
+    trade:'Bank deposits & government bonds — no open market positions.',
     product:'Demo Account',
     cta:'Try a free Demo',
     ctaUrl:'https://my.roboforex.com/en/register-demo/?utm_source=calc&utm_content=seg_saver',
@@ -361,9 +329,7 @@ const SEGS = [
     rate:1.2, rMin:0.8, rMax:1.8,
     time:'< 1 hr / week', timeNote:'pick & monitor a strategy',
     risk:'Set by the strategy', riskNote:'you choose how much to copy',
-    instruments:{forex:'CopyFX strategies trading Forex pairs.',
-                 crypto:'CopyFX strategies trading crypto CFDs.',
-                 stocks:'CopyFX strategies trading stock CFDs.'},
+    trade:'CopyFX strategies covering Forex, crypto and stock CFDs.',
     product:'CopyFX',
     cta:'Start with CopyFX',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_copytrader',
@@ -377,9 +343,7 @@ const SEGS = [
     rate:1.5, rMin:1.0, rMax:2.0,
     time:'~1 hr / week', timeNote:'set up & supervise the robot',
     risk:'Set by the robot', riskNote:'limits you configure once',
-    instruments:{forex:'Expert Advisors trading Forex pairs on MT4 / MT5.',
-                 crypto:'Expert Advisors trading crypto CFDs on MT5.',
-                 stocks:'Expert Advisors trading stock & index CFDs on MT5.'},
+    trade:'Expert Advisors trading Forex, crypto and index CFDs on MT4 / MT5.',
     product:'Pro Account',
     cta:'Open Pro Account',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_robotrader',
@@ -393,9 +357,7 @@ const SEGS = [
     rate:1.0, rMin:0.6, rMax:1.2,
     time:'1–3 hrs / week', timeNote:'review & rebalance',
     risk:'≤ 5% per position', riskNote:'diversified, long holds',
-    instruments:{forex:'Long-term positions in major currency pairs.',
-                 crypto:'Buy-and-hold leading coins.',
-                 stocks:'Shares, ETFs & indices — held for the long run.'},
+    trade:'A long-term portfolio of shares, ETFs, indices, major pairs and leading coins.',
     product:'R StocksTrader',
     cta:'Open R StocksTrader',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_investor',
@@ -409,9 +371,7 @@ const SEGS = [
     rate:2.0, rMin:1.2, rMax:3.0,
     time:'7–10 hrs / week', timeNote:'≈ 1–2 hrs a day',
     risk:'1–3% per trade', riskNote:'disciplined position sizing',
-    instruments:{forex:'Swing & intraday trades on major & minor Forex pairs.',
-                 crypto:'Swing trades on Bitcoin, Ethereum & altcoin CFDs.',
-                 stocks:'Swing trades on stocks & indices around trends.'},
+    trade:'Swing & intraday trades across Forex, crypto and stock CFDs.',
     product:'Pro Account',
     cta:'Open Pro Account',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_parttime',
@@ -425,9 +385,7 @@ const SEGS = [
     rate:3.0, rMin:1.8, rMax:4.5,
     time:'35+ hrs / week', timeNote:'your main occupation',
     risk:'3–10% per trade', riskNote:'aggressive, tightly managed',
-    instruments:{forex:'Intraday & scalping on Forex with raw spreads.',
-                 crypto:'Active crypto-CFD trading through the session.',
-                 stocks:'Day-trading stocks & indices on intraday moves.'},
+    trade:'Intraday & scalping across Forex, crypto and index CFDs.',
     product:'Pro Account',
     cta:'Open Pro Account',
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_fulltime',
@@ -450,7 +408,6 @@ let activeSeg = 'parttime';      // default profile: a part-time trader, trading
 let growthChart = null;
 let contribFreq = 'monthly';
 let compoundFreq = 'monthly';
-let market = 'forex';            // default instrument axis = Forex
 
 // compounding periods per year for each frequency option
 const COMPOUNDS = {annually:1, semiannually:2, quarterly:4, monthly:12, daily:365};
@@ -577,9 +534,13 @@ function renderChart(){
       responsive:true,
       maintainAspectRatio:false,
       interaction:{mode:'index',intersect:false},
-      onClick:(evt,elements)=>{
-        if(!elements.length)return;
-        const di = elements[0].datasetIndex;
+      onClick:(evt,_els,chart)=>{
+        // index-mode interaction returns every dataset at the x position, so the
+        // default elements arg always starts at dataset 0. Resolve the single
+        // nearest line to the cursor instead, so clicking any line works.
+        const pts = chart.getElementsAtEventForMode(evt,'nearest',{intersect:false},true);
+        if(!pts.length)return;
+        const di = pts[0].datasetIndex;
         if(di===0)return;                 // the bold "Your projection" line
         const segId = SEGS[di-1].id;      // offset for the user line at index 0
         setActive(segId);
@@ -630,12 +591,15 @@ function buildCards(){
               ${badge}
             </div>
             <p class="seg-desc">${s.desc}</p>
-            <div class="seg-axes">
-              <span class="seg-axis"><span class="ax-ico">🎯</span><span><b style="color:${s.color}">${r.mo}</b> <span class="ax-sub">${r.yr}</span></span></span>
-              <span class="seg-axis"><span class="ax-ico">⏱</span><span><b>${s.time}</b> <span class="ax-sub">${s.timeNote}</span></span></span>
-              <span class="seg-axis"><span class="ax-ico">🛡</span><span><b>${s.risk}</b> <span class="ax-sub">${s.riskNote}</span></span></span>
-            </div>
-            <p class="seg-instr-line"><b>What you trade:</b> <span class="instr-text" id="instr-${s.id}">${s.instruments[market]}</span></p>
+            <details class="seg-more">
+              <summary>Read more</summary>
+              <div class="seg-axes">
+                <span class="seg-axis"><span class="ax-ico">🎯</span><span><b style="color:${s.color}">${r.mo}</b> <span class="ax-sub">${r.yr}</span></span></span>
+                <span class="seg-axis"><span class="ax-ico">⏱</span><span><b>${s.time}</b> <span class="ax-sub">${s.timeNote}</span></span></span>
+                <span class="seg-axis"><span class="ax-ico">🛡</span><span><b>${s.risk}</b> <span class="ax-sub">${s.riskNote}</span></span></span>
+              </div>
+              <p class="seg-instr-line"><b>What you trade:</b> <span class="instr-text">${s.trade}</span></p>
+            </details>
           </div>
           <div class="seg-earn">
             <p class="seg-earn-label">You could earn</p>
@@ -652,6 +616,7 @@ function buildCards(){
   grid.querySelectorAll('.seg-card').forEach(card=>{
     card.addEventListener('click',e=>{
       if(e.target.closest('.seg-cta-btn'))return;
+      if(e.target.closest('.seg-more'))return;
       setActive(card.dataset.seg);
       document.querySelector('.calc-wrap').scrollIntoView({behavior:'smooth',block:'start'});
     });
@@ -672,18 +637,9 @@ function focusCard(segId){
 // =====================================================================
 //  UPDATES
 // =====================================================================
-function updateInstruments(){
-  SEGS.forEach(s=>{
-    const el=document.getElementById('instr-'+s.id);
-    if(el) el.textContent=s.instruments[market];
-  });
-}
-
 function updateCardsGrowth(){
   const {dep,months} = getInputs();
   const segDep = dep*0.1;
-  document.getElementById('seg-dep-disp').textContent = fmtMoney(segDep);
-  document.getElementById('seg-yr-disp').textContent = months+' month'+(months!==1?'s':'');
   const depGain = depositFinal(segDep,months,0,'monthly') - segDep;
   SEGS.forEach(s=>{
     const gainEl=document.getElementById('sg-gain-'+s.id);
@@ -779,15 +735,6 @@ document.addEventListener('DOMContentLoaded',()=>{
       btn.classList.add('on');btn.setAttribute('aria-pressed','true');
       contribFreq = btn.dataset.freq;
       fullUpdate();
-    });
-  });
-
-  document.querySelectorAll('.market-btn').forEach(btn=>{
-    btn.addEventListener('click',()=>{
-      document.querySelectorAll('.market-btn').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false');});
-      btn.classList.add('on');btn.setAttribute('aria-pressed','true');
-      market = btn.dataset.market;
-      updateInstruments();
     });
   });
 });
