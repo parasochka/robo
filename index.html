@@ -151,6 +151,9 @@ button{cursor:pointer;font-family:var(--font);}
 .seg-card-name{font-size:15.5px;font-weight:700;color:var(--text);line-height:1.2;}
 .seg-track{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:2px 7px;border-radius:5px;}
 .seg-desc{font-size:12.5px;color:var(--text-mid);line-height:1.45;}
+.seg-contrib-tag{font-size:11.5px;font-weight:600;margin-top:5px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.contrib-tag-ico{font-weight:700;font-size:13px;}
+.contrib-tag-note{font-size:10.5px;font-weight:400;color:var(--text-light);margin-left:2px;}
 .seg-instr-line{font-size:11.5px;color:var(--text-light);margin-top:6px;}
 .seg-instr-line b{color:var(--text-mid);font-weight:600;}
 
@@ -387,6 +390,8 @@ const SEGS = [
     color:'#64748b', colorBg:'#f1f5f9',
     desc:'Cash in a bank deposit or bonds. Safe, but growth barely beats inflation.',
     blogs:false,
+    defaultContrib:50, defaultContribFreq:'monthly',
+    contribNote:'Regular monthly savings top-up',
   },
   {
     id:'copytrader', en:'Copy Trader', badge:'step', badgeText:'Easiest first step',
@@ -401,6 +406,8 @@ const SEGS = [
     color:'#8b5cf6', colorBg:'#f5f3ff',
     desc:'Auto-copy verified pro traders via CopyFX — under an hour a week.',
     blogs:false,
+    defaultContrib:100, defaultContribFreq:'monthly',
+    contribNote:'Monthly profit reinvestment',
   },
   {
     id:'robotrader', en:'Robo Trader', badge:'', badgeText:'',
@@ -415,6 +422,8 @@ const SEGS = [
     color:'#0891b2', colorBg:'#ecfeff',
     desc:'Trading robots (Expert Advisors) trade for you 24/5 — set the rules once, let them run.',
     blogs:false,
+    defaultContrib:150, defaultContribFreq:'monthly',
+    contribNote:'Scheduled automated top-up',
   },
   {
     id:'investor', en:'Investor', badge:'', badgeText:'',
@@ -429,6 +438,8 @@ const SEGS = [
     color:'#2563eb', colorBg:'#eff6ff',
     desc:'A buy-and-hold portfolio of stocks, ETFs or indices. Light, weekly involvement.',
     blogs:false,
+    defaultContrib:600, defaultContribFreq:'annually',
+    contribNote:'Annual rebalancing top-up',
   },
   {
     id:'parttime', en:'Part-time Trader', badge:'pop', badgeText:'Most popular', rec:true,
@@ -443,6 +454,8 @@ const SEGS = [
     color:'#16a34a', colorBg:'#ecfdf5',
     desc:'Trading alongside your main job — about an hour or two a day. Where most traders start.',
     blogs:true,
+    defaultContrib:200, defaultContribFreq:'monthly',
+    contribNote:'Monthly profit compounding',
   },
   {
     id:'fulltime', en:'Full-time Trader', badge:'', badgeText:'',
@@ -457,6 +470,8 @@ const SEGS = [
     color:'#d97706', colorBg:'#fffbeb',
     desc:'Trading as your main income — full days at the screen. Highest potential, highest demands.',
     blogs:false,
+    defaultContrib:350, defaultContribFreq:'monthly',
+    contribNote:'Active profit compounding',
   },
 ];
 
@@ -669,12 +684,17 @@ function buildCards(){
               ${badge}
             </div>
             <p class="seg-desc">${s.desc}</p>
+            <p class="seg-contrib-tag" style="color:${s.color}">
+              <span class="contrib-tag-ico">+</span>$${s.defaultContrib}${s.defaultContribFreq==='monthly'?'/mo':'/yr'} avg. top-up
+              <span class="contrib-tag-note">${s.contribNote}</span>
+            </p>
             <details class="seg-more">
               <summary>Read more</summary>
               <div class="seg-axes">
                 <span class="seg-axis"><span class="ax-ico">🎯</span><span><b style="color:${s.color}">${r.mo}</b> <span class="ax-sub">${r.yr}</span></span></span>
                 <span class="seg-axis"><span class="ax-ico">⏱</span><span><b>${s.time}</b> <span class="ax-sub">${s.timeNote}</span></span></span>
                 <span class="seg-axis"><span class="ax-ico">🛡</span><span><b>${s.risk}</b> <span class="ax-sub">${s.riskNote}</span></span></span>
+                <span class="seg-axis"><span class="ax-ico">💰</span><span><b style="color:${s.color}">$${s.defaultContrib}${s.defaultContribFreq==='monthly'?'/mo':'/yr'}</b> <span class="ax-sub">${s.contribNote}</span></span></span>
               </div>
               <p class="seg-instr-line"><b>What you trade:</b> <span class="instr-text">${s.trade}</span></p>
             </details>
@@ -770,13 +790,23 @@ function setActive(segId){
     document.getElementById('inp-rate').value = Math.round(annualFromMonthly(seg.rate));
     document.getElementById('inp-compound').value = 'monthly';
     compoundFreq = 'monthly';
+    // Load this profile's typical contribution amount and frequency
+    document.getElementById('inp-contrib').value = seg.defaultContrib;
+    contribFreq = seg.defaultContribFreq;
+    document.getElementById('inp-freq').value = seg.defaultContribFreq;
+    document.querySelectorAll('.freq-btn').forEach(btn=>{
+      const on = btn.dataset.freq === seg.defaultContribFreq;
+      btn.classList.toggle('on', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
     // Keep the profile indicator above the chart in sync, so it's clear the
     // default figures belong to a specific investor profile (not a promise).
     const sel = document.getElementById('profile-select');
     if(sel) sel.value = segId;
+    const freqLabel = seg.defaultContribFreq === 'monthly' ? '/mo' : '/yr';
     const note = document.getElementById('profile-pick-note');
     if(note) note.innerHTML = 'Default values are pre-filled for a <b>'+seg.en+
-      '</b> (≈'+Math.round(annualFromMonthly(seg.rate))+'%/yr). Switch profile to update the calculator.';
+      '</b> (≈'+Math.round(annualFromMonthly(seg.rate))+'%/yr · +$'+seg.defaultContrib+freqLabel+' top-up). Switch profile to update the calculator.';
   }
   document.querySelectorAll('.seg-card').forEach(card=>{
     const isOn = card.dataset.seg===segId;
