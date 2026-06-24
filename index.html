@@ -61,6 +61,7 @@ button{cursor:pointer;font-family:var(--font);}
 .inp-section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);}
 .inp-grp{margin-bottom:16px;}
 .inp-label{font-size:12.5px;font-weight:600;color:var(--text-mid);margin-bottom:6px;display:block;}
+.inp-label-sub{font-weight:400;font-size:11px;color:var(--text-light);margin-left:4px;}
 .inp-wrap{position:relative;}
 .inp-pre,.inp-suf{position:absolute;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-light);font-weight:500;pointer-events:none;}
 .inp-pre{left:12px;}
@@ -154,6 +155,9 @@ button{cursor:pointer;font-family:var(--font);}
 .seg-contrib-tag{font-size:11.5px;font-weight:600;margin-top:5px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
 .contrib-tag-ico{font-weight:700;font-size:13px;}
 .contrib-tag-note{font-size:10.5px;font-weight:400;color:var(--text-light);margin-left:2px;}
+.seg-calc-detail{margin-top:8px;padding:8px 10px;background:rgba(0,0,0,0.03);border-radius:6px;display:flex;flex-direction:column;gap:3px;}
+.cdl{font-size:11px;color:var(--text-mid);line-height:1.5;}
+.cdl b{color:var(--text-dark);font-weight:600;}
 .seg-instr-line{font-size:11.5px;color:var(--text-light);margin-top:6px;}
 .seg-instr-line b{color:var(--text-mid);font-weight:600;}
 
@@ -288,10 +292,10 @@ button{cursor:pointer;font-family:var(--font);}
       </div>
 
       <div class="inp-grp">
-        <label class="inp-label" for="inp-contrib">Contribution amount</label>
+        <label class="inp-label" for="inp-contrib">Top-up rate <span class="inp-label-sub">% of deposit per period</span></label>
         <div class="inp-wrap">
-          <span class="inp-pre">$</span>
-          <input type="text" id="inp-contrib" class="inp-field p-pre" value="0" inputmode="numeric">
+          <input type="text" id="inp-contrib" class="inp-field p-suf" value="0" inputmode="decimal">
+          <span class="inp-suf">%</span>
         </div>
       </div>
 
@@ -390,7 +394,7 @@ const SEGS = [
     color:'#64748b', colorBg:'#f1f5f9',
     desc:'Cash in a bank deposit or bonds. Safe, but growth barely beats inflation.',
     blogs:false,
-    defaultContrib:50, defaultContribFreq:'monthly',
+    defaultContrib:0.5, defaultContribFreq:'monthly',
     contribNote:'Regular monthly savings top-up',
   },
   {
@@ -406,7 +410,7 @@ const SEGS = [
     color:'#8b5cf6', colorBg:'#f5f3ff',
     desc:'Auto-copy verified pro traders via CopyFX — under an hour a week.',
     blogs:false,
-    defaultContrib:100, defaultContribFreq:'monthly',
+    defaultContrib:1.0, defaultContribFreq:'monthly',
     contribNote:'Monthly profit reinvestment',
   },
   {
@@ -422,7 +426,7 @@ const SEGS = [
     color:'#0891b2', colorBg:'#ecfeff',
     desc:'Trading robots (Expert Advisors) trade for you 24/5 — set the rules once, let them run.',
     blogs:false,
-    defaultContrib:150, defaultContribFreq:'monthly',
+    defaultContrib:1.5, defaultContribFreq:'monthly',
     contribNote:'Scheduled automated top-up',
   },
   {
@@ -438,7 +442,7 @@ const SEGS = [
     color:'#2563eb', colorBg:'#eff6ff',
     desc:'A buy-and-hold portfolio of stocks, ETFs or indices. Light, weekly involvement.',
     blogs:false,
-    defaultContrib:600, defaultContribFreq:'annually',
+    defaultContrib:6.0, defaultContribFreq:'annually',
     contribNote:'Annual rebalancing top-up',
   },
   {
@@ -454,7 +458,7 @@ const SEGS = [
     color:'#16a34a', colorBg:'#ecfdf5',
     desc:'Trading alongside your main job — about an hour or two a day. Where most traders start.',
     blogs:true,
-    defaultContrib:200, defaultContribFreq:'monthly',
+    defaultContrib:2.0, defaultContribFreq:'monthly',
     contribNote:'Monthly profit compounding',
   },
   {
@@ -470,7 +474,7 @@ const SEGS = [
     color:'#d97706', colorBg:'#fffbeb',
     desc:'Trading as your main income — full days at the screen. Highest potential, highest demands.',
     blogs:false,
-    defaultContrib:350, defaultContribFreq:'monthly',
+    defaultContrib:3.5, defaultContribFreq:'monthly',
     contribNote:'Active profit compounding',
   },
 ];
@@ -516,9 +520,10 @@ function rateLabel(s){
 function getInputs(){
   const dep = parseMoney(document.getElementById('inp-deposit').value)||10000;
   const months = parseInt(document.getElementById('inp-months').value)||12;
-  const contrib = parseMoney(document.getElementById('inp-contrib').value)||0;
+  const contribPct = parseFloat(String(document.getElementById('inp-contrib').value).replace(/[^0-9.]/g,''))||0;
+  const contrib = dep * contribPct / 100;   // convert % of deposit → dollar amount
   const rate = parseFloat(String(document.getElementById('inp-rate').value).replace(/[^0-9.]/g,''))||0;
-  return {dep,months,contrib,rate};
+  return {dep,months,contrib,contribPct,rate};
 }
 
 // Compound a user-supplied ANNUAL rate at the chosen compound frequency,
@@ -685,7 +690,7 @@ function buildCards(){
             </div>
             <p class="seg-desc">${s.desc}</p>
             <p class="seg-contrib-tag" style="color:${s.color}">
-              <span class="contrib-tag-ico">+</span>$${s.defaultContrib}${s.defaultContribFreq==='monthly'?'/mo':'/yr'} avg. top-up
+              <span class="contrib-tag-ico">+</span>${s.defaultContrib}% of deposit${s.defaultContribFreq==='monthly'?' / mo':' / yr'}
               <span class="contrib-tag-note">${s.contribNote}</span>
             </p>
             <details class="seg-more">
@@ -694,9 +699,10 @@ function buildCards(){
                 <span class="seg-axis"><span class="ax-ico">🎯</span><span><b style="color:${s.color}">${r.mo}</b> <span class="ax-sub">${r.yr}</span></span></span>
                 <span class="seg-axis"><span class="ax-ico">⏱</span><span><b>${s.time}</b> <span class="ax-sub">${s.timeNote}</span></span></span>
                 <span class="seg-axis"><span class="ax-ico">🛡</span><span><b>${s.risk}</b> <span class="ax-sub">${s.riskNote}</span></span></span>
-                <span class="seg-axis"><span class="ax-ico">💰</span><span><b style="color:${s.color}">$${s.defaultContrib}${s.defaultContribFreq==='monthly'?'/mo':'/yr'}</b> <span class="ax-sub">${s.contribNote}</span></span></span>
+                <span class="seg-axis"><span class="ax-ico">💰</span><span><b style="color:${s.color}">+${s.defaultContrib}%${s.defaultContribFreq==='monthly'?'/mo':'/yr'}</b> <span class="ax-sub">${s.contribNote}</span></span></span>
               </div>
               <p class="seg-instr-line"><b>What you trade:</b> <span class="instr-text">${s.trade}</span></p>
+              <div class="seg-calc-detail" id="sg-detail-${s.id}"></div>
             </details>
           </div>
           <div class="seg-earn">
@@ -736,11 +742,12 @@ function focusCard(segId){
 //  UPDATES
 // =====================================================================
 function updateCardsGrowth(){
-  const {dep,months,contrib} = getInputs();
+  const {dep,months,contrib,contribPct} = getInputs();
   const segDep = dep*0.1;
   const segContrib = contrib*0.1;
   const invested = segDep + segContrib*contribCount(months,contribFreq);
   const depGain = depositFinal(segDep,months,segContrib,contribFreq) - invested;
+  const freqText = contribFreq==='monthly'?'/mo':'/yr';
   SEGS.forEach(s=>{
     const gainEl=document.getElementById('sg-gain-'+s.id);
     if(!gainEl)return;
@@ -755,6 +762,18 @@ function updateCardsGrowth(){
     if(vsEl){
       if(s.id==='saver'||depGain<=0){vsEl.style.display='none';}
       else{vsEl.style.display='';vsEl.textContent=fmtMultiple(gain/depGain)+' a bank deposit';}
+    }
+    const detailEl=document.getElementById('sg-detail-'+s.id);
+    if(detailEl){
+      const r=rateLabel(s);
+      const contribLine = contribPct>0
+        ? `<span class="cdl"><b>Top-up:</b> +${contribPct}%${freqText} of deposit = ${fmtMoney(segContrib)}${freqText}</span>`
+        : '';
+      detailEl.innerHTML =
+        `<span class="cdl"><b>Capital:</b> ${fmtMoney(segDep)} (10% of your ${fmtMoney(dep)} deposit)</span>`+
+        `<span class="cdl"><b>Rate:</b> ${r.mo} · ${r.yr}</span>`+
+        contribLine+
+        `<span class="cdl"><b>After ${months} months:</b> ${fmtMoney(invested)} in → ${fmtMoney(finalBal)} total · <b>+${gainPct}%</b></span>`;
     }
   });
 }
@@ -806,7 +825,7 @@ function setActive(segId){
     const freqLabel = seg.defaultContribFreq === 'monthly' ? '/mo' : '/yr';
     const note = document.getElementById('profile-pick-note');
     if(note) note.innerHTML = 'Default values are pre-filled for a <b>'+seg.en+
-      '</b> (≈'+Math.round(annualFromMonthly(seg.rate))+'%/yr · +$'+seg.defaultContrib+freqLabel+' top-up). Switch profile to update the calculator.';
+      '</b> (≈'+Math.round(annualFromMonthly(seg.rate))+'%/yr · +'+seg.defaultContrib+'%'+freqLabel+' top-up of deposit). Switch profile to update the calculator.';
   }
   document.querySelectorAll('.seg-card').forEach(card=>{
     const isOn = card.dataset.seg===segId;
@@ -863,10 +882,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     fullUpdate();
   });
 
-  ['inp-deposit','inp-contrib'].forEach(id=>{
-    const el = document.getElementById(id);
-    el.addEventListener('blur',()=>{const n=parseMoney(el.value);if(n>0)el.value=fmtNum(n);});
-    el.addEventListener('focus',()=>{const n=parseMoney(el.value);if(n>0)el.value=String(n);});
+  const depEl = document.getElementById('inp-deposit');
+  depEl.addEventListener('blur',()=>{const n=parseMoney(depEl.value);if(n>0)depEl.value=fmtNum(n);});
+  depEl.addEventListener('focus',()=>{const n=parseMoney(depEl.value);if(n>0)depEl.value=String(n);});
+
+  const contribEl = document.getElementById('inp-contrib');
+  contribEl.addEventListener('blur',()=>{
+    const n=parseFloat(contribEl.value)||0;
+    if(n>0) contribEl.value = (n%1===0) ? String(n) : parseFloat(n.toFixed(2)).toString();
   });
 
   document.querySelectorAll('.freq-btn').forEach(btn=>{
