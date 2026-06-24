@@ -988,7 +988,11 @@ function setAllocPct(pct){
   if(ctaPct) ctaPct.textContent = allocPct + '%';
   const handle = document.getElementById('split-handle');
   if(handle) handle.setAttribute('aria-valuenow', allocPct);
-  fullUpdate();
+  // The allocation slider only governs how much of the deposit is put to work
+  // in the investor profiles below — it must NOT touch the first-screen chart
+  // or calculator, which always model the full deposit.
+  updateCardsGrowth();
+  updateAllocate();
 }
 
 function fullUpdate(){
