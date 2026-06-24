@@ -226,19 +226,17 @@ button{cursor:pointer;font-family:var(--font);}
 }
 
 /* Two-column media/FAQ strip — always visible, outside Read more */
-.seg-content-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,0.06);}
+.seg-content-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,0,0,0.06);}
 .seg-content-col{display:flex;flex-direction:column;}
-.seg-col-hd{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);margin-bottom:5px;}
-/* Equal-height rows: articles and FAQ items share the same min-height */
-.seg-art-link,.seg-faq-link{display:flex;align-items:center;gap:8px;text-decoration:none;padding:6px 6px;border-radius:7px;transition:background .15s;margin-bottom:1px;min-height:50px;box-sizing:border-box;}
-.seg-art-link:hover,.seg-faq-link:hover{background:rgba(0,0,0,0.05);}
-.seg-art-thumb{width:34px;height:34px;flex-shrink:0;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;}
-.seg-art-body{min-width:0;flex:1;}
-.seg-art-tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-light);}
-.seg-art-title{display:block;font-size:11px;font-weight:600;color:var(--text);line-height:1.35;margin-top:1px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.seg-art-read{font-size:9.5px;color:var(--text-light);margin-top:1px;display:block;}
-.seg-faq-ico{flex-shrink:0;}
-.seg-faq-q{font-size:11px;font-weight:500;color:var(--text-mid);line-height:1.4;}
+.seg-col-hd{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-light);margin-bottom:4px;}
+/* Unified rows: blog articles and FAQ items share one compact item style */
+.seg-item{display:flex;align-items:center;gap:9px;text-decoration:none;padding:6px;border-radius:8px;transition:background .15s;min-height:42px;box-sizing:border-box;}
+.seg-item:hover{background:rgba(0,0,0,0.05);}
+.seg-thumb{width:28px;height:28px;flex-shrink:0;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;}
+.seg-thumb svg{width:15px;height:15px;}
+.seg-body{min-width:0;flex:1;}
+.seg-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-light);}
+.seg-title{display:-webkit-box;font-size:11.5px;font-weight:500;color:var(--text);line-height:1.3;margin-top:1px;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
 @media(max-width:900px){.seg-content-cols{grid-template-columns:1fr;}}
 </style>
 </head>
@@ -510,9 +508,9 @@ const SEG_MEDIA = {
       {ico:'💡',bg:'#fef9c3',tag:'Basics',title:'When Safe Really Is Safe: Emergency Fund Essentials',url:'https://roboforex.com/blog/',read:'3 min read'},
     ],
     faqs:[
-      {q:'What interest rate can I realistically expect on a deposit?',url:'https://roboforex.com/beginners/'},
-      {q:'Are my savings insured if the bank fails?',url:'https://roboforex.com/beginners/'},
-      {q:'How do government bonds compare to a savings account?',url:'https://roboforex.com/beginners/'},
+      {tag:'Rates',q:'What interest rate can I realistically expect on a deposit?',url:'https://roboforex.com/beginners/'},
+      {tag:'Safety',q:'Are my savings insured if the bank fails?',url:'https://roboforex.com/beginners/'},
+      {tag:'Bonds',q:'How do government bonds compare to a savings account?',url:'https://roboforex.com/beginners/'},
     ],
   },
   copytrader: {
@@ -522,9 +520,9 @@ const SEG_MEDIA = {
       {ico:'⚖️',bg:'#f5f3ff',tag:'Compare',title:'Copy Trading vs. Self-Trading: Pros and Cons',url:'https://roboforex.com/blog/',read:'4 min read'},
     ],
     faqs:[
-      {q:'How much of my capital is at risk when I copy a trader?',url:'https://roboforex.com/beginners/'},
-      {q:'Can I stop copying at any time and withdraw funds?',url:'https://roboforex.com/beginners/'},
-      {q:'What makes a CopyFX strategy reliable to follow?',url:'https://roboforex.com/beginners/'},
+      {tag:'Risk',q:'How much of my capital is at risk when I copy a trader?',url:'https://roboforex.com/beginners/'},
+      {tag:'Control',q:'Can I stop copying at any time and withdraw funds?',url:'https://roboforex.com/beginners/'},
+      {tag:'Strategy',q:'What makes a CopyFX strategy reliable to follow?',url:'https://roboforex.com/beginners/'},
     ],
   },
   robotrader: {
@@ -534,9 +532,9 @@ const SEG_MEDIA = {
       {ico:'📊',bg:'#e0f7fa',tag:'Analysis',title:'How to Read EA Backtesting Reports Correctly',url:'https://roboforex.com/blog/',read:'5 min read'},
     ],
     faqs:[
-      {q:'Does the trading robot work while my computer is off?',url:'https://roboforex.com/beginners/'},
-      {q:'What happens if the EA hits a losing streak?',url:'https://roboforex.com/beginners/'},
-      {q:'How do I set a maximum daily loss limit for my robot?',url:'https://roboforex.com/beginners/'},
+      {tag:'Setup',q:'Does the trading robot work while my computer is off?',url:'https://roboforex.com/beginners/'},
+      {tag:'Risk',q:'What happens if the EA hits a losing streak?',url:'https://roboforex.com/beginners/'},
+      {tag:'Control',q:'How do I set a maximum daily loss limit for my robot?',url:'https://roboforex.com/beginners/'},
     ],
   },
   investor: {
@@ -546,9 +544,9 @@ const SEG_MEDIA = {
       {ico:'🔄',bg:'#eff6ff',tag:'How-to',title:'How to Rebalance a Portfolio Without Overthinking It',url:'https://roboforex.com/blog/',read:'4 min read'},
     ],
     faqs:[
-      {q:'What are ETFs and why are they popular for beginners?',url:'https://roboforex.com/beginners/'},
-      {q:'How often should I review and rebalance my portfolio?',url:'https://roboforex.com/beginners/'},
-      {q:'What is the minimum amount to start investing in stocks?',url:'https://roboforex.com/beginners/'},
+      {tag:'Basics',q:'What are ETFs and why are they popular for beginners?',url:'https://roboforex.com/beginners/'},
+      {tag:'Routine',q:'How often should I review and rebalance my portfolio?',url:'https://roboforex.com/beginners/'},
+      {tag:'Budget',q:'What is the minimum amount to start investing in stocks?',url:'https://roboforex.com/beginners/'},
     ],
   },
   parttime: {
@@ -558,9 +556,9 @@ const SEG_MEDIA = {
       {ico:'🔄',bg:'#f0fdf4',tag:'Strategy',title:'How Compounding Works in Forex — Step by Step',url:'https://roboforex.com/blog/',read:'6 min read'},
     ],
     faqs:[
-      {q:'How many hours a week does part-time trading realistically take?',url:'https://roboforex.com/beginners/'},
-      {q:'Which markets are best for swing and intraday trading?',url:'https://roboforex.com/beginners/'},
-      {q:"How do I protect my account when I can't monitor it all day?",url:'https://roboforex.com/beginners/'},
+      {tag:'Time',q:'How many hours a week does part-time trading realistically take?',url:'https://roboforex.com/beginners/'},
+      {tag:'Markets',q:'Which markets are best for swing and intraday trading?',url:'https://roboforex.com/beginners/'},
+      {tag:'Risk',q:"How do I protect my account when I can't monitor it all day?",url:'https://roboforex.com/beginners/'},
     ],
   },
   fulltime: {
@@ -570,9 +568,9 @@ const SEG_MEDIA = {
       {ico:'📉',bg:'#fef3c7',tag:'Risk',title:'How Professional Traders Survive a Drawdown',url:'https://roboforex.com/blog/',read:'5 min read'},
     ],
     faqs:[
-      {q:'What account type and leverage do full-time traders use?',url:'https://roboforex.com/beginners/'},
-      {q:'How much starting capital is realistic for full-time trading?',url:'https://roboforex.com/beginners/'},
-      {q:'How do professionals manage risk and protect their trading edge?',url:'https://roboforex.com/beginners/'},
+      {tag:'Setup',q:'What account type and leverage do full-time traders use?',url:'https://roboforex.com/beginners/'},
+      {tag:'Capital',q:'How much starting capital is realistic for full-time trading?',url:'https://roboforex.com/beginners/'},
+      {tag:'Risk',q:'How do professionals manage risk and protect their trading edge?',url:'https://roboforex.com/beginners/'},
     ],
   },
 };
@@ -580,18 +578,20 @@ const SEG_MEDIA = {
 function renderMediaCols(media, color){
   if(!media) return '';
   const arts = media.articles.map(a=>`
-    <a class="seg-art-link" href="${a.url}" target="_blank" rel="noopener">
-      <div class="seg-art-thumb" style="background:${a.bg}">${a.ico}</div>
-      <div class="seg-art-body">
-        <span class="seg-art-tag">${a.tag}</span>
-        <span class="seg-art-title">${a.title}</span>
-        <span class="seg-art-read">${a.read}</span>
+    <a class="seg-item" href="${a.url}" target="_blank" rel="noopener">
+      <div class="seg-thumb" style="background:${a.bg}">${a.ico}</div>
+      <div class="seg-body">
+        <span class="seg-tag">${a.tag}</span>
+        <span class="seg-title">${a.title}</span>
       </div>
     </a>`).join('');
   const fqs = media.faqs.map((f,i)=>`
-    <a class="seg-faq-link" href="${f.url}" target="_blank" rel="noopener">
-      <span class="seg-faq-ico" style="color:${color}">${FAQ_ICONS[i%FAQ_ICONS.length]}</span>
-      <span class="seg-faq-q">${f.q}</span>
+    <a class="seg-item" href="${f.url}" target="_blank" rel="noopener">
+      <div class="seg-thumb" style="background:rgba(0,0,0,0.05);color:${color}">${FAQ_ICONS[i%FAQ_ICONS.length]}</div>
+      <div class="seg-body">
+        <span class="seg-tag">${f.tag}</span>
+        <span class="seg-title">${f.q}</span>
+      </div>
     </a>`).join('');
   return `
     <div class="seg-content-cols">
@@ -988,7 +988,11 @@ function setAllocPct(pct){
   if(ctaPct) ctaPct.textContent = allocPct + '%';
   const handle = document.getElementById('split-handle');
   if(handle) handle.setAttribute('aria-valuenow', allocPct);
-  fullUpdate();
+  // The allocation slider only governs how much of the deposit is put to work
+  // in the investor profiles below — it must NOT touch the first-screen chart
+  // or calculator, which always model the full deposit.
+  updateCardsGrowth();
+  updateAllocate();
 }
 
 function fullUpdate(){
