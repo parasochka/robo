@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Compounding Calculator | RoboForex</title>
-<meta name="description" content="See how the same money compounds across nine trader profiles — from a bank deposit through Forex trading to scalping — sorted by target return and risk.">
+<meta name="description" content="See how the same money compounds across six investor profiles — from a bank deposit through copy trading and Forex to full-time scalping — ordered by how much time each one asks of you.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -161,7 +161,7 @@ button{cursor:pointer;font-family:var(--font);}
 .contrib-tag-note{font-size:10.5px;font-weight:400;color:var(--text-light);margin-left:2px;}
 .seg-calc-detail{margin-top:8px;padding:8px 10px;background:rgba(0,0,0,0.03);border-radius:6px;display:flex;flex-direction:column;gap:3px;}
 .cdl{font-size:11px;color:var(--text-mid);line-height:1.5;}
-.cdl b{color:var(--text-dark);font-weight:600;}
+.cdl b{color:var(--text);font-weight:600;}
 .seg-instr-line{font-size:11.5px;color:var(--text-light);margin-top:6px;}
 .seg-instr-line b{color:var(--text-mid);font-weight:600;}
 
@@ -345,7 +345,7 @@ button{cursor:pointer;font-family:var(--font);}
         </div>
       </div>
       <div class="chart-wrap">
-        <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing trader profiles over 12 months"></canvas>
+        <canvas id="growthChart" role="img" aria-label="Growth-over-time chart comparing investor profiles over the selected time horizon"></canvas>
       </div>
     </div>
   </div>
@@ -416,7 +416,6 @@ const SEGS = [
     ctaUrl:'https://my.roboforex.com/en/register-demo/?utm_source=calc&utm_content=seg_saver',
     color:'#64748b', colorBg:'#f1f5f9',
     desc:'Cash in a bank deposit or bonds. Safe, but growth barely beats inflation.',
-    blogs:false,
     defaultContrib:0.5, defaultContribFreq:'monthly',
     contribNote:'Regular monthly savings top-up',
   },
@@ -432,7 +431,6 @@ const SEGS = [
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_copytrader',
     color:'#8b5cf6', colorBg:'#f5f3ff',
     desc:'Auto-copy verified pro traders via CopyFX — under an hour a week.',
-    blogs:false,
     defaultContrib:1.0, defaultContribFreq:'monthly',
     contribNote:'Monthly profit reinvestment',
   },
@@ -448,7 +446,6 @@ const SEGS = [
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_robotrader',
     color:'#0891b2', colorBg:'#ecfeff',
     desc:'Trading robots (Expert Advisors) trade for you 24/5 — set the rules once, let them run.',
-    blogs:false,
     defaultContrib:1.5, defaultContribFreq:'monthly',
     contribNote:'Scheduled automated top-up',
   },
@@ -464,7 +461,6 @@ const SEGS = [
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_investor',
     color:'#2563eb', colorBg:'#eff6ff',
     desc:'A buy-and-hold portfolio of stocks, ETFs or indices. Light, weekly involvement.',
-    blogs:false,
     defaultContrib:6.0, defaultContribFreq:'annually',
     contribNote:'Annual rebalancing top-up',
   },
@@ -480,7 +476,6 @@ const SEGS = [
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_parttime',
     color:'#16a34a', colorBg:'#ecfdf5',
     desc:'Trading alongside your main job — about an hour or two a day. Where most traders start.',
-    blogs:true,
     defaultContrib:2.0, defaultContribFreq:'monthly',
     contribNote:'Monthly profit compounding',
   },
@@ -496,16 +491,9 @@ const SEGS = [
     ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_fulltime',
     color:'#d97706', colorBg:'#fffbeb',
     desc:'Trading as your main income — full days at the screen. Highest potential, highest demands.',
-    blogs:false,
     defaultContrib:3.5, defaultContribFreq:'monthly',
     contribNote:'Active profit compounding',
   },
-];
-
-const BLOG_CARDS = [
-  {ico:'📈',bg:'#fef3c7',title:'What Is Swing Trading? A Practical Guide for Beginners',url:'https://roboforex.com/blog/',read:'5 min read'},
-  {ico:'🛡️',bg:'#dbeafe',title:'Risk Management: The 1–2% Rule Every Trader Should Know',url:'https://roboforex.com/blog/',read:'4 min read'},
-  {ico:'🔄',bg:'#f0fdf4',title:'How Compounding Works in Forex Trading — Step by Step',url:'https://roboforex.com/blog/',read:'6 min read'},
 ];
 
 const FAQ_ICONS = [
@@ -799,8 +787,8 @@ function renderChart(){
 // =====================================================================
 function buildCards(){
   const {dep,months,contrib} = getInputs();
-  const segDep = dep*0.1;
-  const segContrib = contrib*0.1;            // invest 10% of each top-up too
+  const segDep = dep*(allocPct/100);
+  const segContrib = contrib*(allocPct/100);  // invest the same % of each top-up too
   const invested = segDep + segContrib*contribCount(months,contribFreq);
   const grid = document.getElementById('segs-grid');
 
