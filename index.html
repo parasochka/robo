@@ -16,8 +16,6 @@
   --blue-light:#EBF2F9;
   --green:#74B129;
   --green-d:#5F951F;
-  --amber:#f59e0b;
-  --red:#ef4444;
   --text:#1a2533;
   --text-mid:#46566a;        /* darkened for contrast (AA) */
   --text-light:#5d6b7d;      /* darkened for contrast (AA) */
@@ -49,35 +47,10 @@ button{cursor:pointer;font-family:var(--font);}
 .btn-open:hover{background:var(--green-d);}
 
 /* ---- PAGE HERO ---- */
-.hero{background:radial-gradient(circle at 82% 20%,rgba(116,177,41,.34),transparent 28%),linear-gradient(135deg,#0f2a5e 0%,var(--blue) 60%,#1d5fa8 100%);padding:40px 24px 76px;}
+.hero{background:linear-gradient(135deg,#0f2a5e 0%,var(--blue) 60%,#1d5fa8 100%);padding:40px 24px 60px;}
 .hero-inner{max-width:1200px;margin:0 auto;}
-.hero-kicker{display:inline-flex;align-items:center;gap:8px;margin-bottom:12px;padding:6px 11px;border:1px solid rgba(255,255,255,.25);border-radius:999px;background:rgba(255,255,255,.1);color:#d8ebff;font-size:12px;font-weight:700;}
-.hero-title{font-size:34px;font-weight:800;color:#fff;line-height:1.15;margin-bottom:10px;max-width:760px;}
-.hero-sub{font-size:16px;color:rgba(255,255,255,0.87);max-width:850px;line-height:1.65;}
-.hero-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;}
-.hero-action{display:inline-flex;align-items:center;gap:8px;border-radius:8px;padding:11px 16px;font-size:13.5px;font-weight:800;transition:transform .15s,box-shadow .15s;}
-.hero-action.primary{background:var(--green);color:#fff;}
-.hero-action.secondary{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;}
-.hero-action:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.18);}
-
-
-/* ---- GUIDED FUNNEL ---- */
-.path-wrap{max-width:1200px;margin:-40px auto 24px;padding:0 24px;position:relative;z-index:11;}
-.path-card{background:#fff;border-radius:var(--r);box-shadow:var(--shadow-lg);padding:20px;display:grid;grid-template-columns:1.05fr 1.35fr;gap:20px;align-items:center;border:1px solid rgba(221,228,237,.9);}
-.path-copy h2{font-size:20px;line-height:1.25;margin-bottom:7px;color:var(--text);}
-.path-copy p{font-size:13.5px;color:var(--text-mid);line-height:1.55;}
-.path-copy b{color:var(--blue);}
-.path-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
-.path-step{position:relative;background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:12px;min-height:116px;}
-.path-step:not(:last-child)::after{content:'→';position:absolute;right:-13px;top:42%;color:var(--blue-mid);font-weight:800;background:#fff;border-radius:50%;width:20px;height:20px;text-align:center;line-height:19px;box-shadow:var(--shadow);z-index:1;}
-.path-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:800;margin-bottom:8px;}
-.path-step.is-next{border-color:#bfe3a0;background:#f4fbed;box-shadow:0 0 0 1px #bfe3a0;}
-.path-step.is-next .path-num{background:var(--green);color:#fff;}
-.path-title{font-size:13px;font-weight:800;color:var(--text);line-height:1.25;margin-bottom:4px;}
-.path-txt{font-size:11.5px;color:var(--text-mid);line-height:1.4;}
-.trust-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px;}
-.trust-item{background:rgba(235,242,249,.72);border:1px solid #d7e5f3;border-radius:9px;padding:10px 12px;font-size:12px;color:var(--text-mid);}
-.trust-item b{display:block;color:var(--blue);font-size:13px;margin-bottom:1px;}
+.hero-title{font-size:28px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px;}
+.hero-sub{font-size:15.5px;color:rgba(255,255,255,0.85);max-width:1152px;line-height:1.6;}
 
 /* ---- CALC SECTION ---- */
 .calc-wrap{max-width:1200px;margin:-30px auto 0;padding:0 24px;position:relative;z-index:10;}
@@ -225,10 +198,7 @@ button{cursor:pointer;font-family:var(--font);}
 .disclaimer-inner strong{color:var(--text-mid);}
 
 @media(max-width:900px){
-  .hero-title{font-size:28px;}
-  .path-card{grid-template-columns:1fr;}
-  .path-steps{grid-template-columns:1fr 1fr;}
-  .path-step:not(:last-child)::after{display:none;}
+  .hero-title{font-size:27px;}
   .calc-card{grid-template-columns:1fr;}
   .inp-panel{border-right:none;border-bottom:1px solid var(--border);}
   .chart-head{flex-direction:column;}
@@ -238,7 +208,6 @@ button{cursor:pointer;font-family:var(--font);}
   .seg-earn{text-align:left;min-width:0;flex:1 1 auto;}
   .seg-cta-btn{flex:1 1 100%;}
   .allocate-card{grid-template-columns:1fr;gap:18px;padding:22px;}
-  .trust-row{grid-template-columns:1fr;}
   .allocate-cta{width:100%;justify-content:center;}
 }
 @media (prefers-reduced-motion: reduce){
@@ -265,37 +234,10 @@ button{cursor:pointer;font-family:var(--font);}
 <!-- HERO -->
 <div class="hero">
   <div class="hero-inner">
-    <p class="hero-kicker">From passive deposit to active trader</p>
-    <h1 class="hero-title">See the next realistic step for your money</h1>
-    <p class="hero-sub">Start with the bank-deposit mindset, then compare low-effort CopyFX, automated robots, investing and hands-on trading. The page shows what to do next, how much time it takes and why you can begin with only 10% of your capital.</p>
-    <div class="hero-actions">
-      <a class="hero-action primary" href="#segs-grid">Find my trading path →</a>
-      <a class="hero-action secondary" href="#inp-deposit">Calculate with my amount</a>
-    </div>
+    <h1 class="hero-title">Compound Interest Calculator</h1>
+    <p class="hero-sub">A bank deposit pays you around 4–8% a year. See — side by side — how much the very same money could earn if you let it work a little harder, from a safe deposit all the way to active trading. Start where you are, move up when you're ready.</p>
   </div>
 </div>
-
-
-<!-- GUIDED FUNNEL -->
-<section class="path-wrap" aria-label="How to move from deposit to trading">
-  <div class="path-card">
-    <div class="path-copy">
-      <h2>A simple path instead of a wall of products</h2>
-      <p>For a deposit user, the first conversion is not “trade full time”. It is: <b>keep control, invest a small test amount, learn the risk, then choose a profile</b>. Follow the visual path and use the calculator to size the first step.</p>
-      <div class="trust-row" aria-label="What the calculator explains">
-        <div class="trust-item"><b>Amount</b>Start with 10%, not all capital.</div>
-        <div class="trust-item"><b>Effort</b>See weekly time before choosing.</div>
-        <div class="trust-item"><b>Risk</b>Compare exposure per strategy.</div>
-      </div>
-    </div>
-    <div class="path-steps">
-      <div class="path-step"><div class="path-num">1</div><div class="path-title">Deposit comfort</div><div class="path-txt">You know the return is limited, but capital feels safe.</div></div>
-      <div class="path-step is-next"><div class="path-num">2</div><div class="path-title">10% test account</div><div class="path-txt">Move a small slice into demo, CopyFX or Pro without changing your whole plan.</div></div>
-      <div class="path-step"><div class="path-num">3</div><div class="path-title">Pick profile</div><div class="path-txt">Choose by time: copy, robot, investor, part-time or full-time trader.</div></div>
-      <div class="path-step"><div class="path-num">4</div><div class="path-title">Trade with rules</div><div class="path-txt">Use position sizing and reinvest only when the process is clear.</div></div>
-    </div>
-  </div>
-</section>
 
 <!-- CALCULATOR -->
 <div class="calc-wrap">
