@@ -120,10 +120,13 @@ button{cursor:pointer;font-family:var(--font);}
 .allocate-sub{font-size:14px;color:rgba(255,255,255,0.85);max-width:600px;line-height:1.55;}
 .allocate-sub b{color:#fff;font-weight:700;}
 
-/* the 90 / 10 split visual */
-.split-bar{display:flex;height:60px;border-radius:9px;overflow:visible;margin-top:18px;gap:6px;}
+/* the 90 / 10 split visual — draggable */
+.split-bar{display:flex;height:60px;margin-top:18px;position:relative;user-select:none;-webkit-user-select:none;}
 .split-keep{flex:1 1 0;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:0 16px;min-width:0;}
-.split-invest{flex:0 0 26%;background:var(--green);border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:0 16px;min-width:0;box-shadow:0 0 20px rgba(122,200,50,0.35),0 4px 12px rgba(0,0,0,0.25);}
+.split-handle{flex:0 0 18px;width:18px;cursor:ew-resize;display:flex;align-items:center;justify-content:center;z-index:5;touch-action:none;outline:none;}
+.split-handle-icon{display:block;width:3px;height:28px;background:rgba(255,255,255,0.45);border-radius:3px;transition:background .15s,height .15s;}
+.split-handle:hover .split-handle-icon,.split-handle.dragging .split-handle-icon{background:rgba(255,255,255,0.9);height:36px;}
+.split-invest{flex:0 0 22%;background:var(--green);border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:0 16px;min-width:60px;box-shadow:0 0 20px rgba(122,200,50,0.35),0 4px 12px rgba(0,0,0,0.25);}
 .split-pct{font-size:14px;font-weight:800;color:#fff;line-height:1;}
 .split-invest .split-pct{font-size:20px;color:#fff;}
 .split-lbl{font-size:11px;line-height:1.35;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -337,20 +340,23 @@ button{cursor:pointer;font-family:var(--font);}
   <div class="allocate-card">
     <div class="allocate-text">
       <p class="allocate-eyebrow">You stay in control</p>
-      <h2 class="allocate-title">You don't have to invest it all — start with just <b>10%</b></h2>
+      <h2 class="allocate-title">You don't have to invest it all — start with just <b id="alloc-pct">10%</b></h2>
       <p class="allocate-sub">Keep the rest where it feels safe. Putting only <b id="alloc-invest">$1,000</b> of your <b id="alloc-total">$10,000</b> to work is enough to start earning — that's the figure every profile below is built on.</p>
-      <div class="split-bar" aria-hidden="true">
+      <div class="split-bar" id="split-bar" aria-label="Allocation slider">
         <div class="split-keep">
-          <span class="split-pct">90% stays put</span>
+          <span class="split-pct" id="split-keep-pct">90% stays put</span>
           <span class="split-lbl"><span id="alloc-keep">$9,000</span> untouched</span>
         </div>
-        <div class="split-invest">
-          <span class="split-pct">10%</span>
+        <div class="split-handle" id="split-handle" role="slider" aria-label="Percentage to invest" aria-valuemin="5" aria-valuemax="50" aria-valuenow="10" tabindex="0">
+          <span class="split-handle-icon"></span>
+        </div>
+        <div class="split-invest" id="split-invest-bar">
+          <span class="split-pct" id="split-invest-pct">10%</span>
           <span class="split-lbl"><b id="alloc-invest2">$1,000</b> at work</span>
         </div>
       </div>
     </div>
-    <button type="button" class="allocate-cta" id="alloc-cta">See what your 10% can do →</button>
+    <button type="button" class="allocate-cta" id="alloc-cta">See what your <span id="alloc-cta-pct">10%</span> can do →</button>
   </div>
 </div>
 
@@ -493,6 +499,7 @@ let activeSeg = 'parttime';      // default profile: a part-time trader, trading
 let growthChart = null;
 let contribFreq = 'monthly';
 let compoundFreq = 'monthly';
+let allocPct = 10;
 
 // compounding periods per year for each frequency option
 const COMPOUNDS = {annually:1, semiannually:2, quarterly:4, monthly:12, daily:365};
@@ -744,8 +751,8 @@ function focusCard(segId){
 // =====================================================================
 function updateCardsGrowth(){
   const {dep,months,contrib,contribPct} = getInputs();
-  const segDep = dep*0.1;
-  const segContrib = contrib*0.1;
+  const segDep = dep*(allocPct/100);
+  const segContrib = contrib*(allocPct/100);
   const invested = segDep + segContrib*contribCount(months,contribFreq);
   const depGain = depositFinal(segDep,months,segContrib,contribFreq) - invested;
   const freqText = contribFreq==='monthly'?'/mo':'/yr';
@@ -771,7 +778,7 @@ function updateCardsGrowth(){
         ? `<span class="cdl"><b>Top-up:</b> +${contribPct}%${freqText} of deposit = ${fmtMoney(segContrib)}${freqText}</span>`
         : '';
       detailEl.innerHTML =
-        `<span class="cdl"><b>Capital:</b> ${fmtMoney(segDep)} (10% of your ${fmtMoney(dep)} deposit)</span>`+
+        `<span class="cdl"><b>Capital:</b> ${fmtMoney(segDep)} (${allocPct}% of your ${fmtMoney(dep)} deposit)</span>`+
         `<span class="cdl"><b>Rate:</b> ${r.mo} · ${r.yr}</span>`+
         contribLine+
         `<span class="cdl"><b>After ${months} months:</b> ${fmtMoney(invested)} in → ${fmtMoney(finalBal)} total · <b>+${gainPct}%</b></span>`;
@@ -837,14 +844,36 @@ function setActive(segId){
   fullUpdate();
 }
 
-// Keep the "invest only 10%" band in sync with the deposit the visitor typed.
+// Keep the "invest only X%" band in sync with deposit + slider.
 function updateAllocate(){
   const {dep} = getInputs();
-  const invest = fmtMoney(dep*0.1);
+  const frac = allocPct / 100;
+  const invest = fmtMoney(dep * frac);
   document.getElementById('alloc-invest').textContent = invest;
   document.getElementById('alloc-invest2').textContent = invest;
   document.getElementById('alloc-total').textContent = fmtMoney(dep);
-  document.getElementById('alloc-keep').textContent = fmtMoney(dep*0.9);
+  document.getElementById('alloc-keep').textContent = fmtMoney(dep * (1 - frac));
+}
+
+// Visual width is exaggerated: allocPct=10 → ~22% visual, so even small % looks significant.
+function visualInvestPct(pct){ return Math.min(75, Math.max(12, 10 + pct * 1.2)); }
+
+function setAllocPct(pct){
+  allocPct = Math.min(50, Math.max(5, Math.round(pct)));
+  const vis = visualInvestPct(allocPct);
+  const investBar = document.getElementById('split-invest-bar');
+  if(investBar) investBar.style.flex = `0 0 ${vis}%`;
+  const keepPct = document.getElementById('split-keep-pct');
+  if(keepPct) keepPct.textContent = (100 - allocPct) + '% stays put';
+  const investPct = document.getElementById('split-invest-pct');
+  if(investPct) investPct.textContent = allocPct + '%';
+  const allocPctEl = document.getElementById('alloc-pct');
+  if(allocPctEl) allocPctEl.textContent = allocPct + '%';
+  const ctaPct = document.getElementById('alloc-cta-pct');
+  if(ctaPct) ctaPct.textContent = allocPct + '%';
+  const handle = document.getElementById('split-handle');
+  if(handle) handle.setAttribute('aria-valuenow', allocPct);
+  fullUpdate();
 }
 
 function fullUpdate(){
@@ -901,6 +930,57 @@ document.addEventListener('DOMContentLoaded',()=>{
       fullUpdate();
     });
   });
+
+  // ---- Allocation slider drag ----
+  (function initAllocSlider(){
+    const handle = document.getElementById('split-handle');
+    const bar    = document.getElementById('split-bar');
+    if(!handle||!bar) return;
+    let dragging = false;
+
+    function pctFromPointer(clientX){
+      const rect = bar.getBoundingClientRect();
+      // invest bar is on the RIGHT; pointer closer to right edge = bigger invest %
+      const rightOffset = rect.right - clientX;
+      const visualPct   = (rightOffset / rect.width) * 100;
+      // invert exaggeration: visualPct = 10 + pct*1.2 → pct = (visual-10)/1.2
+      return (visualPct - 10) / 1.2;
+    }
+
+    handle.addEventListener('pointerdown', e=>{
+      dragging = true;
+      handle.classList.add('dragging');
+      handle.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+
+    handle.addEventListener('pointermove', e=>{
+      if(!dragging) return;
+      setAllocPct(pctFromPointer(e.clientX));
+    });
+
+    handle.addEventListener('pointerup', ()=>{
+      dragging = false;
+      handle.classList.remove('dragging');
+    });
+
+    handle.addEventListener('pointercancel', ()=>{
+      dragging = false;
+      handle.classList.remove('dragging');
+    });
+
+    // Keyboard: left arrow = more invest, right arrow = less invest
+    handle.addEventListener('keydown', e=>{
+      if(e.key==='ArrowLeft')  { setAllocPct(allocPct+1); e.preventDefault(); }
+      if(e.key==='ArrowRight') { setAllocPct(allocPct-1); e.preventDefault(); }
+      if(e.key==='Home')       { setAllocPct(5);           e.preventDefault(); }
+      if(e.key==='End')        { setAllocPct(50);          e.preventDefault(); }
+    });
+
+    // Init visual width without triggering an extra fullUpdate
+    const investBar = document.getElementById('split-invest-bar');
+    if(investBar) investBar.style.flex = `0 0 ${visualInvestPct(allocPct)}%`;
+  })();
 });
 </script>
 </body>
