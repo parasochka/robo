@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept 3 — Do Nothing | Compounding Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#183E8C;--blue-mid:#1361A1;--blue-light:#EBF2F9;
+  --green:#74B129;--green-d:#5F951F;
+  --text:#16233a;--muted:#5d6b7d;--border:#dbe3ee;--bg:#eef3fa;--card:#fff;
+  --font:'Open Sans',-apple-system,sans-serif;
+}
+body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.5;font-size:15px;}
+button{font-family:inherit;cursor:pointer;}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 48px;}
+.ribbon{background:#0f2450;color:#fff;font-size:12px;padding:7px 16px;text-align:center;}
+.ribbon b{color:#9dd15a;}
+.hdr{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;}
+.hdr-in{max-width:900px;margin:0 auto;height:54px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--blue);font-size:16px;}
+.logo-mark{width:26px;height:26px;background:var(--blue);border-radius:6px;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;}
+.cta-sm{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-weight:700;font-size:13px;}
+
+.hero{background:linear-gradient(160deg,#0f2a5e,#183E8C 70%);color:#fff;padding:24px 16px 20px;}
+.hero-in{max-width:868px;margin:0 auto;}
+.hero h1{font-size:24px;font-weight:700;line-height:1.22;}
+.hero h1 b{color:#9dd15a;}
+.hero p{font-size:13.5px;color:rgba(255,255,255,.82);margin-top:8px;}
+
+/* EFFORT SWITCH — the whole page is organised by how much time it asks of you */
+.effort{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px;margin-top:16px;}
+.effort-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.effort-ttl{font-size:13px;font-weight:700;}
+.effort-val{font-size:14px;font-weight:800;color:#9dd15a;}
+.effort-desc{font-size:11.5px;color:rgba(255,255,255,.7);margin-bottom:12px;}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;background:rgba(255,255,255,.22);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#9dd15a;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#9dd15a;border:3px solid #fff;}
+.effort-scale{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.6);margin-top:7px;}
+
+/* result panel that answers "while you do (almost) nothing" */
+.panel{background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(9,44,80,.12);margin-top:-12px;position:relative;z-index:5;padding:20px 18px;}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);color:var(--blue);font-size:11.5px;font-weight:800;padding:5px 12px;border-radius:999px;margin-bottom:10px;}
+.result{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;}
+.result .big{font-size:42px;font-weight:800;letter-spacing:-1px;line-height:1;}
+.result .x{background:#eafbe0;color:var(--green-d);border:1px solid #cbe9b0;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px;white-space:nowrap;}
+.result-sub{font-size:12.5px;color:var(--muted);margin-top:6px;}
+.result-sub b{color:var(--text);}
+.pName{font-weight:800;color:var(--blue);}
+
+/* inputs */
+.inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
+.ctrl{background:#f7f9fc;border:1px solid var(--border);border-radius:12px;padding:12px;}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.ctrl-name{font-size:11.5px;font-weight:700;color:var(--muted);}
+.ctrl-val{font-size:14px;font-weight:800;color:var(--blue);}
+.ctrl input[type=range]{background:var(--border);}
+.ctrl input[type=range]::-webkit-slider-thumb{background:#fff;border-color:var(--green);}
+.ctrl input[type=range]::-moz-range-thumb{background:#fff;border-color:var(--green);}
+
+/* comparison table — the ✓/✗ grid from the notes */
+.tbl-h{font-size:16px;font-weight:800;margin:24px 0 4px;}
+.tbl-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;}
+.tbl{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.trow{display:grid;grid-template-columns:1.4fr .9fr .8fr .8fr;align-items:center;gap:6px;padding:12px 12px;border-top:1px solid var(--border);}
+.trow:first-child{border-top:none;background:#f7f9fc;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700;}
+.trow.on{background:var(--blue-light);}
+.tname{display:flex;align-items:center;gap:9px;}
+.tdot{width:12px;height:12px;border-radius:50%;flex:0 0 auto;}
+.tname b{font-size:13.5px;font-weight:800;}
+.tname .sm{font-size:10.5px;color:var(--muted);display:block;font-weight:400;}
+.tval{font-size:13px;font-weight:800;text-align:center;}
+.tval.grow{color:var(--green-d);}
+.chk{font-size:15px;text-align:center;}
+
+/* passive callout (note 6) */
+.passive{margin-top:20px;background:linear-gradient(135deg,#eafbe0,#f0f9e6);border:1px solid #cbe9b0;border-radius:14px;padding:16px;}
+.passive h3{font-size:15px;font-weight:800;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.passive p{font-size:12.5px;color:#3e5c22;}
+.passive .tags{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.passive .tag{background:#fff;border:1px solid #cbe9b0;color:var(--green-d);font-weight:700;font-size:12px;padding:6px 12px;border-radius:999px;}
+
+/* why block */
+.why{margin-top:18px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.why summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;font-weight:700;font-size:14px;color:var(--blue);}
+.why summary::-webkit-details-marker{display:none;}
+.why .chev{transition:.2s;}.why[open] .chev{transform:rotate(180deg);}
+.why-body{padding:0 16px 16px;font-size:13px;color:var(--muted);}
+.why-row{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed var(--border);}
+.why-row b{color:var(--text);}
+
+.final{margin-top:22px;background:linear-gradient(135deg,#183E8C,#1361A1);border-radius:16px;padding:22px 18px;text-align:center;color:#fff;}
+.final h3{font-size:18px;font-weight:700;}
+.final h3 b{color:#9dd15a;}
+.final p{font-size:12.5px;color:rgba(255,255,255,.8);margin:6px 0 14px;}
+.btn-open{background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 24px;font-weight:800;font-size:15px;width:100%;max-width:320px;}
+.btn-open:hover{background:var(--green-d);}
+.disc{font-size:11px;color:var(--muted);margin-top:20px;line-height:1.5;}
+@media(min-width:640px){.hero h1{font-size:29px;}.result .big{font-size:52px;}}
+</style>
+</head>
+<body>
+<div class="ribbon">Concept <b>3 — “Do Nothing”</b> · organised by time-cost · leads with the hands-off strategies (note 6: Robo · Copy · Investor)</div>
+<header class="hdr"><div class="hdr-in">
+  <div class="logo"><span class="logo-mark">R</span>RoboForex</div>
+  <button class="cta-sm">Open account</button>
+</div></header>
+
+<div class="hero"><div class="hero-in">
+  <h1>How much could your money earn <b>while you barely lift a finger?</b></h1>
+  <p>Most people picture trading as screens and stress. It doesn’t have to be. Slide from “I want zero effort” toward “I’ll put in real hours” and watch the payoff move.</p>
+
+  <div class="effort">
+    <div class="effort-top"><span class="effort-ttl">How much time can you give it?</span><span class="effort-val" id="effVal">~1 hr / week</span></div>
+    <div class="effort-desc" id="effDesc">Set up a robot once and glance at it over coffee.</div>
+    <input type="range" id="eff" min="0" max="5" step="1" value="2">
+    <div class="effort-scale"><span>Nothing</span><span>All day</span></div>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="panel">
+    <span class="pill">👤 <span id="pillName">Robo Trader</span></span>
+    <div class="result">
+      <span class="big" id="fv">$0</span>
+      <span class="x" id="x">×— vs a bank</span>
+    </div>
+    <div class="result-sub">A <span class="pName" id="pName">Robo Trader</span> turns <b id="startAmt">$10,000</b> into this over <b id="yrsLbl">5 years</b>. A bank saver? Just <b id="bankFV">$0</b>.</div>
+
+    <div class="inputs">
+      <div class="ctrl">
+        <div class="ctrl-top"><span class="ctrl-name">Amount</span><span class="ctrl-val" id="amtVal">$10,000</span></div>
+        <input type="range" id="amt" min="500" max="100000" step="500" value="10000">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><span class="ctrl-name">Years</span><span class="ctrl-val" id="yrVal">5</span></div>
+        <input type="range" id="yr" min="1" max="20" step="1" value="5">
+      </div>
+    </div>
+  </div>
+
+  <div class="passive">
+    <h3>🛋️ The “set it and forget it” tier</h3>
+    <p>Three ways to compound with little or no daily work — perfect if you’d rather not stare at charts. Everything above the bank line, none of the screen time.</p>
+    <div class="tags"><span class="tag">🤖 Robo</span><span class="tag">👥 Copy</span><span class="tag">📈 Investor</span></div>
+  </div>
+
+  <div class="tbl-h">Everyone vs. the bank</div>
+  <div class="tbl-sub">Same money, same years — sorted by how much of your time it asks. The row you picked is highlighted.</div>
+  <div class="tbl" id="tbl"></div>
+
+  <details class="why">
+    <summary>Why this number? <span class="chev">▾</span></summary>
+    <div class="why-body">
+      <div class="why-row"><span>You invest</span><b id="wAmt">$10,000</b></div>
+      <div class="why-row"><span id="wName">Robo Trader</span><b id="wRate">1.5% / month</b></div>
+      <div class="why-row"><span>Compounded over</span><b id="wMonths">60 months</b></div>
+      <div class="why-row"><span>Projected value</span><b id="wFV">$0</b></div>
+      <p style="margin-top:10px;font-size:11.5px;">value = amount × (1 + monthly rate)<sup>months</sup>, profits reinvested each month. Rates are typical mid-range figures per strategy — not guarantees.</p>
+    </div>
+  </details>
+
+  <div class="final">
+    <h3>That’s <b id="ctaX">—</b> a bank deposit.</h3>
+    <p>Open a free account and pick the effort level that fits your life.</p>
+    <button class="btn-open">Open an account →</button>
+  </div>
+
+  <p class="disc"><b>Risk disclaimer:</b> Projections are illustrative estimates based on typical monthly returns for each strategy with monthly profit reinvestment. Past performance does not guarantee future results. Trading leveraged products involves significant risk of loss. Educational only — not financial advice.</p>
+</div>
+
+<script>
+// ordered by effort (index = effort slider position)
+const P=[
+  {id:'saver',name:'Bank Saver',rate:0.5,time:'0 hrs / week',color:'#94a3b8',desc:'Money just sits there.',passive:true},
+  {id:'copy',name:'Copy Trader',rate:1.2,time:'<1 hr / week',color:'#8b5cf6',desc:'Copy a proven trader and glance in weekly.',passive:true},
+  {id:'robo',name:'Robo Trader',rate:1.5,time:'~1 hr / week',color:'#0891b2',desc:'Set up a robot once and check it over coffee.',passive:true},
+  {id:'invest',name:'Investor',rate:1.0,time:'1–3 hrs / week',color:'#2563eb',desc:'Buy, hold, rebalance on a lazy Sunday.',passive:true},
+  {id:'part',name:'Part-time Trader',rate:2.0,time:'7–10 hrs / week',color:'#16a34a',desc:'An hour or two after work.',passive:false},
+  {id:'full',name:'Full-time Trader',rate:3.0,time:'35+ hrs / week',color:'#d97706',desc:'Full days at the screen — your main job.',passive:false},
+];
+const BANK_RATE=0.5;
+let sel=2;
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+const fv=(a,r,m)=>a*Math.pow(1+r/100,m);
+
+function buildTable(amt,m){
+  const bankFV=fv(amt,BANK_RATE,m);
+  let html=`<div class="trow"><span>Profile</span><span style="text-align:center">/month</span><span style="text-align:center">Result</span><span style="text-align:center">Hands-off?</span></div>`;
+  P.forEach((p,i)=>{
+    const f=fv(amt,p.rate,m);const x=f/bankFV;
+    html+=`<div class="trow ${i===sel?'on':''}">
+      <span class="tname"><span class="tdot" style="background:${p.color}"></span><b>${p.name}<span class="sm">${p.time}</span></b></span>
+      <span class="tval">${p.rate}%</span>
+      <span class="tval grow">${fmt(f)}<br><span style="font-size:10px;color:#5d6b7d">×${x.toFixed(1)}</span></span>
+      <span class="chk">${p.passive?'✓':'✗'}</span>
+    </div>`;
+  });
+  $('tbl').innerHTML=html;
+}
+function render(){
+  sel=+$('eff').value;
+  const p=P[sel];const amt=+$('amt').value,yr=+$('yr').value,m=yr*12;
+  const f=fv(amt,p.rate,m),bankFV=fv(amt,BANK_RATE,m),x=f/bankFV;
+  $('effVal').textContent=p.time;$('effDesc').textContent=p.desc;
+  $('pillName').textContent=p.name;$('pName').textContent=p.name;
+  $('fv').textContent=fmt(f);$('x').textContent='×'+x.toFixed(1)+' vs a bank';
+  $('startAmt').textContent=fmt(amt);$('yrsLbl').textContent=yr+(yr===1?' year':' years');
+  $('bankFV').textContent=fmt(bankFV);
+  $('amtVal').textContent=fmt(amt);$('yrVal').textContent=yr;
+  $('ctaX').textContent=x.toFixed(1)+'×';
+  $('wAmt').textContent=fmt(amt);$('wName').textContent=p.name;$('wRate').textContent=p.rate+'% / month';
+  $('wMonths').textContent=m+' months';$('wFV').textContent=fmt(f);
+  buildTable(amt,m);
+}
+['eff','amt','yr'].forEach(id=>$(id).addEventListener('input',render));
+render();
+</script>
+</body>
+</html>
