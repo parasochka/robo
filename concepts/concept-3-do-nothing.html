@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Concept 3 — Do Nothing | Compounding Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -12,110 +13,127 @@
   --green:#74B129;--green-d:#5F951F;
   --text:#16233a;--muted:#5d6b7d;--border:#dbe3ee;--bg:#eef3fa;--card:#fff;
   --font:'Open Sans',-apple-system,sans-serif;
+  --hero:linear-gradient(155deg,#0f2a5e 0%,#183E8C 68%,#1d5fa8 100%);
 }
+html{scroll-behavior:smooth;}
 body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.5;font-size:15px;}
 button{font-family:inherit;cursor:pointer;}
-.wrap{max-width:900px;margin:0 auto;padding:0 16px 48px;}
-.ribbon{background:#0f2450;color:#fff;font-size:12px;padding:7px 16px;text-align:center;}
+:focus-visible{outline:3px solid var(--blue-mid);outline-offset:2px;border-radius:6px;}
+
+.ribbon{background:#0f2450;color:#cddcff;font-size:12.5px;padding:8px 20px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
 .ribbon b{color:#9dd15a;}
+.ribbon a{color:#fff;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:2px 12px;transition:.15s;}
+.ribbon a:hover{background:rgba(255,255,255,.12);}
 .hdr{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;}
-.hdr-in{max-width:900px;margin:0 auto;height:54px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;}
-.logo{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--blue);font-size:16px;}
-.logo-mark{width:26px;height:26px;background:var(--blue);border-radius:6px;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;}
-.cta-sm{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-weight:700;font-size:13px;}
+.hdr-in{max-width:1120px;margin:0 auto;height:60px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;color:var(--blue);font-size:17px;}
+.logo-mark{width:30px;height:30px;background:var(--blue);border-radius:7px;color:#fff;display:grid;place-items:center;font-size:14px;font-weight:800;}
+.cta-sm{background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-weight:700;font-size:13.5px;transition:background .15s;}
+.cta-sm:hover{background:var(--green-d);}
 
-.hero{background:linear-gradient(160deg,#0f2a5e,#183E8C 70%);color:#fff;padding:24px 16px 20px;}
-.hero-in{max-width:868px;margin:0 auto;}
-.hero h1{font-size:24px;font-weight:700;line-height:1.22;}
+.hero{background:var(--hero);color:#fff;padding:34px 24px 26px;}
+.hero-in{max-width:1120px;margin:0 auto;}
+.hero h1{font-size:26px;font-weight:800;line-height:1.22;letter-spacing:-.3px;max-width:760px;}
 .hero h1 b{color:#9dd15a;}
-.hero p{font-size:13.5px;color:rgba(255,255,255,.82);margin-top:8px;}
+.hero p{font-size:14px;color:rgba(255,255,255,.84);margin-top:10px;max-width:680px;}
 
-/* EFFORT SWITCH — the whole page is organised by how much time it asks of you */
-.effort{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px;margin-top:16px;}
-.effort-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
-.effort-ttl{font-size:13px;font-weight:700;}
-.effort-val{font-size:14px;font-weight:800;color:#9dd15a;}
-.effort-desc{font-size:11.5px;color:rgba(255,255,255,.7);margin-bottom:12px;}
+/* EFFORT SWITCH */
+.effort{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:18px 20px;margin-top:20px;max-width:1120px;}
+.effort-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;gap:12px;}
+.effort-ttl{font-size:14px;font-weight:800;}
+.effort-val{font-size:15px;font-weight:800;color:#9dd15a;white-space:nowrap;}
+.effort-desc{font-size:12.5px;color:rgba(255,255,255,.72);margin-bottom:14px;}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;background:rgba(255,255,255,.22);outline:none;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#9dd15a;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.3);}
 input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#9dd15a;border:3px solid #fff;}
-.effort-scale{display:flex;justify-content:space-between;font-size:10px;color:rgba(255,255,255,.6);margin-top:7px;}
+.effort-scale{display:flex;justify-content:space-between;font-size:10.5px;color:rgba(255,255,255,.6);margin-top:8px;}
 
-/* result panel that answers "while you do (almost) nothing" */
-.panel{background:var(--card);border-radius:18px;box-shadow:0 10px 30px rgba(9,44,80,.12);margin-top:-12px;position:relative;z-index:5;padding:20px 18px;}
-.pill{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);color:var(--blue);font-size:11.5px;font-weight:800;padding:5px 12px;border-radius:999px;margin-bottom:10px;}
-.result{display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;}
-.result .big{font-size:42px;font-weight:800;letter-spacing:-1px;line-height:1;}
-.result .x{background:#eafbe0;color:var(--green-d);border:1px solid #cbe9b0;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px;white-space:nowrap;}
-.result-sub{font-size:12.5px;color:var(--muted);margin-top:6px;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px 56px;}
+
+/* result panel */
+.panel{background:var(--card);border-radius:20px;box-shadow:0 14px 40px rgba(9,44,80,.13);margin-top:-14px;position:relative;z-index:5;padding:24px 22px;}
+.pill{display:inline-flex;align-items:center;gap:6px;background:var(--blue-light);color:var(--blue);font-size:12px;font-weight:800;padding:6px 13px;border-radius:999px;margin-bottom:12px;}
+.result{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;}
+.result .big{font-size:44px;font-weight:800;letter-spacing:-1.2px;line-height:1;}
+.result .x{background:#eafbe0;color:var(--green-d);border:1px solid #cbe9b0;font-weight:800;font-size:13px;padding:7px 13px;border-radius:999px;white-space:nowrap;}
+.result-sub{font-size:13px;color:var(--muted);margin-top:8px;}
 .result-sub b{color:var(--text);}
 .pName{font-weight:800;color:var(--blue);}
 
-/* inputs */
-.inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px;}
-.ctrl{background:#f7f9fc;border:1px solid var(--border);border-radius:12px;padding:12px;}
-.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
+.ctrl{background:#f7f9fc;border:1px solid var(--border);border-radius:12px;padding:14px;}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;}
 .ctrl-name{font-size:11.5px;font-weight:700;color:var(--muted);}
 .ctrl-val{font-size:14px;font-weight:800;color:var(--blue);}
 .ctrl input[type=range]{background:var(--border);}
 .ctrl input[type=range]::-webkit-slider-thumb{background:#fff;border-color:var(--green);}
 .ctrl input[type=range]::-moz-range-thumb{background:#fff;border-color:var(--green);}
 
-/* prominent allocation band */
-.alloc{margin-top:12px;background:var(--blue-light);border:1.5px solid #bcd4f0;border-radius:12px;padding:16px;}
+.alloc{margin-top:14px;background:var(--blue-light);border:1.5px solid #bcd4f0;border-radius:14px;padding:16px;}
 .alloc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
-.alloc-ttl{font-size:14px;font-weight:800;color:var(--blue);}
+.alloc-ttl{font-size:13.5px;font-weight:800;color:var(--blue);}
 .alloc-val{font-size:16px;font-weight:800;color:var(--blue);}
-.alloc-note{font-size:11.5px;color:var(--muted);margin-bottom:12px;line-height:1.4;}
+.alloc-note{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.45;}
 .alloc-note b{color:var(--green-d);font-weight:800;}
 .alloc input[type=range]{background:#c4d8f0;}
 .alloc input[type=range]::-webkit-slider-thumb{width:28px;height:28px;border-color:var(--blue);}
 .alloc input[type=range]::-moz-range-thumb{width:28px;height:28px;border-color:var(--blue);}
-.alloc-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:7px;font-weight:600;}
+.alloc-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:8px;font-weight:600;}
 
-/* comparison table — the ✓/✗ grid from the notes */
-.tbl-h{font-size:16px;font-weight:800;margin:24px 0 4px;}
-.tbl-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;}
-.tbl{background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-.trow{display:grid;grid-template-columns:1.4fr .9fr .8fr .8fr;align-items:center;gap:6px;padding:12px 12px;border-top:1px solid var(--border);}
+/* comparison table */
+.tbl-h{font-size:18px;font-weight:800;margin:28px 0 4px;}
+.tbl-sub{font-size:13px;color:var(--muted);margin-bottom:16px;}
+.tbl{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
+.trow{display:grid;grid-template-columns:1.4fr .9fr .8fr .8fr;align-items:center;gap:8px;padding:14px 16px;border-top:1px solid var(--border);transition:background .15s;}
 .trow:first-child{border-top:none;background:#f7f9fc;font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:700;}
 .trow.on{background:var(--blue-light);}
-.tname{display:flex;align-items:center;gap:9px;}
+.tname{display:flex;align-items:center;gap:10px;}
 .tdot{width:12px;height:12px;border-radius:50%;flex:0 0 auto;}
-.tname b{font-size:13.5px;font-weight:800;}
+.tname b{font-size:14px;font-weight:800;}
 .tname .sm{font-size:10.5px;color:var(--muted);display:block;font-weight:400;}
 .tval{font-size:13px;font-weight:800;text-align:center;}
 .tval.grow{color:var(--green-d);}
-.chk{font-size:15px;text-align:center;}
+.chk{font-size:16px;text-align:center;}
 
-/* passive callout (note 6) */
-.passive{margin-top:20px;background:linear-gradient(135deg,#eafbe0,#f0f9e6);border:1px solid #cbe9b0;border-radius:14px;padding:16px;}
-.passive h3{font-size:15px;font-weight:800;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
-.passive p{font-size:12.5px;color:#3e5c22;}
-.passive .tags{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-.passive .tag{background:#fff;border:1px solid #cbe9b0;color:var(--green-d);font-weight:700;font-size:12px;padding:6px 12px;border-radius:999px;}
+/* passive callout */
+.passive{margin-top:22px;background:linear-gradient(135deg,#eafbe0,#f0f9e6);border:1px solid #cbe9b0;border-radius:16px;padding:18px 20px;}
+.passive h3{font-size:16px;font-weight:800;color:var(--green-d);margin-bottom:6px;display:flex;align-items:center;gap:8px;}
+.passive p{font-size:13px;color:#3e5c22;max-width:760px;}
+.passive .tags{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.passive .tag{background:#fff;border:1px solid #cbe9b0;color:var(--green-d);font-weight:700;font-size:12px;padding:7px 13px;border-radius:999px;}
 
 /* why block */
-.why{margin-top:18px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-.why summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;font-weight:700;font-size:14px;color:var(--blue);}
+.why{margin-top:20px;background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.why summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;justify-content:space-between;font-weight:800;font-size:14px;color:var(--blue);}
 .why summary::-webkit-details-marker{display:none;}
 .why .chev{transition:.2s;}.why[open] .chev{transform:rotate(180deg);}
-.why-body{padding:0 16px 16px;font-size:13px;color:var(--muted);}
-.why-row{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed var(--border);}
+.why-body{padding:0 18px 16px;font-size:13px;color:var(--muted);}
+.why-row{display:flex;justify-content:space-between;padding:9px 0;border-top:1px dashed var(--border);}
 .why-row b{color:var(--text);}
 
-.final{margin-top:22px;background:linear-gradient(135deg,#183E8C,#1361A1);border-radius:16px;padding:22px 18px;text-align:center;color:#fff;}
-.final h3{font-size:18px;font-weight:700;}
+.final{margin-top:24px;background:var(--hero);border-radius:18px;padding:26px 20px;text-align:center;color:#fff;}
+.final h3{font-size:20px;font-weight:800;}
 .final h3 b{color:#9dd15a;}
-.final p{font-size:12.5px;color:rgba(255,255,255,.8);margin:6px 0 14px;}
-.btn-open{background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 24px;font-weight:800;font-size:15px;width:100%;max-width:320px;}
+.final p{font-size:13px;color:rgba(255,255,255,.82);margin:8px auto 16px;max-width:420px;}
+.btn-open{background:var(--green);color:#fff;border:none;border-radius:11px;padding:15px 26px;font-weight:800;font-size:15px;width:100%;max-width:320px;transition:background .15s;}
 .btn-open:hover{background:var(--green-d);}
-.disc{font-size:11px;color:var(--muted);margin-top:20px;line-height:1.5;}
-@media(min-width:640px){.hero h1{font-size:29px;}.result .big{font-size:52px;}}
+.disc{font-size:11.5px;color:var(--muted);margin-top:22px;line-height:1.55;}
+
+/* ---- DESKTOP ---- */
+@media(min-width:900px){
+  .hero{padding:44px 24px 30px;}
+  .hero h1{font-size:34px;}
+  .result .big{font-size:56px;}
+  .panel{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;padding:30px 30px;}
+  .panel-result{align-self:center;}
+  .panel-controls{align-self:center;}
+  .inputs{margin-top:0;}
+  .final h3{font-size:22px;}
+}
 </style>
 </head>
 <body>
-<div class="ribbon">Concept <b>3 — “Do Nothing”</b> · organised by time-cost · leads with the hands-off strategies (note 6: Robo · Copy · Investor)</div>
+<div class="ribbon">Concept <b>3 — “Do Nothing”</b> · organised by time-cost · leads with the hands-off strategies <a href="../index.html">All concepts →</a></div>
 <header class="hdr"><div class="hdr-in">
   <div class="logo"><span class="logo-mark">R</span>RoboForex</div>
   <button class="cta-sm">Open account</button>
@@ -135,29 +153,33 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 
 <div class="wrap">
   <div class="panel">
-    <span class="pill">👤 <span id="pillName">Robo Trader</span></span>
-    <div class="result">
-      <span class="big" id="fv">$0</span>
-      <span class="x" id="x">×— vs a bank</span>
-    </div>
-    <div class="result-sub">A <span class="pName" id="pName">Robo Trader</span> turns <b id="startAmt">$10,000</b> into this over <b id="yrsLbl">5 years</b>. A bank saver? Just <b id="bankFV">$0</b>.</div>
-
-    <div class="inputs">
-      <div class="ctrl">
-        <div class="ctrl-top"><span class="ctrl-name">Amount</span><span class="ctrl-val" id="amtVal">$10,000</span></div>
-        <input type="range" id="amt" min="500" max="100000" step="500" value="10000">
+    <div class="panel-result">
+      <span class="pill">👤 <span id="pillName">Robo Trader</span></span>
+      <div class="result">
+        <span class="big" id="fv">$0</span>
+        <span class="x" id="x">×— vs a bank</span>
       </div>
-      <div class="ctrl">
-        <div class="ctrl-top"><span class="ctrl-name">Years</span><span class="ctrl-val" id="yrVal">5</span></div>
-        <input type="range" id="yr" min="1" max="20" step="1" value="5">
-      </div>
+      <div class="result-sub">A <span class="pName" id="pName">Robo Trader</span> turns <b id="startAmt">$10,000</b> into this over <b id="yrsLbl">5 years</b>. A bank saver? Just <b id="bankFV">$0</b>.</div>
     </div>
 
-    <div class="alloc">
-      <div class="alloc-top"><span class="alloc-ttl">How much do you put to work?</span><span class="alloc-val" id="allocVal">100%</span></div>
-      <div class="alloc-note">Start small — you don’t have to commit the whole pot. Even <b id="allocAmt">$10,000</b> at work compounds. The rest stays safe.</div>
-      <input type="range" id="alloc" min="10" max="100" step="5" value="100">
-      <div class="alloc-scale"><span>Just 10%</span><span>All in</span></div>
+    <div class="panel-controls">
+      <div class="inputs">
+        <div class="ctrl">
+          <div class="ctrl-top"><span class="ctrl-name">Amount</span><span class="ctrl-val" id="amtVal">$10,000</span></div>
+          <input type="range" id="amt" min="500" max="100000" step="500" value="10000">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><span class="ctrl-name">Years</span><span class="ctrl-val" id="yrVal">5</span></div>
+          <input type="range" id="yr" min="1" max="20" step="1" value="5">
+        </div>
+      </div>
+
+      <div class="alloc">
+        <div class="alloc-top"><span class="alloc-ttl">How much do you put to work?</span><span class="alloc-val" id="allocVal">100%</span></div>
+        <div class="alloc-note">Start small — you don’t have to commit the whole pot. Even <b id="allocAmt">$10,000</b> at work compounds. The rest stays safe.</div>
+        <input type="range" id="alloc" min="10" max="100" step="5" value="100">
+        <div class="alloc-scale"><span>Just 10%</span><span>All in</span></div>
+      </div>
     </div>
   </div>
 
@@ -178,7 +200,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
       <div class="why-row"><span id="wName">Robo Trader</span><b id="wRate">1.5% / month</b></div>
       <div class="why-row"><span>Compounded over</span><b id="wMonths">60 months</b></div>
       <div class="why-row"><span>Projected value</span><b id="wFV">$0</b></div>
-      <p style="margin-top:10px;font-size:11.5px;">value = amount × (1 + monthly rate)<sup>months</sup>, profits reinvested each month. Rates are typical mid-range figures per strategy — not guarantees.</p>
+      <p style="margin-top:12px;font-size:11.5px;">value = amount × (1 + monthly rate)<sup>months</sup>, profits reinvested each month. Rates are typical mid-range figures per strategy — not guarantees.</p>
     </div>
   </details>
 

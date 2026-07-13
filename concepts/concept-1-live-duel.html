@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Concept 1 — Live Duel | Compounding Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -12,167 +13,195 @@
   --green:#74B129;--green-d:#5F951F;
   --text:#16233a;--muted:#5d6b7d;--border:#dbe3ee;--bg:#eef3fa;--card:#fff;
   --font:'Open Sans',-apple-system,sans-serif;
+  --stage:linear-gradient(155deg,#0f2a5e 0%,#183E8C 58%,#1d5fa8 100%);
 }
-html{-webkit-text-size-adjust:100%;}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
 body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.5;font-size:15px;}
 button{font-family:inherit;cursor:pointer;}
-.wrap{max-width:900px;margin:0 auto;padding:0 16px 48px;}
+:focus-visible{outline:3px solid var(--blue-mid);outline-offset:2px;border-radius:6px;}
 
 /* concept ribbon */
-.ribbon{background:#0f2450;color:#fff;font-size:12px;padding:7px 16px;text-align:center;letter-spacing:.3px;}
+.ribbon{background:#0f2450;color:#cddcff;font-size:12.5px;padding:8px 20px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
 .ribbon b{color:#9dd15a;}
+.ribbon a{color:#fff;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:2px 12px;transition:.15s;}
+.ribbon a:hover{background:rgba(255,255,255,.12);}
 
 /* header */
 .hdr{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;}
-.hdr-in{max-width:900px;margin:0 auto;height:54px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;}
-.logo{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--blue);font-size:16px;}
-.logo-mark{width:26px;height:26px;background:var(--blue);border-radius:6px;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;}
-.cta-sm{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-weight:700;font-size:13px;}
+.hdr-in{max-width:1180px;margin:0 auto;height:60px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;color:var(--blue);font-size:17px;}
+.logo-mark{width:30px;height:30px;background:var(--blue);border-radius:7px;color:#fff;display:grid;place-items:center;font-size:14px;font-weight:800;}
+.cta-sm{background:var(--green);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-weight:700;font-size:13.5px;transition:background .15s;}
+.cta-sm:hover{background:var(--green-d);}
 
-/* THE FIRST SCREEN — everything fits, no scroll to see the answer */
-.stage{background:linear-gradient(160deg,#0f2a5e,#183E8C 65%,#1d5fa8);border-radius:0 0 20px 20px;padding:18px 16px 24px;color:#fff;}
-.stage-in{max-width:868px;margin:0 auto;}
-.kicker{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#9dc2f0;font-weight:700;margin-bottom:4px;}
-.headline{font-size:21px;font-weight:700;line-height:1.25;margin-bottom:14px;}
-.headline b{color:#9dd15a;}
+/* page shell */
+.wrap{max-width:1180px;margin:0 auto;padding:26px 24px 60px;}
+.page-head{margin:0 2px 20px;}
+.page-head .kicker{font-size:12px;text-transform:uppercase;letter-spacing:1.4px;color:var(--blue-mid);font-weight:800;}
+.page-head h1{font-size:26px;font-weight:800;line-height:1.2;color:var(--text);margin-top:6px;letter-spacing:-.3px;}
+.page-head h1 b{color:var(--green-d);}
+.page-head p{color:var(--muted);font-size:14.5px;margin-top:8px;max-width:640px;}
 
-/* the money answer, huge and live */
-.answer{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
-.answer-big{font-size:44px;font-weight:800;line-height:1;letter-spacing:-1px;}
-.answer-x{background:rgba(157,209,90,.18);border:1px solid rgba(157,209,90,.5);color:#c9ef94;font-weight:800;font-size:15px;padding:6px 12px;border-radius:999px;white-space:nowrap;}
-.answer-sub{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:14px;}
+/* THE CALCULATOR CARD — dark answer/chart panel + light controls */
+.calc-card{background:var(--card);border-radius:22px;box-shadow:0 20px 54px rgba(9,44,80,.16);overflow:hidden;}
+
+/* left: the live answer + duel chart */
+.stage-panel{background:var(--stage);color:#fff;padding:26px 24px 26px;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.stage-panel::after{content:'';position:absolute;right:-70px;top:-70px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none;}
+.stage-kicker{font-size:11.5px;text-transform:uppercase;letter-spacing:1.2px;color:#9dc2f0;font-weight:800;margin-bottom:10px;}
+.answer{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;}
+.answer-big{font-size:46px;font-weight:800;line-height:.95;letter-spacing:-1.5px;}
+.answer-x{background:rgba(157,209,90,.18);border:1px solid rgba(157,209,90,.55);color:#c9ef94;font-weight:800;font-size:14px;padding:6px 13px;border-radius:999px;white-space:nowrap;}
+.answer-sub{font-size:13px;color:rgba(255,255,255,.82);margin-top:10px;}
 .answer-sub b{color:#fff;}
 
-/* chart */
-.chart-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px 10px 8px;}
-.chart-legend{display:flex;gap:16px;padding:2px 6px 8px;flex-wrap:wrap;}
-.leg{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;}
+.chart-box{margin-top:18px;flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:16px;padding:14px 12px 10px;display:flex;flex-direction:column;min-height:250px;}
+.chart-legend{display:flex;gap:18px;padding:2px 6px 10px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;}
 .leg .dot{width:22px;height:4px;border-radius:2px;}
-.leg .val{color:rgba(255,255,255,.65);font-weight:400;margin-left:2px;}
-svg.chart{width:100%;height:190px;display:block;overflow:visible;}
-.axis-lbl{fill:rgba(255,255,255,.5);font-size:10px;font-weight:600;}
+.leg .val{color:rgba(255,255,255,.62);font-weight:600;margin-left:2px;}
+svg.chart{width:100%;flex:1;min-height:190px;display:block;overflow:visible;}
 
-/* controls — sliders WITHOUT text clutter (note: "слайдер без текста") */
-.controls{background:var(--card);border-radius:16px;box-shadow:0 8px 30px rgba(9,44,80,.12);padding:18px 16px;margin-top:-14px;position:relative;z-index:5;}
-.ctrl{margin-bottom:16px;}
-.ctrl:last-child{margin-bottom:0;}
-.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+/* right: controls, cleaner and roomier */
+.controls-panel{padding:26px 24px;display:flex;flex-direction:column;gap:20px;justify-content:center;}
+.controls-head{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;color:var(--muted);}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px;}
 .ctrl-name{font-size:13px;font-weight:700;color:var(--muted);}
 .ctrl-val{font-size:16px;font-weight:800;color:var(--blue);}
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;background:var(--border);outline:none;}
 input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--green);box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:grab;}
 input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--green);box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:grab;}
-.range-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:5px;}
+.range-scale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:7px;}
 
 /* strategy quick-toggle — the "opponent" you put up against the bank */
-.opps{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-.opps::-webkit-scrollbar{display:none;}
-.opp{flex:0 0 auto;border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:7px;white-space:nowrap;transition:.15s;}
+.opps{display:flex;gap:8px;flex-wrap:wrap;}
+.opp{border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:7px;white-space:nowrap;transition:.15s;}
+.opp:hover{border-color:#b9cbe6;}
 .opp .swatch{width:10px;height:10px;border-radius:50%;}
 .opp[aria-pressed=true]{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
 
-/* allocation — floating slider, "you don't have to invest it all" */
-.alloc{margin-top:14px;background:var(--blue-light);border:1px solid #cfe0f2;border-radius:12px;padding:14px;}
+/* allocation — "you don't have to invest it all" */
+.alloc{background:var(--blue-light);border:1px solid #cfe0f2;border-radius:14px;padding:16px;}
 .alloc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
-.alloc-ttl{font-size:13px;font-weight:700;color:var(--blue);}
-.alloc-note{font-size:11.5px;color:var(--muted);margin-bottom:10px;}
-.alloc-note b{color:var(--green-d);}
+.alloc-ttl{font-size:13.5px;font-weight:800;color:var(--blue);}
+.alloc-note{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.45;}
+.alloc-note b{color:var(--green-d);font-weight:800;}
+.alloc input[type=range]{background:#c4d8f0;}
+.alloc input[type=range]::-webkit-slider-thumb{border-color:var(--blue);}
+.alloc input[type=range]::-moz-range-thumb{border-color:var(--blue);}
 
-/* transparent maths — "why this number" */
-.why{margin-top:18px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
-.why summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:14px;color:var(--blue);}
+/* lower band: transparent maths + big CTA, side by side on desktop */
+.lower{margin-top:22px;display:grid;gap:16px;align-items:start;}
+.why{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.why summary{list-style:none;cursor:pointer;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:14px;color:var(--blue);}
 .why summary::-webkit-details-marker{display:none;}
 .why summary .chev{transition:.2s;}
 .why[open] summary .chev{transform:rotate(180deg);}
-.why-body{padding:0 16px 16px;font-size:13px;color:var(--muted);}
-.why-row{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed var(--border);}
+.why-body{padding:0 18px 16px;font-size:13px;color:var(--muted);}
+.why-row{display:flex;justify-content:space-between;padding:9px 0;border-top:1px dashed var(--border);}
 .why-row b{color:var(--text);font-weight:700;}
 
-/* big CTA */
-.final-cta{margin-top:20px;background:linear-gradient(135deg,#183E8C,#1361A1);border-radius:16px;padding:22px 18px;text-align:center;color:#fff;}
-.final-cta h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+.final-cta{background:var(--stage);border-radius:16px;padding:24px 22px;text-align:center;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.final-cta h3{font-size:19px;font-weight:800;margin-bottom:6px;line-height:1.25;}
 .final-cta h3 b{color:#9dd15a;}
-.final-cta p{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:14px;}
-.btn-open{background:var(--green);color:#fff;border:none;border-radius:9px;padding:13px 30px;font-weight:800;font-size:15px;width:100%;max-width:320px;}
+.final-cta p{font-size:13px;color:rgba(255,255,255,.82);margin-bottom:16px;max-width:360px;}
+.btn-open{background:var(--green);color:#fff;border:none;border-radius:10px;padding:14px 30px;font-weight:800;font-size:15px;width:100%;max-width:320px;transition:background .15s;}
 .btn-open:hover{background:var(--green-d);}
-.disc{font-size:11px;color:var(--muted);margin-top:18px;line-height:1.5;}
-@media(min-width:640px){
-  .headline{font-size:26px;}.answer-big{font-size:56px;}svg.chart{height:230px;}
+.disc{font-size:11.5px;color:var(--muted);margin-top:24px;line-height:1.55;}
+
+/* ---- DESKTOP ---- */
+@media(min-width:900px){
+  .page-head h1{font-size:32px;}
+  .calc-card{display:grid;grid-template-columns:1.12fr .88fr;}
+  .stage-panel{padding:34px 32px;}
+  .answer-big{font-size:60px;}
+  .controls-panel{padding:34px 34px;gap:22px;}
+  .lower{grid-template-columns:1.15fr .85fr;}
+  .why summary{padding:18px 22px;}
 }
 </style>
 </head>
 <body>
-<div class="ribbon">Concept <b>1 — “Live Duel”</b> · your strategy vs. the bank, redrawn as you drag · mobile-first</div>
+<div class="ribbon">Concept <b>1 — “Live Duel”</b> · your strategy vs. the bank, redrawn as you drag <a href="../index.html">All concepts →</a></div>
 <header class="hdr"><div class="hdr-in">
   <div class="logo"><span class="logo-mark">R</span>RoboForex</div>
   <button class="cta-sm">Open account</button>
 </div></header>
 
-<div class="stage"><div class="stage-in">
-  <div class="kicker">Compound calculator</div>
-  <h1 class="headline">Your money vs. a bank deposit. <b>Drag and watch.</b></h1>
-
-  <div class="answer">
-    <span class="answer-big" id="fvBig">$0</span>
-    <span class="answer-x" id="xTimes">—</span>
-  </div>
-  <div class="answer-sub">after <b id="yrsLbl">5 years</b> · a bank would give you <b id="bankFV">$0</b></div>
-
-  <div class="chart-box">
-    <div class="chart-legend">
-      <span class="leg"><span class="dot" id="legStratDot" style="background:#9dd15a"></span><span id="legStratName">Robo Trader</span><span class="val" id="legStratVal"></span></span>
-      <span class="leg"><span class="dot" style="background:#8fb2e0"></span>Bank Saver<span class="val" id="legBankVal"></span></span>
-    </div>
-    <svg class="chart" id="chart" viewBox="0 0 340 190" preserveAspectRatio="none" aria-label="Two-line growth comparison"></svg>
-  </div>
-</div></div>
-
-<div class="wrap">
-  <div class="controls">
-    <div class="ctrl">
-      <div class="ctrl-top"><span class="ctrl-name">Starting amount</span><span class="ctrl-val" id="amtVal">$10,000</span></div>
-      <input type="range" id="amt" min="500" max="100000" step="500" value="10000">
-      <div class="range-scale"><span>$500</span><span>$100k</span></div>
-    </div>
-    <div class="ctrl">
-      <div class="ctrl-top"><span class="ctrl-name">Time horizon</span><span class="ctrl-val" id="yrVal">5 years</span></div>
-      <input type="range" id="yr" min="1" max="20" step="1" value="5">
-      <div class="range-scale"><span>1 yr</span><span>20 yrs</span></div>
-    </div>
-
-    <div class="ctrl">
-      <div class="ctrl-top"><span class="ctrl-name">Put it up against…</span></div>
-      <div class="opps" id="opps"></div>
-    </div>
-
-    <div class="alloc">
-      <div class="alloc-top"><span class="alloc-ttl">How much do you put to work?</span><span class="ctrl-val" id="allocVal">100%</span></div>
-      <div class="alloc-note">You don’t have to risk it all. The rest stays where it feels safe — you still put <b id="allocAmt">$10,000</b> to work.</div>
-      <input type="range" id="alloc" min="10" max="100" step="5" value="100">
-      <div class="range-scale"><span>10%</span><span>All in</span></div>
-    </div>
+<main class="wrap">
+  <div class="page-head">
+    <div class="kicker">Compound calculator</div>
+    <h1>Your money vs. a bank deposit. <b>Drag and watch.</b></h1>
+    <p>Set the amount, the horizon and who you’re up against — the answer and the two-line chart redraw live.</p>
   </div>
 
-  <details class="why">
-    <summary>Why this number? <span class="chev">▾</span></summary>
-    <div class="why-body">
-      <div class="why-row"><span>You invest</span><b id="wAmt">$10,000</b></div>
-      <div class="why-row"><span id="wStratName">Robo Trader</span> <b id="wRate">1.5% / month</b></div>
-      <div class="why-row"><span>Compounded over</span><b id="wMonths">60 months</b></div>
-      <div class="why-row"><span>Profits reinvested</span><b>Every month</b></div>
-      <div class="why-row"><span>Projected value</span><b id="wFV">$0</b></div>
-      <p style="margin-top:10px;font-size:11.5px;">Formula: value = amount × (1 + monthly rate)<sup>months</sup>. Rates are typical mid-range figures for each strategy — not a promise. Markets move both ways.</p>
-    </div>
-  </details>
+  <div class="calc-card">
+    <!-- LEFT: the live answer + duel chart -->
+    <section class="stage-panel">
+      <div class="stage-kicker">After <span id="yrsLbl">5 years</span></div>
+      <div class="answer">
+        <span class="answer-big" id="fvBig">$0</span>
+        <span class="answer-x" id="xTimes">—</span>
+      </div>
+      <div class="answer-sub">A bank deposit would give you <b id="bankFV">$0</b></div>
 
-  <div class="final-cta">
-    <h3>That’s <b id="ctaX">—</b> what a bank would give you.</h3>
-    <p>Open a free account and start where you are — move up when you’re ready.</p>
-    <button class="btn-open">Open an account →</button>
+      <div class="chart-box">
+        <div class="chart-legend">
+          <span class="leg"><span class="dot" id="legStratDot" style="background:#9dd15a"></span><span id="legStratName">Robo Trader</span><span class="val" id="legStratVal"></span></span>
+          <span class="leg"><span class="dot" style="background:#8fb2e0"></span>Bank Saver<span class="val" id="legBankVal"></span></span>
+        </div>
+        <svg class="chart" id="chart" viewBox="0 0 340 200" preserveAspectRatio="none" aria-label="Two-line growth comparison"></svg>
+      </div>
+    </section>
+
+    <!-- RIGHT: controls -->
+    <section class="controls-panel">
+      <div class="controls-head">Set the scene</div>
+      <div class="ctrl">
+        <div class="ctrl-top"><span class="ctrl-name">Starting amount</span><span class="ctrl-val" id="amtVal">$10,000</span></div>
+        <input type="range" id="amt" min="500" max="100000" step="500" value="10000">
+        <div class="range-scale"><span>$500</span><span>$100k</span></div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><span class="ctrl-name">Time horizon</span><span class="ctrl-val" id="yrVal">5 years</span></div>
+        <input type="range" id="yr" min="1" max="20" step="1" value="5">
+        <div class="range-scale"><span>1 yr</span><span>20 yrs</span></div>
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-top"><span class="ctrl-name">Put it up against…</span></div>
+        <div class="opps" id="opps"></div>
+      </div>
+      <div class="alloc">
+        <div class="alloc-top"><span class="alloc-ttl">How much do you put to work?</span><span class="ctrl-val" id="allocVal">100%</span></div>
+        <div class="alloc-note">You don’t have to risk it all. The rest stays where it feels safe — you still put <b id="allocAmt">$10,000</b> to work.</div>
+        <input type="range" id="alloc" min="10" max="100" step="5" value="100">
+        <div class="range-scale"><span>10%</span><span>All in</span></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="lower">
+    <details class="why">
+      <summary>Why this number? <span class="chev">▾</span></summary>
+      <div class="why-body">
+        <div class="why-row"><span>You invest</span><b id="wAmt">$10,000</b></div>
+        <div class="why-row"><span id="wStratName">Robo Trader</span> <b id="wRate">1.5% / month</b></div>
+        <div class="why-row"><span>Compounded over</span><b id="wMonths">60 months</b></div>
+        <div class="why-row"><span>Profits reinvested</span><b>Every month</b></div>
+        <div class="why-row"><span>Projected value</span><b id="wFV">$0</b></div>
+        <p style="margin-top:12px;font-size:11.5px;">Formula: value = amount × (1 + monthly rate)<sup>months</sup>. Rates are typical mid-range figures for each strategy — not a promise. Markets move both ways.</p>
+      </div>
+    </details>
+
+    <div class="final-cta">
+      <h3>That’s <b id="ctaX">—</b> what a bank would give you.</h3>
+      <p>Open a free account and start where you are — move up when you’re ready.</p>
+      <button class="btn-open">Open an account →</button>
+    </div>
   </div>
 
   <p class="disc"><b>Risk disclaimer:</b> Projections are illustrative estimates based on typical monthly returns for each strategy with full profit reinvestment. Past performance does not guarantee future results. Trading leveraged products involves significant risk of loss. For education only — not financial advice.</p>
-</div>
+</main>
 
 <script>
 const BANK={name:'Bank Saver',rate:0.5,color:'#8fb2e0'};
@@ -206,7 +235,7 @@ function buildOpps(){
 }
 
 function drawChart(sA,sB,colA,colB){
-  const W=340,H=190,pad={l:6,r:6,t:12,b:20};
+  const W=340,H=200,pad={l:6,r:6,t:12,b:20};
   const all=[...sA,...sB];const max=Math.max(...all),min=Math.min(...all);
   const x=i=>pad.l+(W-pad.l-pad.r)*i/(sA.length-1);
   const y=v=>pad.t+(H-pad.t-pad.b)*(1-(v-min)/(max-min||1));
