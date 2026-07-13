@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept 2 — Pick Your Character | Compounding Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#183E8C;--blue-mid:#1361A1;--blue-light:#EBF2F9;
+  --green:#74B129;--green-d:#5F951F;
+  --text:#16233a;--muted:#5d6b7d;--border:#dbe3ee;--bg:#eef3fa;--card:#fff;
+  --font:'Open Sans',-apple-system,sans-serif;
+}
+body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.5;font-size:15px;}
+button{font-family:inherit;cursor:pointer;}
+.wrap{max-width:920px;margin:0 auto;padding:0 16px 48px;}
+.ribbon{background:#0f2450;color:#fff;font-size:12px;padding:7px 16px;text-align:center;}
+.ribbon b{color:#9dd15a;}
+.hdr{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;}
+.hdr-in{max-width:920px;margin:0 auto;height:54px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--blue);font-size:16px;}
+.logo-mark{width:26px;height:26px;background:var(--blue);border-radius:6px;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;}
+.cta-sm{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-weight:700;font-size:13px;}
+
+.intro{text-align:center;padding:24px 16px 6px;}
+.intro h1{font-size:23px;font-weight:700;line-height:1.25;}
+.intro h1 b{color:var(--blue);}
+.intro p{color:var(--muted);font-size:14px;margin-top:6px;}
+
+/* CHARACTER PICKER — "человечки": scroll row of persona figures */
+.chars{display:flex;gap:10px;overflow-x:auto;padding:16px 16px 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x mandatory;}
+.chars::-webkit-scrollbar{display:none;}
+.wrapc{max-width:920px;margin:0 auto;}
+.char{flex:0 0 auto;width:104px;scroll-snap-align:center;background:#fff;border:2px solid var(--border);border-radius:16px;padding:12px 8px 10px;text-align:center;transition:.18s;position:relative;}
+.char[aria-pressed=true]{border-color:var(--sel);box-shadow:0 8px 22px rgba(9,44,80,.14);transform:translateY(-3px);}
+.char-face{width:66px;height:66px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;font-size:34px;}
+.char-name{font-size:12.5px;font-weight:800;line-height:1.15;}
+.char-tag{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.2;}
+.char-badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;color:#fff;padding:2px 8px;border-radius:999px;white-space:nowrap;}
+
+/* THE ONE ADAPTIVE CARD */
+.card{background:var(--card);border-radius:20px;box-shadow:0 10px 34px rgba(9,44,80,.13);overflow:hidden;margin-top:8px;transition:.2s;}
+.card-head{padding:20px 20px 16px;color:#fff;position:relative;overflow:hidden;}
+.card-head::after{content:'';position:absolute;right:-30px;top:-30px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.08);}
+.card-persona{display:flex;align-items:center;gap:14px;position:relative;z-index:1;}
+.card-avatar{width:60px;height:60px;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:34px;flex:0 0 auto;}
+.card-persona h2{font-size:19px;font-weight:800;}
+.card-persona .role{font-size:13px;opacity:.85;}
+.card-quote{font-size:13.5px;font-style:italic;opacity:.9;margin-top:14px;position:relative;z-index:1;line-height:1.45;}
+
+.card-body{padding:18px 20px 20px;}
+/* result */
+.result{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px;}
+.result .big{font-size:40px;font-weight:800;letter-spacing:-1px;line-height:1;color:var(--text);}
+.result .x{background:var(--blue-light);color:var(--blue);border:1px solid #cfe0f2;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px;white-space:nowrap;}
+.result-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;}
+.result-sub b{color:var(--text);}
+
+/* mini bar duel vs bank */
+.duel{display:flex;flex-direction:column;gap:10px;margin:6px 0 16px;}
+.duel-row{display:flex;align-items:center;gap:10px;}
+.duel-lbl{width:88px;flex:0 0 auto;font-size:12px;font-weight:700;color:var(--muted);}
+.duel-track{flex:1;height:26px;background:#f1f5f9;border-radius:7px;overflow:hidden;position:relative;}
+.duel-fill{height:100%;border-radius:7px;transition:width .5s cubic-bezier(.2,.7,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#fff;font-size:11.5px;font-weight:800;min-width:44px;}
+
+/* stat chips */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;}
+.stat{background:#f7f9fc;border:1px solid var(--border);border-radius:11px;padding:10px;text-align:center;}
+.stat .s-val{font-size:15px;font-weight:800;color:var(--blue);}
+.stat .s-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+
+/* inputs */
+.inputs{background:#f7f9fc;border-radius:14px;padding:14px;margin-bottom:12px;}
+/* prominent allocation band */
+.alloc{background:var(--blue-light);border:1.5px solid #bcd4f0;border-radius:14px;padding:16px;margin-bottom:14px;}
+.alloc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.alloc-ttl{font-size:14px;font-weight:800;color:var(--blue);}
+.alloc-note{font-size:11.5px;color:var(--muted);margin-bottom:12px;line-height:1.4;}
+.alloc-note b{color:var(--green-d);font-weight:800;}
+.alloc input[type=range]{background:#c4d8f0;}
+.alloc input[type=range]::-webkit-slider-thumb{width:28px;height:28px;border-color:var(--blue);}
+.alloc input[type=range]::-moz-range-thumb{width:28px;height:28px;border-color:var(--blue);}
+.alloc-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:7px;font-weight:600;}
+.ctrl{margin-bottom:14px;}
+.ctrl:last-child{margin-bottom:0;}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.ctrl-name{font-size:12.5px;font-weight:700;color:var(--muted);}
+.ctrl-val{font-size:15px;font-weight:800;color:var(--blue);}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;background:var(--border);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--green);box-shadow:0 2px 8px rgba(0,0,0,.2);}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid var(--green);box-shadow:0 2px 8px rgba(0,0,0,.2);}
+
+.card-cta{width:100%;background:var(--green);color:#fff;border:none;border-radius:11px;padding:14px;font-weight:800;font-size:15px;}
+.card-cta:hover{background:var(--green-d);}
+.card-cta .sub{display:block;font-size:11px;font-weight:500;opacity:.9;margin-top:2px;}
+
+.hint{text-align:center;font-size:12px;color:var(--muted);margin:14px 0 0;}
+.disc{font-size:11px;color:var(--muted);margin-top:20px;line-height:1.5;}
+@media(min-width:640px){.intro h1{font-size:28px;}.result .big{font-size:48px;}}
+</style>
+</head>
+<body>
+<div class="ribbon">Concept <b>2 — “Pick Your Character”</b> · one adaptive card instead of six · you identify with a persona</div>
+<header class="hdr"><div class="hdr-in">
+  <div class="logo"><span class="logo-mark">R</span>RoboForex</div>
+  <button class="cta-sm">Open account</button>
+</div></header>
+
+<div class="intro">
+  <h1>Which investor <b>are you?</b></h1>
+  <p>Tap a character — the whole card becomes their money story.</p>
+</div>
+
+<div class="wrapc"><div class="chars" id="chars"></div></div>
+
+<div class="wrap">
+  <div class="card" id="card">
+    <div class="card-head" id="cardHead">
+      <div class="card-persona">
+        <div class="card-avatar" id="avatar">🤖</div>
+        <div><h2 id="pName">Robo Trader</h2><div class="role" id="pRole">Set the rules once, let it run</div></div>
+      </div>
+      <div class="card-quote" id="pQuote">“I set up my robot on Sunday and check it over coffee. It trades while I sleep.”</div>
+    </div>
+    <div class="card-body">
+      <div class="result">
+        <span class="big" id="fv">$0</span>
+        <span class="x" id="x">×— vs bank</span>
+      </div>
+      <div class="result-sub">from <b id="startAmt">$10,000</b> over <b id="yrsLbl">5 years</b> · a bank saver would reach <b id="bankFV">$0</b></div>
+
+      <div class="duel">
+        <div class="duel-row"><span class="duel-lbl" id="duelName">Robo Trader</span><div class="duel-track"><div class="duel-fill" id="fillStrat" style="background:#0891b2"></div></div></div>
+        <div class="duel-row"><span class="duel-lbl">Bank Saver</span><div class="duel-track"><div class="duel-fill" id="fillBank" style="background:#8fb2e0">bank</div></div></div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="s-val" id="stRate">1.5%</div><div class="s-lbl">per month</div></div>
+        <div class="stat"><div class="s-val" id="stTime">~1 hr</div><div class="s-lbl">a week</div></div>
+        <div class="stat"><div class="s-val" id="stRisk">Set once</div><div class="s-lbl">risk you pick</div></div>
+      </div>
+
+      <div class="inputs">
+        <div class="ctrl">
+          <div class="ctrl-top"><span class="ctrl-name">Starting amount</span><span class="ctrl-val" id="amtVal">$10,000</span></div>
+          <input type="range" id="amt" min="500" max="100000" step="500" value="10000">
+        </div>
+        <div class="ctrl">
+          <div class="ctrl-top"><span class="ctrl-name">Time horizon</span><span class="ctrl-val" id="yrVal">5 years</span></div>
+          <input type="range" id="yr" min="1" max="20" step="1" value="5">
+        </div>
+      </div>
+
+      <div class="alloc">
+        <div class="alloc-top"><span class="alloc-ttl">How much do you put to work?</span><span class="ctrl-val" id="allocVal">100%</span></div>
+        <div class="alloc-note">You don’t have to invest the whole pot. Keep the rest where it feels safe — <b id="allocAmt">$10,000</b> is enough to start compounding.</div>
+        <input type="range" id="alloc" min="10" max="100" step="5" value="100">
+        <div class="alloc-scale"><span>Just 10%</span><span>All in</span></div>
+      </div>
+
+      <button class="card-cta" id="cta">Start as a <span id="ctaName">Robo Trader</span> →<span class="sub" id="ctaProd">Pro Account · free to open</span></button>
+    </div>
+  </div>
+  <p class="hint">← swipe the characters to compare lives, not just numbers →</p>
+
+  <p class="disc"><b>Risk disclaimer:</b> Figures are illustrative estimates based on typical monthly returns for each profile, with profits reinvested monthly. Characters are personas, not real people. Past performance does not guarantee future results. Trading leveraged products carries significant risk of loss. Educational only — not financial advice.</p>
+</div>
+
+<script>
+const CH=[
+  {id:'saver',face:'👵',avatar:'👵',grad:'linear-gradient(135deg,#475569,#64748b)',sel:'#64748b',fill:'#94a3b8',
+   name:'Grandma Saver',role:'Keeps it all in the bank',badge:'Where most start',badgeBg:'#64748b',
+   quote:'“I like to sleep at night. My money sits safe — and barely grows.”',
+   rate:0.5,time:'0 hrs',risk:'None',prod:'Demo Account · free'},
+  {id:'copy',face:'🧑‍💼',avatar:'🧑‍💼',grad:'linear-gradient(135deg,#6d28d9,#8b5cf6)',sel:'#8b5cf6',fill:'#8b5cf6',
+   name:'Copy Trader',role:'Copies the pros',badge:'Easiest step up',badgeBg:'#8b5cf6',
+   quote:'“I found a trader with a track record and mirror their moves. Under an hour a week.”',
+   rate:1.2,time:'<1 hr',risk:'You choose',prod:'CopyFX · free'},
+  {id:'robo',face:'🤖',avatar:'🤖',grad:'linear-gradient(135deg,#0e7490,#0891b2)',sel:'#0891b2',fill:'#0891b2',
+   name:'Robo Trader',role:'Set the rules once, let it run',badge:'',badgeBg:'',
+   quote:'“I set up my robot on Sunday and check it over coffee. It trades while I sleep.”',
+   rate:1.5,time:'~1 hr',risk:'Set once',prod:'Pro Account · free'},
+  {id:'invest',face:'🧔',avatar:'🧔',grad:'linear-gradient(135deg,#1d4ed8,#3b82f6)',sel:'#2563eb',fill:'#2563eb',
+   name:'The Investor',role:'Buys and holds a portfolio',badge:'',badgeBg:'',
+   quote:'“Stocks, ETFs, a few coins. I rebalance on Sundays and let time do the work.”',
+   rate:1.0,time:'1–3 hrs',risk:'≤5% each',prod:'R StocksTrader · free'},
+  {id:'part',face:'🕴️',avatar:'🕴️',grad:'linear-gradient(135deg,#047857,#16a34a)',sel:'#16a34a',fill:'#16a34a',
+   name:'Briefcase Trader',role:'Trades around a day job',badge:'Most popular',badgeBg:'#16a34a',
+   quote:'“An hour or two after work. It’s a serious side income — with discipline.”',
+   rate:2.0,time:'7–10 hrs',risk:'1–3%/trade',prod:'Pro Account · free'},
+  {id:'full',face:'⌚',avatar:'⌚',grad:'linear-gradient(135deg,#b45309,#d97706)',sel:'#d97706',fill:'#d97706',
+   name:'The Rolex Trader',role:'Trades full-time',badge:'Highest risk',badgeBg:'#d97706',
+   quote:'“This is my job. Full days at the screen. Biggest upside — and it demands everything.”',
+   rate:3.0,time:'35+ hrs',risk:'3–10%/trade',prod:'Pro Account · free'},
+];
+const BANK_RATE=0.5;
+let sel=2;
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+const fv=(a,r,m)=>a*Math.pow(1+r/100,m);
+
+function buildChars(){
+  const el=$('chars');el.innerHTML='';
+  CH.forEach((c,i)=>{
+    const b=document.createElement('button');
+    b.className='char';b.style.setProperty('--sel',c.sel);b.setAttribute('aria-pressed',i===sel);
+    b.innerHTML=(c.badge?`<span class="char-badge" style="background:${c.badgeBg}">${c.badge}</span>`:'')+
+      `<div class="char-face" style="background:${c.grad}22">${c.face}</div>`+
+      `<div class="char-name">${c.name}</div><div class="char-tag">${c.rate}%/mo</div>`;
+    b.onclick=()=>{sel=i;buildChars();render();b.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});};
+    el.appendChild(b);
+  });
+}
+function render(){
+  const c=CH[sel];const amt=+$('amt').value,yr=+$('yr').value,m=yr*12;
+  const allocPct=+$('alloc').value, working=amt*allocPct/100;
+  const stratFV=fv(working,c.rate,m),bankFV=fv(working,BANK_RATE,m);
+  const x=stratFV/bankFV;
+  $('allocVal').textContent=allocPct+'%';
+  $('allocAmt').textContent=fmt(working)+(allocPct<100?' of your '+fmt(amt):'');
+  $('cardHead').style.background=c.grad;
+  $('avatar').textContent=c.avatar;
+  $('pName').textContent=c.name;$('pRole').textContent=c.role;$('pQuote').textContent=c.quote;
+  $('fv').textContent=fmt(stratFV);
+  $('x').textContent='×'+x.toFixed(1)+' vs bank';
+  $('startAmt').textContent=fmt(working);
+  $('yrsLbl').textContent=yr+(yr===1?' year':' years');
+  $('bankFV').textContent=fmt(bankFV);
+  $('duelName').textContent=c.name;
+  $('stRate').textContent=c.rate+'%';$('stTime').textContent=c.time;$('stRisk').textContent=c.risk;
+  $('amtVal').textContent=fmt(amt);$('yrVal').textContent=yr+(yr===1?' year':' years');
+  $('ctaName').textContent=c.name;$('ctaProd').textContent=c.prod;
+  $('cta').style.background=c.id==='saver'?'#64748b':'';
+  // duel bars scaled to the strategy (the winner) so bank looks tiny
+  const fs=$('fillStrat'),fb=$('fillBank');
+  fs.style.background=c.fill;fs.style.width='100%';fs.textContent=fmt(stratFV);
+  fb.style.width=Math.max(6,(bankFV/stratFV)*100)+'%';
+}
+['amt','yr','alloc'].forEach(id=>$(id).addEventListener('input',render));
+buildChars();render();
+</script>
+</body>
+</html>

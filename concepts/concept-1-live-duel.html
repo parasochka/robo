@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept 1 — Live Duel | Compounding Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#183E8C;--blue-mid:#1361A1;--blue-light:#EBF2F9;
+  --green:#74B129;--green-d:#5F951F;
+  --text:#16233a;--muted:#5d6b7d;--border:#dbe3ee;--bg:#eef3fa;--card:#fff;
+  --font:'Open Sans',-apple-system,sans-serif;
+}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.5;font-size:15px;}
+button{font-family:inherit;cursor:pointer;}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px 48px;}
+
+/* concept ribbon */
+.ribbon{background:#0f2450;color:#fff;font-size:12px;padding:7px 16px;text-align:center;letter-spacing:.3px;}
+.ribbon b{color:#9dd15a;}
+
+/* header */
+.hdr{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20;}
+.hdr-in{max-width:900px;margin:0 auto;height:54px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;color:var(--blue);font-size:16px;}
+.logo-mark{width:26px;height:26px;background:var(--blue);border-radius:6px;color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;}
+.cta-sm{background:var(--green);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-weight:700;font-size:13px;}
+
+/* THE FIRST SCREEN — everything fits, no scroll to see the answer */
+.stage{background:linear-gradient(160deg,#0f2a5e,#183E8C 65%,#1d5fa8);border-radius:0 0 20px 20px;padding:18px 16px 24px;color:#fff;}
+.stage-in{max-width:868px;margin:0 auto;}
+.kicker{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#9dc2f0;font-weight:700;margin-bottom:4px;}
+.headline{font-size:21px;font-weight:700;line-height:1.25;margin-bottom:14px;}
+.headline b{color:#9dd15a;}
+
+/* the money answer, huge and live */
+.answer{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:6px;}
+.answer-big{font-size:44px;font-weight:800;line-height:1;letter-spacing:-1px;}
+.answer-x{background:rgba(157,209,90,.18);border:1px solid rgba(157,209,90,.5);color:#c9ef94;font-weight:800;font-size:15px;padding:6px 12px;border-radius:999px;white-space:nowrap;}
+.answer-sub{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:14px;}
+.answer-sub b{color:#fff;}
+
+/* chart */
+.chart-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px 10px 8px;}
+.chart-legend{display:flex;gap:16px;padding:2px 6px 8px;flex-wrap:wrap;}
+.leg{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;}
+.leg .dot{width:22px;height:4px;border-radius:2px;}
+.leg .val{color:rgba(255,255,255,.65);font-weight:400;margin-left:2px;}
+svg.chart{width:100%;height:190px;display:block;overflow:visible;}
+.axis-lbl{fill:rgba(255,255,255,.5);font-size:10px;font-weight:600;}
+
+/* controls — sliders WITHOUT text clutter (note: "слайдер без текста") */
+.controls{background:var(--card);border-radius:16px;box-shadow:0 8px 30px rgba(9,44,80,.12);padding:18px 16px;margin-top:-14px;position:relative;z-index:5;}
+.ctrl{margin-bottom:16px;}
+.ctrl:last-child{margin-bottom:0;}
+.ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;}
+.ctrl-name{font-size:13px;font-weight:700;color:var(--muted);}
+.ctrl-val{font-size:16px;font-weight:800;color:var(--blue);}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;background:var(--border);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--green);box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:grab;}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--green);box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:grab;}
+.range-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:5px;}
+
+/* strategy quick-toggle — the "opponent" you put up against the bank */
+.opps{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+.opps::-webkit-scrollbar{display:none;}
+.opp{flex:0 0 auto;border:1.5px solid var(--border);background:#fff;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:7px;white-space:nowrap;transition:.15s;}
+.opp .swatch{width:10px;height:10px;border-radius:50%;}
+.opp[aria-pressed=true]{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+
+/* allocation — floating slider, "you don't have to invest it all" */
+.alloc{margin-top:14px;background:var(--blue-light);border:1px solid #cfe0f2;border-radius:12px;padding:14px;}
+.alloc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.alloc-ttl{font-size:13px;font-weight:700;color:var(--blue);}
+.alloc-note{font-size:11.5px;color:var(--muted);margin-bottom:10px;}
+.alloc-note b{color:var(--green-d);}
+
+/* transparent maths — "why this number" */
+.why{margin-top:18px;background:#fff;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.why summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:14px;color:var(--blue);}
+.why summary::-webkit-details-marker{display:none;}
+.why summary .chev{transition:.2s;}
+.why[open] summary .chev{transform:rotate(180deg);}
+.why-body{padding:0 16px 16px;font-size:13px;color:var(--muted);}
+.why-row{display:flex;justify-content:space-between;padding:8px 0;border-top:1px dashed var(--border);}
+.why-row b{color:var(--text);font-weight:700;}
+
+/* big CTA */
+.final-cta{margin-top:20px;background:linear-gradient(135deg,#183E8C,#1361A1);border-radius:16px;padding:22px 18px;text-align:center;color:#fff;}
+.final-cta h3{font-size:18px;font-weight:700;margin-bottom:6px;}
+.final-cta h3 b{color:#9dd15a;}
+.final-cta p{font-size:13px;color:rgba(255,255,255,.8);margin-bottom:14px;}
+.btn-open{background:var(--green);color:#fff;border:none;border-radius:9px;padding:13px 30px;font-weight:800;font-size:15px;width:100%;max-width:320px;}
+.btn-open:hover{background:var(--green-d);}
+.disc{font-size:11px;color:var(--muted);margin-top:18px;line-height:1.5;}
+@media(min-width:640px){
+  .headline{font-size:26px;}.answer-big{font-size:56px;}svg.chart{height:230px;}
+}
+</style>
+</head>
+<body>
+<div class="ribbon">Concept <b>1 — “Live Duel”</b> · your strategy vs. the bank, redrawn as you drag · mobile-first</div>
+<header class="hdr"><div class="hdr-in">
+  <div class="logo"><span class="logo-mark">R</span>RoboForex</div>
+  <button class="cta-sm">Open account</button>
+</div></header>
+
+<div class="stage"><div class="stage-in">
+  <div class="kicker">Compound calculator</div>
+  <h1 class="headline">Your money vs. a bank deposit. <b>Drag and watch.</b></h1>
+
+  <div class="answer">
+    <span class="answer-big" id="fvBig">$0</span>
+    <span class="answer-x" id="xTimes">—</span>
+  </div>
+  <div class="answer-sub">after <b id="yrsLbl">5 years</b> · a bank would give you <b id="bankFV">$0</b></div>
+
+  <div class="chart-box">
+    <div class="chart-legend">
+      <span class="leg"><span class="dot" id="legStratDot" style="background:#9dd15a"></span><span id="legStratName">Robo Trader</span><span class="val" id="legStratVal"></span></span>
+      <span class="leg"><span class="dot" style="background:#8fb2e0"></span>Bank Saver<span class="val" id="legBankVal"></span></span>
+    </div>
+    <svg class="chart" id="chart" viewBox="0 0 340 190" preserveAspectRatio="none" aria-label="Two-line growth comparison"></svg>
+  </div>
+</div></div>
+
+<div class="wrap">
+  <div class="controls">
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name">Starting amount</span><span class="ctrl-val" id="amtVal">$10,000</span></div>
+      <input type="range" id="amt" min="500" max="100000" step="500" value="10000">
+      <div class="range-scale"><span>$500</span><span>$100k</span></div>
+    </div>
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name">Time horizon</span><span class="ctrl-val" id="yrVal">5 years</span></div>
+      <input type="range" id="yr" min="1" max="20" step="1" value="5">
+      <div class="range-scale"><span>1 yr</span><span>20 yrs</span></div>
+    </div>
+
+    <div class="ctrl">
+      <div class="ctrl-top"><span class="ctrl-name">Put it up against…</span></div>
+      <div class="opps" id="opps"></div>
+    </div>
+
+    <div class="alloc">
+      <div class="alloc-top"><span class="alloc-ttl">How much do you put to work?</span><span class="ctrl-val" id="allocVal">100%</span></div>
+      <div class="alloc-note">You don’t have to risk it all. The rest stays where it feels safe — you still put <b id="allocAmt">$10,000</b> to work.</div>
+      <input type="range" id="alloc" min="10" max="100" step="5" value="100">
+      <div class="range-scale"><span>10%</span><span>All in</span></div>
+    </div>
+  </div>
+
+  <details class="why">
+    <summary>Why this number? <span class="chev">▾</span></summary>
+    <div class="why-body">
+      <div class="why-row"><span>You invest</span><b id="wAmt">$10,000</b></div>
+      <div class="why-row"><span id="wStratName">Robo Trader</span> <b id="wRate">1.5% / month</b></div>
+      <div class="why-row"><span>Compounded over</span><b id="wMonths">60 months</b></div>
+      <div class="why-row"><span>Profits reinvested</span><b>Every month</b></div>
+      <div class="why-row"><span>Projected value</span><b id="wFV">$0</b></div>
+      <p style="margin-top:10px;font-size:11.5px;">Formula: value = amount × (1 + monthly rate)<sup>months</sup>. Rates are typical mid-range figures for each strategy — not a promise. Markets move both ways.</p>
+    </div>
+  </details>
+
+  <div class="final-cta">
+    <h3>That’s <b id="ctaX">—</b> what a bank would give you.</h3>
+    <p>Open a free account and start where you are — move up when you’re ready.</p>
+    <button class="btn-open">Open an account →</button>
+  </div>
+
+  <p class="disc"><b>Risk disclaimer:</b> Projections are illustrative estimates based on typical monthly returns for each strategy with full profit reinvestment. Past performance does not guarantee future results. Trading leveraged products involves significant risk of loss. For education only — not financial advice.</p>
+</div>
+
+<script>
+const BANK={name:'Bank Saver',rate:0.5,color:'#8fb2e0'};
+const OPPS=[
+  {id:'copy',name:'Copy Trader',rate:1.2,color:'#8b5cf6'},
+  {id:'robo',name:'Robo Trader',rate:1.5,color:'#74B129'},
+  {id:'invest',name:'Investor',rate:1.0,color:'#2563eb'},
+  {id:'part',name:'Part-time',rate:2.0,color:'#16a34a'},
+  {id:'full',name:'Full-time',rate:3.0,color:'#d97706'},
+];
+let sel=1; // robo
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
+const fmtK=n=>n>=1000?'$'+(n/1000).toFixed(n>=10000?0:1)+'k':'$'+Math.round(n);
+
+// future value, monthly compounding, no top-up (kept deliberately simple for this concept)
+function fv(amount,ratePct,months){return amount*Math.pow(1+ratePct/100,months);}
+function series(amount,ratePct,months,pts=48){
+  const a=[];for(let i=0;i<=pts;i++){const m=months*i/pts;a.push(fv(amount,ratePct,m));}return a;
+}
+
+function buildOpps(){
+  const el=$('opps');el.innerHTML='';
+  OPPS.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opp';b.setAttribute('aria-pressed',i===sel);
+    b.innerHTML=`<span class="swatch" style="background:${o.color}"></span>${o.name}`;
+    b.onclick=()=>{sel=i;buildOpps();render();};
+    el.appendChild(b);
+  });
+}
+
+function drawChart(sA,sB,colA,colB){
+  const W=340,H=190,pad={l:6,r:6,t:12,b:20};
+  const all=[...sA,...sB];const max=Math.max(...all),min=Math.min(...all);
+  const x=i=>pad.l+(W-pad.l-pad.r)*i/(sA.length-1);
+  const y=v=>pad.t+(H-pad.t-pad.b)*(1-(v-min)/(max-min||1));
+  const path=s=>s.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' ');
+  const area=s=>path(s)+` L${x(s.length-1)} ${H-pad.b} L${x(0)} ${H-pad.b} Z`;
+  const svg=`
+    <defs><linearGradient id="gA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="${colA}" stop-opacity=".28"/><stop offset="1" stop-color="${colA}" stop-opacity="0"/>
+    </linearGradient></defs>
+    <line x1="${pad.l}" y1="${H-pad.b}" x2="${W-pad.r}" y2="${H-pad.b}" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+    <path d="${area(sA)}" fill="url(#gA)"/>
+    <path d="${path(sB)}" fill="none" stroke="${colB}" stroke-width="2.5" stroke-dasharray="5 5" stroke-linecap="round"/>
+    <path d="${path(sA)}" fill="none" stroke="${colA}" stroke-width="3.5" stroke-linecap="round"/>
+    <circle cx="${x(sA.length-1)}" cy="${y(sA[sA.length-1])}" r="5" fill="${colA}" stroke="#fff" stroke-width="2"/>
+    <circle cx="${x(sB.length-1)}" cy="${y(sB[sB.length-1])}" r="4" fill="${colB}" stroke="#fff" stroke-width="1.5"/>`;
+  $('chart').innerHTML=svg;
+}
+
+function render(){
+  const amount=+$('amt').value, years=+$('yr').value, allocPct=+$('alloc').value;
+  const o=OPPS[sel], months=years*12;
+  const working=amount*allocPct/100;
+  const stratFV=fv(working,o.rate,months);
+  const bankFV=fv(working,BANK.rate,months);
+  const x=(stratFV/bankFV);
+
+  $('amtVal').textContent=fmt(amount);
+  $('yrVal').textContent=years+(years===1?' year':' years');
+  $('yrsLbl').textContent=years+(years===1?' year':' years');
+  $('allocVal').textContent=allocPct+'%';
+  $('allocAmt').textContent=fmt(working);
+
+  $('fvBig').textContent=fmt(stratFV);
+  $('xTimes').textContent='×'+x.toFixed(1)+' a bank';
+  $('bankFV').textContent=fmt(bankFV);
+  $('legStratName').textContent=o.name;
+  $('legStratDot').style.background=o.color;
+  $('legStratVal').textContent=fmt(stratFV);
+  $('legBankVal').textContent=fmt(bankFV);
+  $('ctaX').textContent=x.toFixed(1)+'×';
+
+  $('wAmt').textContent=fmt(working);
+  $('wStratName').textContent=o.name;
+  $('wRate').textContent=o.rate+'% / month';
+  $('wMonths').textContent=months+' months';
+  $('wFV').textContent=fmt(stratFV);
+
+  drawChart(series(working,o.rate,months),series(working,BANK.rate,months),o.color,BANK.color);
+}
+['amt','yr','alloc'].forEach(id=>$(id).addEventListener('input',render));
+buildOpps();render();
+</script>
+</body>
+</html>
