@@ -72,7 +72,17 @@ button{font-family:inherit;cursor:pointer;}
 .stat .s-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
 
 /* inputs */
-.inputs{background:#f7f9fc;border-radius:14px;padding:14px;margin-bottom:14px;}
+.inputs{background:#f7f9fc;border-radius:14px;padding:14px;margin-bottom:12px;}
+/* prominent allocation band */
+.alloc{background:var(--blue-light);border:1.5px solid #bcd4f0;border-radius:14px;padding:16px;margin-bottom:14px;}
+.alloc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.alloc-ttl{font-size:14px;font-weight:800;color:var(--blue);}
+.alloc-note{font-size:11.5px;color:var(--muted);margin-bottom:12px;line-height:1.4;}
+.alloc-note b{color:var(--green-d);font-weight:800;}
+.alloc input[type=range]{background:#c4d8f0;}
+.alloc input[type=range]::-webkit-slider-thumb{width:28px;height:28px;border-color:var(--blue);}
+.alloc input[type=range]::-moz-range-thumb{width:28px;height:28px;border-color:var(--blue);}
+.alloc-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:7px;font-weight:600;}
 .ctrl{margin-bottom:14px;}
 .ctrl:last-child{margin-bottom:0;}
 .ctrl-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
@@ -143,6 +153,13 @@ input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;bac
         </div>
       </div>
 
+      <div class="alloc">
+        <div class="alloc-top"><span class="alloc-ttl">How much do you put to work?</span><span class="ctrl-val" id="allocVal">100%</span></div>
+        <div class="alloc-note">You don’t have to invest the whole pot. Keep the rest where it feels safe — <b id="allocAmt">$10,000</b> is enough to start compounding.</div>
+        <input type="range" id="alloc" min="10" max="100" step="5" value="100">
+        <div class="alloc-scale"><span>Just 10%</span><span>All in</span></div>
+      </div>
+
       <button class="card-cta" id="cta">Start as a <span id="ctaName">Robo Trader</span> →<span class="sub" id="ctaProd">Pro Account · free to open</span></button>
     </div>
   </div>
@@ -198,14 +215,17 @@ function buildChars(){
 }
 function render(){
   const c=CH[sel];const amt=+$('amt').value,yr=+$('yr').value,m=yr*12;
-  const stratFV=fv(amt,c.rate,m),bankFV=fv(amt,BANK_RATE,m);
+  const allocPct=+$('alloc').value, working=amt*allocPct/100;
+  const stratFV=fv(working,c.rate,m),bankFV=fv(working,BANK_RATE,m);
   const x=stratFV/bankFV;
+  $('allocVal').textContent=allocPct+'%';
+  $('allocAmt').textContent=fmt(working)+(allocPct<100?' of your '+fmt(amt):'');
   $('cardHead').style.background=c.grad;
   $('avatar').textContent=c.avatar;
   $('pName').textContent=c.name;$('pRole').textContent=c.role;$('pQuote').textContent=c.quote;
   $('fv').textContent=fmt(stratFV);
   $('x').textContent='×'+x.toFixed(1)+' vs bank';
-  $('startAmt').textContent=fmt(amt);
+  $('startAmt').textContent=fmt(working);
   $('yrsLbl').textContent=yr+(yr===1?' year':' years');
   $('bankFV').textContent=fmt(bankFV);
   $('duelName').textContent=c.name;
@@ -218,7 +238,7 @@ function render(){
   fs.style.background=c.fill;fs.style.width='100%';fs.textContent=fmt(stratFV);
   fb.style.width=Math.max(6,(bankFV/stratFV)*100)+'%';
 }
-['amt','yr'].forEach(id=>$(id).addEventListener('input',render));
+['amt','yr','alloc'].forEach(id=>$(id).addEventListener('input',render));
 buildChars();render();
 </script>
 </body>

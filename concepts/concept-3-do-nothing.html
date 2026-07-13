@@ -61,6 +61,18 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
 .ctrl input[type=range]::-webkit-slider-thumb{background:#fff;border-color:var(--green);}
 .ctrl input[type=range]::-moz-range-thumb{background:#fff;border-color:var(--green);}
 
+/* prominent allocation band */
+.alloc{margin-top:12px;background:var(--blue-light);border:1.5px solid #bcd4f0;border-radius:12px;padding:16px;}
+.alloc-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+.alloc-ttl{font-size:14px;font-weight:800;color:var(--blue);}
+.alloc-val{font-size:16px;font-weight:800;color:var(--blue);}
+.alloc-note{font-size:11.5px;color:var(--muted);margin-bottom:12px;line-height:1.4;}
+.alloc-note b{color:var(--green-d);font-weight:800;}
+.alloc input[type=range]{background:#c4d8f0;}
+.alloc input[type=range]::-webkit-slider-thumb{width:28px;height:28px;border-color:var(--blue);}
+.alloc input[type=range]::-moz-range-thumb{width:28px;height:28px;border-color:var(--blue);}
+.alloc-scale{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:7px;font-weight:600;}
+
 /* comparison table — the ✓/✗ grid from the notes */
 .tbl-h{font-size:16px;font-weight:800;margin:24px 0 4px;}
 .tbl-sub{font-size:12.5px;color:var(--muted);margin-bottom:14px;}
@@ -140,6 +152,13 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
         <input type="range" id="yr" min="1" max="20" step="1" value="5">
       </div>
     </div>
+
+    <div class="alloc">
+      <div class="alloc-top"><span class="alloc-ttl">How much do you put to work?</span><span class="alloc-val" id="allocVal">100%</span></div>
+      <div class="alloc-note">Start small — you don’t have to commit the whole pot. Even <b id="allocAmt">$10,000</b> at work compounds. The rest stays safe.</div>
+      <input type="range" id="alloc" min="10" max="100" step="5" value="100">
+      <div class="alloc-scale"><span>Just 10%</span><span>All in</span></div>
+    </div>
   </div>
 
   <div class="passive">
@@ -205,19 +224,22 @@ function buildTable(amt,m){
 function render(){
   sel=+$('eff').value;
   const p=P[sel];const amt=+$('amt').value,yr=+$('yr').value,m=yr*12;
-  const f=fv(amt,p.rate,m),bankFV=fv(amt,BANK_RATE,m),x=f/bankFV;
+  const allocPct=+$('alloc').value, working=amt*allocPct/100;
+  const f=fv(working,p.rate,m),bankFV=fv(working,BANK_RATE,m),x=f/bankFV;
   $('effVal').textContent=p.time;$('effDesc').textContent=p.desc;
   $('pillName').textContent=p.name;$('pName').textContent=p.name;
   $('fv').textContent=fmt(f);$('x').textContent='×'+x.toFixed(1)+' vs a bank';
-  $('startAmt').textContent=fmt(amt);$('yrsLbl').textContent=yr+(yr===1?' year':' years');
+  $('startAmt').textContent=fmt(working);$('yrsLbl').textContent=yr+(yr===1?' year':' years');
   $('bankFV').textContent=fmt(bankFV);
   $('amtVal').textContent=fmt(amt);$('yrVal').textContent=yr;
+  $('allocVal').textContent=allocPct+'%';
+  $('allocAmt').textContent=fmt(working)+(allocPct<100?' of '+fmt(amt):'');
   $('ctaX').textContent=x.toFixed(1)+'×';
-  $('wAmt').textContent=fmt(amt);$('wName').textContent=p.name;$('wRate').textContent=p.rate+'% / month';
+  $('wAmt').textContent=fmt(working);$('wName').textContent=p.name;$('wRate').textContent=p.rate+'% / month';
   $('wMonths').textContent=m+' months';$('wFV').textContent=fmt(f);
-  buildTable(amt,m);
+  buildTable(working,m);
 }
-['eff','amt','yr'].forEach(id=>$(id).addEventListener('input',render));
+['eff','amt','yr','alloc'].forEach(id=>$(id).addEventListener('input',render));
 render();
 </script>
 </body>
