@@ -39,16 +39,29 @@ h1{font-size:30px;font-weight:800;color:var(--blue);line-height:1.15;margin-top:
   .card.prod .go{padding-top:0;margin-left:auto;white-space:nowrap;}
   .card.prod-text{flex:1;}
 }
+.card.featured{border-color:var(--green);box-shadow:0 0 0 1.5px var(--green),0 8px 26px rgba(9,44,80,.12);}
+.card.featured .num{background:var(--green);}
+.latest{display:inline-block;vertical-align:middle;margin-left:8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--green);border-radius:999px;padding:3px 9px;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="head">
     <div class="eyebrow">Compound calculator</div>
-    <h1>Three directions to react to</h1>
+    <h1>Four directions to react to</h1>
     <p class="lead">Pulled from the working session and the doc notes, plus the current production page. Each is a live, self-contained prototype — drag the sliders. Built mobile-first (~80% of traffic) and laid out for desktop too.</p>
   </div>
   <div class="grid">
+    <a class="card prod featured" href="concepts/concept-4-composite.html">
+      <span class="num">4</span>
+      <div class="prod-text">
+        <h2>One Composite Card <span class="latest">Latest</span></h2>
+        <div class="tag">A lighter production — one card, assembled from your choice</div>
+        <p>The production page, simplified. Every edit from the earlier releases carried over, but the six stacked profile cards collapse into <em>one</em> composite card. Pick a profile, move the sliders — its numbers, its blog and its FAQ are all built on the fly from what you chose.</p>
+      </div>
+      <div class="go">Open prototype →</div>
+    </a>
+    <div class="sep">Earlier directions</div>
     <a class="card" href="concepts/concept-1-live-duel.html">
       <span class="num">1</span>
       <h2>Live Duel</h2>
