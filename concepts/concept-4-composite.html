@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Concept 4 — One Composite Card | Compounding Calculator</title>
+<meta name="description" content="A lighter compound calculator: pick a profile, move the sliders, and one card is assembled on the fly — its numbers, its blog and its FAQ all built from your choice.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#183E8C;
+  --blue-mid:#1361A1;
+  --blue-light:#EBF2F9;
+  --green:#74B129;
+  --green-d:#5F951F;
+  --text:#1a2533;
+  --text-mid:#46566a;
+  --text-light:#5d6b7d;
+  --border:#dde4ed;
+  --bg:#f0f4fa;
+  --card:#ffffff;
+  --shadow:0 2px 12px rgba(9,44,80,0.08);
+  --shadow-lg:0 8px 32px rgba(9,44,80,0.14);
+  --r:12px;
+  --r-sm:8px;
+  --font:'Open Sans',-apple-system,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);color:var(--text);background:var(--bg);font-size:15px;line-height:1.6;}
+a{color:inherit;text-decoration:none;}
+button{cursor:pointer;font-family:var(--font);}
+:focus-visible{outline:3px solid var(--blue-mid);outline-offset:2px;border-radius:4px;}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+
+/* ribbon (prototype label) */
+.ribbon{background:#0f2450;color:#cddcff;font-size:12.5px;padding:8px 20px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;}
+.ribbon b{color:#9dd15a;}
+.ribbon a{color:#fff;text-decoration:none;font-weight:700;border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:2px 12px;transition:.15s;}
+.ribbon a:hover{background:rgba(255,255,255,.12);}
+
+/* ---- HEADER ---- */
+.hdr{background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+.hdr-inner{max-width:1120px;margin:0 auto;padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:8px;font-size:18px;font-weight:700;color:var(--blue);}
+.logo-mark{width:30px;height:30px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:800;}
+.hdr-nav{display:flex;align-items:center;gap:8px;}
+.btn-login{font-size:13px;font-weight:600;color:var(--blue-mid);background:none;border:1.5px solid var(--border);border-radius:6px;padding:7px 16px;transition:all .15s;}
+.btn-login:hover{border-color:var(--blue-mid);background:var(--blue-light);}
+.btn-open{font-size:13px;font-weight:700;color:#fff;background:var(--green);border:none;border-radius:6px;padding:8px 20px;transition:background .15s;}
+.btn-open:hover{background:var(--green-d);}
+
+/* ---- HERO ---- */
+.hero{background:linear-gradient(135deg,#0f2a5e 0%,var(--blue) 60%,#1d5fa8 100%);padding:38px 24px 58px;}
+.hero-inner{max-width:1120px;margin:0 auto;}
+.hero-title{font-size:28px;font-weight:700;color:#fff;line-height:1.2;margin-bottom:8px;}
+.hero-sub{font-size:15.5px;color:rgba(255,255,255,0.85);max-width:760px;line-height:1.6;}
+
+/* ---- CALC SECTION ---- */
+.calc-wrap{max-width:1120px;margin:-30px auto 0;padding:0 24px;position:relative;z-index:10;}
+.calc-card{display:grid;grid-template-columns:340px 1fr;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow-lg);overflow:hidden;}
+
+/* Input panel */
+.inp-panel{background:#f7f9fc;border-right:1px solid var(--border);padding:26px 24px 24px;display:flex;flex-direction:column;}
+.inp-section-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.inp-grp{margin-bottom:16px;}
+.inp-label{font-size:12.5px;font-weight:600;color:var(--text-mid);margin-bottom:6px;display:block;}
+.inp-label-sub{font-weight:400;font-size:11px;color:var(--text-light);margin-left:4px;}
+.inp-wrap{position:relative;}
+.inp-pre,.inp-suf{position:absolute;top:50%;transform:translateY(-50%);font-size:14px;color:var(--text-light);font-weight:500;pointer-events:none;}
+.inp-pre{left:12px;}
+.inp-suf{right:12px;}
+.inp-field{width:100%;height:44px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:15px;font-weight:600;color:var(--text);background:#fff;outline:none;transition:border-color .15s;}
+.inp-field:focus{border-color:var(--blue-mid);}
+.inp-field.p-pre{padding:0 14px 0 30px;}
+.inp-field.p-suf{padding:0 52px 0 14px;}
+.inp-select{appearance:none;-webkit-appearance:none;-moz-appearance:none;padding:0 38px 0 14px;cursor:pointer;background-image:url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='12'%20height='8'%3E%3Cpath%20fill='%231a2533'%20d='M0%200%20L12%200%20L6%208%20Z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
+.freq-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.freq-btn{padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r-sm);background:#fff;font-family:var(--font);font-size:13.5px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all .15s;text-align:center;}
+.freq-btn.on{border-color:var(--blue);color:var(--blue);background:var(--blue-light);}
+
+/* Chart panel */
+.chart-panel{padding:26px 28px 20px;display:flex;flex-direction:column;min-height:440px;}
+.chart-head{margin-bottom:12px;}
+.chart-label-sm{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-light);margin-bottom:3px;}
+.chart-balance{font-size:38px;font-weight:700;line-height:1.1;transition:color .3s;color:var(--blue);}
+.chart-balance-sub{font-size:13px;color:var(--text-light);margin-top:4px;}
+.chart-gap{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 13px;border-radius:999px;background:#eaf6e0;border:1px solid #cfe8b8;color:var(--green-d);font-size:12.5px;font-weight:700;}
+.chart-gap.is-deposit{background:var(--blue-light);border-color:#cfe0f2;color:var(--blue-mid);}
+.chart-gap b{font-weight:800;}
+.chart-wrap{flex:1;position:relative;min-height:260px;}
+
+/* ---- "INVEST ONLY 10%" ALLOCATION BAND ---- */
+.allocate{max-width:1120px;margin:34px auto 0;padding:0 24px;}
+.allocate-card{position:relative;overflow:hidden;background:linear-gradient(135deg,#0f2a5e 0%,var(--blue) 55%,#1d5fa8 100%);border-radius:var(--r);box-shadow:var(--shadow-lg);padding:26px 28px;display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;}
+.allocate-text{min-width:0;}
+.allocate-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ec5ee;margin-bottom:6px;}
+.allocate-title{font-size:22px;font-weight:700;line-height:1.25;color:#fff;margin-bottom:8px;}
+.allocate-title b{color:#a6e26a;}
+.allocate-sub{font-size:14px;color:rgba(255,255,255,0.85);max-width:600px;line-height:1.55;}
+.allocate-sub b{color:#fff;font-weight:700;}
+.split-bar{display:flex;height:60px;margin-top:18px;position:relative;user-select:none;-webkit-user-select:none;}
+.split-keep{flex:1 1 0;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:0 16px;min-width:0;}
+.split-handle{flex:0 0 18px;width:18px;cursor:ew-resize;display:flex;align-items:center;justify-content:center;z-index:5;touch-action:none;outline:none;}
+.split-handle-icon{display:block;width:3px;height:28px;background:rgba(255,255,255,0.45);border-radius:3px;transition:background .15s,height .15s;}
+.split-handle:hover .split-handle-icon,.split-handle.dragging .split-handle-icon{background:rgba(255,255,255,0.9);height:36px;}
+.split-invest{flex:0 0 22%;background:var(--green);border-radius:8px;display:flex;flex-direction:column;justify-content:center;padding:0 16px;min-width:60px;box-shadow:0 0 20px rgba(122,200,50,0.35),0 4px 12px rgba(0,0,0,0.25);}
+.split-pct{font-size:14px;font-weight:800;color:#fff;line-height:1;}
+.split-invest .split-pct{font-size:20px;color:#fff;}
+.split-lbl{font-size:11px;line-height:1.35;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.split-keep .split-lbl{color:rgba(255,255,255,0.75);}
+.split-invest .split-lbl{color:rgba(255,255,255,0.95);}
+.split-invest .split-lbl b{font-weight:700;}
+.allocate-cta{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--blue);font-size:14px;font-weight:700;padding:14px 24px;border-radius:8px;border:none;white-space:nowrap;transition:transform .15s,box-shadow .15s;}
+.allocate-cta:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,0.28);}
+
+/* ================================================================
+   THE COMPOSITE CARD  — one card, assembled from the chosen profile
+   ================================================================ */
+.composite{max-width:1120px;margin:40px auto 0;padding:0 24px;}
+.comp-intro{margin-bottom:16px;}
+.comp-intro h2{font-size:20px;font-weight:800;color:var(--text);}
+.comp-intro p{font-size:13.5px;color:var(--text-mid);margin-top:3px;}
+
+/* profile selector — pills replace the six stacked cards */
+.comp-pills{display:flex;gap:9px;overflow-x:auto;padding:4px 2px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none;scroll-snap-type:x proximity;}
+.comp-pills::-webkit-scrollbar{display:none;}
+.pill{flex:0 0 auto;scroll-snap-align:start;display:flex;align-items:center;gap:9px;background:#fff;border:1.5px solid var(--border);border-radius:999px;padding:8px 15px 8px 9px;transition:.15s;position:relative;}
+.pill:hover{border-color:#c3d3ea;transform:translateY(-1px);}
+.pill[aria-pressed=true]{border-color:var(--sel);box-shadow:0 0 0 1.5px var(--sel),var(--shadow);}
+.pill-face{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:16px;flex:0 0 auto;}
+.pill-txt{text-align:left;line-height:1.1;}
+.pill-name{font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;}
+.pill-rate{font-size:10.5px;color:var(--text-light);}
+.pill-badge{position:absolute;top:-8px;right:8px;font-size:8px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#fff;padding:2px 7px;border-radius:999px;white-space:nowrap;}
+
+/* the card itself */
+.comp-card{background:var(--card);border-radius:18px;box-shadow:var(--shadow-lg);overflow:hidden;}
+.comp-head{padding:22px 26px 20px;color:#fff;position:relative;overflow:hidden;}
+.comp-head::after{content:'';position:absolute;right:-50px;top:-50px;width:190px;height:190px;border-radius:50%;background:rgba(255,255,255,.08);}
+.comp-persona{display:flex;align-items:center;gap:16px;position:relative;z-index:1;flex-wrap:wrap;}
+.comp-avatar{width:58px;height:58px;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:32px;flex:0 0 auto;}
+.comp-id{min-width:0;flex:1;}
+.comp-id h3{font-size:21px;font-weight:800;line-height:1.15;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.comp-track{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.2);color:#fff;}
+.comp-role{font-size:13.5px;opacity:.9;margin-top:3px;}
+.comp-quote{font-size:13.5px;font-style:italic;opacity:.92;margin-top:15px;position:relative;z-index:1;line-height:1.5;max-width:680px;}
+
+.comp-body{padding:22px 26px 24px;display:grid;gap:26px;}
+
+/* LEFT — the money story */
+.comp-earn-row{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.comp-earn-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);margin-bottom:4px;}
+.comp-earn-amt{font-size:44px;font-weight:800;letter-spacing:-1.2px;line-height:1;}
+.comp-vs{background:#eaf6e0;color:var(--green-d);border:1px solid #cfe8b8;font-weight:800;font-size:12.5px;padding:7px 13px;border-radius:999px;white-space:nowrap;}
+.comp-earn-sub{font-size:13px;color:var(--text-mid);margin-top:12px;}
+.comp-earn-sub b{color:var(--text);font-weight:700;}
+
+/* mini duel vs bank */
+.duel{display:flex;flex-direction:column;gap:10px;margin:18px 0 4px;}
+.duel-row{display:flex;align-items:center;gap:12px;}
+.duel-lbl{width:100px;flex:0 0 auto;font-size:12px;font-weight:700;color:var(--text-mid);}
+.duel-track{flex:1;height:28px;background:#f1f5f9;border-radius:8px;overflow:hidden;position:relative;}
+.duel-fill{height:100%;border-radius:8px;transition:width .5s cubic-bezier(.2,.7,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:10px;color:#fff;font-size:11.5px;font-weight:800;min-width:52px;white-space:nowrap;}
+
+/* stat chips (uniform axes: return / time / risk) */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;}
+.stat{background:#f7f9fc;border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;}
+.stat .s-ico{font-size:15px;line-height:1;}
+.stat .s-val{font-size:14.5px;font-weight:800;margin-top:4px;}
+.stat .s-lbl{font-size:10px;color:var(--text-light);text-transform:uppercase;letter-spacing:.4px;margin-top:3px;}
+
+/* RIGHT — trade info + content + CTA */
+.comp-aside{display:flex;flex-direction:column;gap:16px;}
+.comp-trade{background:#f7f9fc;border:1px solid var(--border);border-radius:12px;padding:14px 16px;}
+.comp-trade-hd{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light);margin-bottom:5px;}
+.comp-trade-txt{font-size:12.5px;color:var(--text-mid);line-height:1.5;}
+.comp-contrib{font-size:12px;font-weight:600;margin-top:8px;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
+.comp-contrib .ci{font-weight:800;font-size:14px;}
+.comp-contrib .cn{font-size:11px;font-weight:400;color:var(--text-light);}
+
+/* blog + FAQ content strip (built from the profile) */
+.comp-content{display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;}
+.comp-content-col{display:flex;flex-direction:column;}
+.comp-col-hd{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--text-light);margin-bottom:6px;}
+.seg-item{display:flex;align-items:center;gap:9px;text-decoration:none;padding:5px 6px;border-radius:8px;transition:background .15s;}
+.seg-item:hover{background:rgba(0,0,0,0.05);}
+.seg-thumb{width:26px;height:26px;flex-shrink:0;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;line-height:1;}
+.seg-thumb svg{width:14px;height:14px;}
+.seg-body{min-width:0;flex:1;}
+.seg-tag{font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text-light);}
+.seg-title{display:-webkit-box;font-size:11.5px;font-weight:500;color:var(--text);line-height:1.28;overflow:hidden;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+
+.comp-cta{width:100%;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-weight:800;font-size:15px;transition:background .15s;margin-top:2px;}
+.comp-cta:hover{background:var(--green-d);}
+.comp-cta .sub{display:block;font-size:11px;font-weight:500;opacity:.9;margin-top:3px;}
+
+/* ---- DISCLAIMER ---- */
+.disclaimer{max-width:1120px;margin:28px auto 0;padding:0 24px 48px;}
+.disclaimer-inner{background:#fff;border-radius:var(--r);border:1px solid var(--border);padding:16px 20px;font-size:12.5px;color:var(--text-light);line-height:1.65;}
+.disclaimer-inner strong{color:var(--text-mid);}
+
+/* ---- DESKTOP ---- */
+@media(min-width:900px){
+  .hero-title{font-size:32px;}
+  .comp-body{grid-template-columns:1.05fr .95fr;}
+  .comp-earn-amt{font-size:52px;}
+}
+@media(max-width:900px){
+  .calc-card{grid-template-columns:1fr;}
+  .inp-panel{border-right:none;border-bottom:1px solid var(--border);}
+  .allocate-card{grid-template-columns:1fr;gap:18px;padding:22px;}
+  .allocate-cta{width:100%;justify-content:center;}
+  .comp-content{grid-template-columns:1fr;gap:2px 0;}
+  .comp-content-col+.comp-content-col{margin-top:10px;}
+}
+@media (prefers-reduced-motion: reduce){
+  *{scroll-behavior:auto !important;animation:none !important;transition:none !important;}
+}
+</style>
+</head>
+<body>
+
+<div class="ribbon">Concept <b>4 — “One Composite Card”</b> · a lighter build: pick a profile, the card assembles itself <a href="../index.html">All concepts →</a></div>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="hdr-inner">
+    <a href="#" class="logo"><div class="logo-mark" aria-hidden="true">RF</div>RoboForex</a>
+    <nav class="hdr-nav" aria-label="Account">
+      <button class="btn-login">Log In</button>
+      <a href="https://my.roboforex.com/en/register/" class="btn-open">Open an account</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1 class="hero-title">Compound Interest Calculator</h1>
+    <p class="hero-sub">A bank deposit pays around 4–8% a year. Set your numbers, pick who you want to be, and one card is built for you — the maths, the blog and the FAQ, all assembled from your choice. Start where you are, move up when you're ready.</p>
+  </div>
+</div>
+
+<!-- CALCULATOR -->
+<div class="calc-wrap">
+  <div class="calc-card">
+    <!-- Left: Inputs -->
+    <div class="inp-panel">
+      <h2 class="inp-section-title">Investment details</h2>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-deposit">Initial deposit</label>
+        <div class="inp-wrap">
+          <span class="inp-pre">$</span>
+          <input type="text" id="inp-deposit" class="inp-field p-pre" value="10,000" inputmode="numeric" aria-describedby="dep-help">
+        </div>
+        <span id="dep-help" class="sr-only">Your total starting capital in US dollars.</span>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-months">Time horizon</label>
+        <div class="inp-wrap">
+          <input type="number" id="inp-months" class="inp-field p-suf" value="12" min="1" max="120">
+          <span class="inp-suf">Months</span>
+        </div>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-rate">Estimated rate of return <span style="font-weight:400;color:var(--text-light)">(per year)</span></label>
+        <div class="inp-wrap">
+          <input type="text" id="inp-rate" class="inp-field p-suf" value="27" inputmode="decimal">
+          <span class="inp-suf">%</span>
+        </div>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-compound">Compound frequency</label>
+        <div class="inp-wrap">
+          <select id="inp-compound" class="inp-field inp-select">
+            <option value="annually">Annually</option>
+            <option value="semiannually">Semiannually</option>
+            <option value="quarterly">Quarterly</option>
+            <option value="monthly" selected>Monthly</option>
+            <option value="daily">Daily</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" for="inp-contrib">Top-up rate <span class="inp-label-sub">% of deposit per period</span></label>
+        <div class="inp-wrap">
+          <input type="text" id="inp-contrib" class="inp-field p-suf" value="0" inputmode="decimal">
+          <span class="inp-suf">%</span>
+        </div>
+      </div>
+
+      <div class="inp-grp">
+        <label class="inp-label" id="freq-label">Contribution frequency</label>
+        <div class="freq-grid" role="group" aria-labelledby="freq-label">
+          <button class="freq-btn on" data-freq="monthly" aria-pressed="true">Monthly</button>
+          <button class="freq-btn" data-freq="annually" aria-pressed="false">Annually</button>
+        </div>
+        <input type="hidden" id="inp-freq" value="monthly">
+      </div>
+    </div>
+
+    <!-- Right: Chart -->
+    <div class="chart-panel">
+      <div class="chart-head">
+        <p class="chart-label-sm">Your money could grow to</p>
+        <div id="chart-balance" class="chart-balance">$0</div>
+        <p id="chart-balance-sub" class="chart-balance-sub">after 12 months</p>
+        <div id="chart-gap" class="chart-gap" aria-live="polite"></div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="growthChart" role="img" aria-label="Growth-over-time chart: your selected profile against a bank deposit"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALLOCATION BAND -->
+<div class="allocate">
+  <div class="allocate-card">
+    <div class="allocate-text">
+      <p class="allocate-eyebrow">You stay in control</p>
+      <h2 class="allocate-title">You don't have to invest it all — start with just <b id="alloc-pct">10%</b></h2>
+      <p class="allocate-sub">Keep the rest where it feels safe. Putting only <b id="alloc-invest">$1,000</b> of your <b id="alloc-total">$10,000</b> to work is enough to start earning — that's the figure the card below is built on.</p>
+      <div class="split-bar" id="split-bar" aria-label="Allocation slider">
+        <div class="split-keep">
+          <span class="split-pct" id="split-keep-pct">90% stays put</span>
+          <span class="split-lbl"><span id="alloc-keep">$9,000</span> untouched</span>
+        </div>
+        <div class="split-handle" id="split-handle" role="slider" aria-label="Percentage to invest" aria-valuemin="5" aria-valuemax="50" aria-valuenow="10" tabindex="0">
+          <span class="split-handle-icon"></span>
+        </div>
+        <div class="split-invest" id="split-invest-bar">
+          <span class="split-pct" id="split-invest-pct">10%</span>
+          <span class="split-lbl"><b id="alloc-invest2">$1,000</b> at work</span>
+        </div>
+      </div>
+    </div>
+    <button type="button" class="allocate-cta" id="alloc-cta">See what your <span id="alloc-cta-pct">10%</span> can do →</button>
+  </div>
+</div>
+
+<!-- COMPOSITE CARD -->
+<div class="composite">
+  <div class="comp-intro">
+    <h2>Now pick who you want to be</h2>
+    <p>One card, assembled on the fly. Tap a profile — its numbers, blog and FAQ are all built from your choice and the sliders above.</p>
+  </div>
+  <div class="comp-pills" id="comp-pills" role="tablist" aria-label="Investor profile"></div>
+  <article class="comp-card" id="comp-card" aria-live="polite"></article>
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  <div class="disclaimer-inner">
+    <strong>Risk disclaimer:</strong> Projections are illustrative estimates based on typical returns for each strategy type and assume consistent monthly performance with full reinvestment of profits. Annual figures are the mathematical equivalent of the monthly rate (compounded), shown only for comparison. Past performance does not guarantee future results. Trading leveraged products involves significant risk of loss. This calculator is for educational purposes only and is not financial advice.
+  </div>
+</div>
+
+<script>
+// =====================================================================
+//  DATA — six investor profiles, ordered by how much time each asks of
+//  you. Three uniform, comparable axes only: target return (%/month),
+//  time commitment (hrs/week), risk (% of portfolio per position).
+//  Instrument (Forex/Crypto/Stocks) and style live INSIDE a profile.
+// =====================================================================
+const SEGS = [
+  {
+    id:'saver', en:'Bank Saver', avatar:'🏦',
+    grad:'linear-gradient(135deg,#334155,#64748b)', color:'#64748b',
+    badge:'', badgeText:'Where you are now',
+    track:'Saving',
+    role:'Money sits safe — and barely grows',
+    quote:'“I like to sleep at night. It’s parked in the bank, earning just above inflation.”',
+    rate:0.5, rMin:0.3, rMax:0.6,
+    time:'0 hrs / wk', timeNote:'money just sits',
+    risk:'0%', riskNote:'no open positions',
+    trade:'Bank deposits & government bonds — no open market positions.',
+    cta:'Try a free Demo', ctaProd:'Demo Account · free to open',
+    ctaUrl:'https://my.roboforex.com/en/register-demo/?utm_source=calc&utm_content=seg_saver',
+    defaultContrib:0.5, defaultContribFreq:'monthly', contribNote:'Regular monthly savings top-up',
+  },
+  {
+    id:'copytrader', en:'Copy Trader', avatar:'🧑‍💼',
+    grad:'linear-gradient(135deg,#6d28d9,#8b5cf6)', color:'#8b5cf6',
+    badge:'step', badgeText:'Easiest first step',
+    track:'Outsourced skill',
+    role:'Mirrors verified pro traders',
+    quote:'“I found a trader with a real track record and copy their moves. Under an hour a week.”',
+    rate:1.2, rMin:0.8, rMax:1.8,
+    time:'< 1 hr / wk', timeNote:'pick & monitor a strategy',
+    risk:'You set it', riskNote:'you choose how much to copy',
+    trade:'CopyFX strategies covering Forex, crypto and stock CFDs.',
+    cta:'Start with CopyFX', ctaProd:'CopyFX · free to open',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_copytrader',
+    defaultContrib:1.0, defaultContribFreq:'monthly', contribNote:'Monthly profit reinvestment',
+  },
+  {
+    id:'robotrader', en:'Robo Trader', avatar:'🤖',
+    grad:'linear-gradient(135deg,#0e7490,#0891b2)', color:'#0891b2',
+    badge:'', badgeText:'',
+    track:'Automated',
+    role:'Set the rules once, let it run',
+    quote:'“I set up my robot on Sunday and check it over coffee. It trades while I sleep.”',
+    rate:1.5, rMin:1.0, rMax:2.0,
+    time:'~1 hr / wk', timeNote:'set up & supervise',
+    risk:'Set once', riskNote:'limits you configure once',
+    trade:'Expert Advisors trading Forex, crypto and index CFDs on MT4 / MT5.',
+    cta:'Open Pro Account', ctaProd:'Pro Account · free to open',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_robotrader',
+    defaultContrib:1.5, defaultContribFreq:'monthly', contribNote:'Scheduled automated top-up',
+  },
+  {
+    id:'investor', en:'Investor', avatar:'🧔',
+    grad:'linear-gradient(135deg,#1d4ed8,#3b82f6)', color:'#2563eb',
+    badge:'', badgeText:'',
+    track:'Investing',
+    role:'Buys and holds a portfolio',
+    quote:'“Stocks, ETFs, a few coins. I rebalance on Sundays and let time do the work.”',
+    rate:1.0, rMin:0.6, rMax:1.2,
+    time:'1–3 hrs / wk', timeNote:'review & rebalance',
+    risk:'≤ 5% each', riskNote:'diversified, long holds',
+    trade:'A long-term portfolio of shares, ETFs, indices, major pairs and leading coins.',
+    cta:'Open R StocksTrader', ctaProd:'R StocksTrader · free to open',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_investor',
+    defaultContrib:6.0, defaultContribFreq:'annually', contribNote:'Annual rebalancing top-up',
+  },
+  {
+    id:'parttime', en:'Part-time Trader', avatar:'🕴️',
+    grad:'linear-gradient(135deg,#047857,#16a34a)', color:'#16a34a',
+    badge:'pop', badgeText:'Most popular', rec:true,
+    track:'Trading',
+    role:'Trades around a day job',
+    quote:'“An hour or two after work. It’s a serious side income — with discipline.”',
+    rate:2.0, rMin:1.2, rMax:3.0,
+    time:'7–10 hrs / wk', timeNote:'≈ 1–2 hrs a day',
+    risk:'1–3% / trade', riskNote:'disciplined position sizing',
+    trade:'Swing & intraday trades across Forex, crypto and stock CFDs.',
+    cta:'Open Pro Account', ctaProd:'Pro Account · free to open',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_parttime',
+    defaultContrib:2.0, defaultContribFreq:'monthly', contribNote:'Monthly profit compounding',
+  },
+  {
+    id:'fulltime', en:'Full-time Trader', avatar:'⌚',
+    grad:'linear-gradient(135deg,#b45309,#d97706)', color:'#d97706',
+    badge:'risk', badgeText:'Highest risk',
+    track:'Trading',
+    role:'Trades full-time, all day',
+    quote:'“This is my job. Full days at the screen. Biggest upside — and it demands everything.”',
+    rate:3.0, rMin:1.8, rMax:4.5,
+    time:'35+ hrs / wk', timeNote:'your main occupation',
+    risk:'3–10% / trade', riskNote:'aggressive, tightly managed',
+    trade:'Intraday & scalping across Forex, crypto and index CFDs.',
+    cta:'Open Pro Account', ctaProd:'Pro Account · free to open',
+    ctaUrl:'https://my.roboforex.com/en/register/?utm_source=calc&utm_content=seg_fulltime',
+    defaultContrib:3.5, defaultContribFreq:'monthly', contribNote:'Active profit compounding',
+  },
+];
+
+const BADGE_BG = {step:'#8b5cf6', pop:'#16a34a', risk:'#d97706', now:'#64748b'};
+
+const FAQ_ICONS = [
+  `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M8 10.5V11.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M6.5 6a1.5 1.5 0 113 0c0 1-1.5 1.5-1.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+  `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 8h5M8.5 6l2.5 2-2.5 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 00-2 7.46V11h4V9.46A4 4 0 008 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 13h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`,
+];
+
+// Blog + FAQ content per profile — injected into the one card ("контент блога, а FAQ")
+const SEG_MEDIA = {
+  saver:{
+    articles:[
+      {ico:'🏦',bg:'#e0f2fe',tag:'Guide',title:'How Bank Deposits Really Work — And Why Rates Matter',url:'https://roboforex.com/blog/'},
+      {ico:'📊',bg:'#f1f5f9',tag:'Analysis',title:'Government Bonds vs. Savings Accounts: A Side-by-Side',url:'https://roboforex.com/blog/'},
+      {ico:'💡',bg:'#fef9c3',tag:'Basics',title:'When Safe Really Is Safe: Emergency Fund Essentials',url:'https://roboforex.com/blog/'},
+    ],
+    faqs:[
+      {tag:'Rates',q:'What interest rate can I realistically expect on a deposit?',url:'https://roboforex.com/beginners/'},
+      {tag:'Safety',q:'Are my savings insured if the bank fails?',url:'https://roboforex.com/beginners/'},
+      {tag:'Bonds',q:'How do government bonds compare to a savings account?',url:'https://roboforex.com/beginners/'},
+    ],
+  },
+  copytrader:{
+    articles:[
+      {ico:'📋',bg:'#faf5ff',tag:'Guide',title:'What Is Copy Trading and How Does CopyFX Work?',url:'https://roboforex.com/blog/'},
+      {ico:'🔍',bg:'#ede9fe',tag:'How-to',title:'How to Pick the Right Strategy to Follow',url:'https://roboforex.com/blog/'},
+      {ico:'⚖️',bg:'#f5f3ff',tag:'Compare',title:'Copy Trading vs. Self-Trading: Pros and Cons',url:'https://roboforex.com/blog/'},
+    ],
+    faqs:[
+      {tag:'Risk',q:'How much of my capital is at risk when I copy a trader?',url:'https://roboforex.com/beginners/'},
+      {tag:'Control',q:'Can I stop copying at any time and withdraw funds?',url:'https://roboforex.com/beginners/'},
+      {tag:'Strategy',q:'What makes a CopyFX strategy reliable to follow?',url:'https://roboforex.com/beginners/'},
+    ],
+  },
+  robotrader:{
+    articles:[
+      {ico:'🤖',bg:'#ecfeff',tag:'Guide',title:'What Is an Expert Advisor and How Does It Trade?',url:'https://roboforex.com/blog/'},
+      {ico:'⚙️',bg:'#cffafe',tag:'How-to',title:'Setting Up Your First Trading Robot on MT4 or MT5',url:'https://roboforex.com/blog/'},
+      {ico:'📊',bg:'#e0f7fa',tag:'Analysis',title:'How to Read EA Backtesting Reports Correctly',url:'https://roboforex.com/blog/'},
+    ],
+    faqs:[
+      {tag:'Setup',q:'Does the trading robot work while my computer is off?',url:'https://roboforex.com/beginners/'},
+      {tag:'Risk',q:'What happens if the EA hits a losing streak?',url:'https://roboforex.com/beginners/'},
+      {tag:'Control',q:'How do I set a maximum daily loss limit for my robot?',url:'https://roboforex.com/beginners/'},
+    ],
+  },
+  investor:{
+    articles:[
+      {ico:'📈',bg:'#eff6ff',tag:'Strategy',title:'Buy-and-Hold: Why Time in Market Beats Timing the Market',url:'https://roboforex.com/blog/'},
+      {ico:'🗂️',bg:'#dbeafe',tag:'Compare',title:'ETFs vs. Individual Stocks: Where Should You Begin?',url:'https://roboforex.com/blog/'},
+      {ico:'🔄',bg:'#eff6ff',tag:'How-to',title:'How to Rebalance a Portfolio Without Overthinking It',url:'https://roboforex.com/blog/'},
+    ],
+    faqs:[
+      {tag:'Basics',q:'What are ETFs and why are they popular for beginners?',url:'https://roboforex.com/beginners/'},
+      {tag:'Routine',q:'How often should I review and rebalance my portfolio?',url:'https://roboforex.com/beginners/'},
+      {tag:'Budget',q:'What is the minimum amount to start investing in stocks?',url:'https://roboforex.com/beginners/'},
+    ],
+  },
+  parttime:{
+    articles:[
+      {ico:'📈',bg:'#fef3c7',tag:'Guide',title:'What Is Swing Trading? A Practical Guide for Beginners',url:'https://roboforex.com/blog/'},
+      {ico:'🛡️',bg:'#dbeafe',tag:'Risk',title:'Risk Management: The 1–2% Rule Every Trader Should Know',url:'https://roboforex.com/blog/'},
+      {ico:'🔄',bg:'#f0fdf4',tag:'Strategy',title:'How Compounding Works in Forex — Step by Step',url:'https://roboforex.com/blog/'},
+    ],
+    faqs:[
+      {tag:'Time',q:'How many hours a week does part-time trading realistically take?',url:'https://roboforex.com/beginners/'},
+      {tag:'Markets',q:'Which markets are best for swing and intraday trading?',url:'https://roboforex.com/beginners/'},
+      {tag:'Risk',q:"How do I protect my account when I can't monitor it all day?",url:'https://roboforex.com/beginners/'},
+    ],
+  },
+  fulltime:{
+    articles:[
+      {ico:'⚡',bg:'#fffbeb',tag:'Style',title:'Scalping vs. Day Trading: How to Choose Your Approach',url:'https://roboforex.com/blog/'},
+      {ico:'🧠',bg:'#fff7ed',tag:'Psychology',title:'The Trading Psychology Every Full-Time Trader Must Master',url:'https://roboforex.com/blog/'},
+      {ico:'📉',bg:'#fef3c7',tag:'Risk',title:'How Professional Traders Survive a Drawdown',url:'https://roboforex.com/blog/'},
+    ],
+    faqs:[
+      {tag:'Setup',q:'What account type and leverage do full-time traders use?',url:'https://roboforex.com/beginners/'},
+      {tag:'Capital',q:'How much starting capital is realistic for full-time trading?',url:'https://roboforex.com/beginners/'},
+      {tag:'Risk',q:'How do professionals manage risk and protect their trading edge?',url:'https://roboforex.com/beginners/'},
+    ],
+  },
+};
+
+// =====================================================================
+//  STATE
+// =====================================================================
+let activeSeg = 'parttime';
+let growthChart = null;
+let contribFreq = 'monthly';
+let compoundFreq = 'monthly';
+let allocPct = 10;
+const COMPOUNDS = {annually:1, semiannually:2, quarterly:4, monthly:12, daily:365};
+
+// =====================================================================
+//  HELPERS
+// =====================================================================
+const $ = id => document.getElementById(id);
+function parseMoney(s){return parseFloat(String(s).replace(/[^0-9.]/g,''))||0;}
+function fmtNum(n){return n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:0});}
+function fmtMoney(n){return '$'+fmtNum(n);}
+function fmtK(n){
+  if(n>=1000000)return '$'+(n/1000000).toFixed(1)+'M';
+  if(n>=10000)return '$'+(n/1000).toFixed(0)+'k';
+  if(n>=1000)return '$'+(n/1000).toFixed(1)+'k';
+  return '$'+Math.round(n);
+}
+function annualFromMonthly(m){return (Math.pow(1+m/100,12)-1)*100;}
+function rateLabel(s){
+  const aMin=annualFromMonthly(s.rMin), aMax=annualFromMonthly(s.rMax);
+  return {mo:`${s.rMin}–${s.rMax}% / mo`, yr:`≈ ${Math.round(aMin)}–${Math.round(aMax)}% / yr`};
+}
+function fmtMultiple(m){return (m>=10?Math.round(m):m.toFixed(1))+'×';}
+
+function getInputs(){
+  const dep = parseMoney($('inp-deposit').value)||10000;
+  const months = parseInt($('inp-months').value)||12;
+  const contribPct = parseFloat(String($('inp-contrib').value).replace(/[^0-9.]/g,''))||0;
+  const contrib = dep * contribPct / 100;
+  const rate = parseFloat(String($('inp-rate').value).replace(/[^0-9.]/g,''))||0;
+  return {dep,months,contrib,contribPct,rate};
+}
+
+// Compound a user-supplied ANNUAL rate at the chosen compound frequency.
+function calcSeriesRate(P, annualPct, months, contrib, cFreq, compFreq){
+  const n = COMPOUNDS[compFreq]||12;
+  const r = annualPct/100;
+  const monthlyFactor = Math.pow(1 + r/n, n/12);
+  let bal = P; const res = [P];
+  for(let m=1;m<=months;m++){
+    if(cFreq==='monthly'&&contrib>0) bal+=contrib;
+    else if(cFreq==='annually'&&m%12===1&&m>1&&contrib>0) bal+=contrib;
+    bal*=monthlyFactor; res.push(bal);
+  }
+  return res;
+}
+// Compound month-by-month at a MONTHLY rate.
+function calcSeriesMonthly(P, rateMonthly, months, contrib, freq){
+  let bal = P; const res = [P];
+  for(let m=1;m<=months;m++){
+    if(freq==='monthly'&&contrib>0) bal+=contrib;
+    else if(freq==='annually'&&m%12===1&&m>1&&contrib>0) bal+=contrib;
+    bal*=(1+rateMonthly/100); res.push(bal);
+  }
+  return res;
+}
+const DEPOSIT_SEG = SEGS.find(s=>s.id==='saver');
+function depositFinal(P, months, contrib, freq){
+  const b = calcSeriesMonthly(P, DEPOSIT_SEG.rate, months, contrib, freq);
+  return b[b.length-1];
+}
+function contribCount(months, freq){
+  let c=0;
+  for(let m=1;m<=months;m++){
+    if(freq==='monthly') c++;
+    else if(freq==='annually'&&m%12===1&&m>1) c++;
+  }
+  return c;
+}
+
+// =====================================================================
+//  CHART — your chosen profile vs a bank deposit
+// =====================================================================
+function renderChart(){
+  if(typeof Chart==='undefined') return;   // chart library unavailable — card still works
+  const {dep,months,contrib,rate} = getInputs();
+  const seg = SEGS.find(s=>s.id===activeSeg);
+  const labels = ['Now',...Array.from({length:months},(_,i)=>'M'+(i+1))];
+
+  // Bold line: your projection from the rate field (set by the chosen profile).
+  const userLine = {
+    label:seg?seg.en:'Your projection',
+    data:calcSeriesRate(dep,rate,months,contrib,contribFreq,compoundFreq),
+    borderColor:seg?seg.color:'#183E8C',
+    backgroundColor:(seg?seg.color:'#183E8C')+'14',
+    borderWidth:3.5, pointRadius:4, pointHoverRadius:7,
+    pointBackgroundColor:seg?seg.color:'#183E8C', pointBorderColor:'#fff', pointBorderWidth:2,
+    tension:0.35, fill:true, order:0,
+  };
+  // Reference line: a plain bank deposit — the anchor we measure upside against.
+  const bankLine = {
+    label:'Bank deposit',
+    data:calcSeriesMonthly(dep,DEPOSIT_SEG.rate,months,contrib,contribFreq),
+    borderColor:'#94a3b8', backgroundColor:'transparent',
+    borderWidth:1.75, borderDash:[5,4], pointRadius:2, pointHoverRadius:4,
+    pointBackgroundColor:'#94a3b8', pointBorderColor:'#fff', pointBorderWidth:1,
+    tension:0.35, fill:false, order:1,
+  };
+
+  const ctx = $('growthChart').getContext('2d');
+  if(growthChart) growthChart.destroy();
+  growthChart = new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[userLine,bankLine]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:true,position:'bottom',labels:{boxWidth:12,boxHeight:12,usePointStyle:true,pointStyle:'line',font:{size:12,family:"'Open Sans',sans-serif"},color:'#46566a',padding:16}},
+        tooltip:{
+          backgroundColor:'rgba(26,37,51,0.92)',
+          titleFont:{size:13,family:"'Open Sans',sans-serif"},
+          bodyFont:{size:12.5,family:"'Open Sans',sans-serif"},
+          padding:12, cornerRadius:8,
+          callbacks:{label:(c)=>' '+c.dataset.label+': '+fmtMoney(c.raw)},
+        }
+      },
+      scales:{
+        x:{grid:{color:'rgba(0,0,0,0.04)'},ticks:{font:{size:12,family:"'Open Sans',sans-serif"},color:'#5d6b7d'}},
+        y:{grid:{color:'rgba(0,0,0,0.05)'},ticks:{font:{size:12,family:"'Open Sans',sans-serif"},color:'#5d6b7d',callback:v=>fmtK(v)}}
+      }
+    }
+  });
+}
+
+// =====================================================================
+//  PROFILE PILLS
+// =====================================================================
+function buildPills(){
+  const el = $('comp-pills');
+  el.innerHTML = SEGS.map(s=>{
+    const badge = s.badge?`<span class="pill-badge" style="background:${BADGE_BG[s.badge]||s.color}">${s.badgeText}</span>`:'';
+    return `<button class="pill" role="tab" data-seg="${s.id}" style="--sel:${s.color}" aria-pressed="${s.id===activeSeg}">
+      ${badge}
+      <span class="pill-face" style="background:${s.color}1f">${s.avatar}</span>
+      <span class="pill-txt"><span class="pill-name">${s.en}</span><span class="pill-rate">≈${Math.round(annualFromMonthly(s.rate))}%/yr</span></span>
+    </button>`;
+  }).join('');
+  el.querySelectorAll('.pill').forEach(p=>{
+    p.addEventListener('click',()=>{
+      setActive(p.dataset.seg);
+      p.scrollIntoView({behavior:'smooth',inline:'nearest',block:'nearest'});
+    });
+  });
+}
+function syncPills(){
+  $('comp-pills').querySelectorAll('.pill').forEach(p=>{
+    p.setAttribute('aria-pressed', String(p.dataset.seg===activeSeg));
+  });
+}
+
+// =====================================================================
+//  THE ONE COMPOSITE CARD
+// =====================================================================
+function mediaCols(seg){
+  const media = SEG_MEDIA[seg.id];
+  const arts = media.articles.map(a=>`
+    <a class="seg-item" href="${a.url}" target="_blank" rel="noopener">
+      <div class="seg-thumb" style="background:${a.bg}">${a.ico}</div>
+      <div class="seg-body"><span class="seg-tag">${a.tag}</span><span class="seg-title">${a.title}</span></div>
+    </a>`).join('');
+  const fqs = media.faqs.map((f,i)=>`
+    <a class="seg-item" href="${f.url}" target="_blank" rel="noopener">
+      <div class="seg-thumb" style="background:color-mix(in srgb, ${seg.color} 13%, #fff);color:${seg.color}">${FAQ_ICONS[i%FAQ_ICONS.length]}</div>
+      <div class="seg-body"><span class="seg-tag">${f.tag}</span><span class="seg-title">${f.q}</span></div>
+    </a>`).join('');
+  return `
+    <div class="comp-content">
+      <div class="comp-content-col"><p class="comp-col-hd">From the blog</p>${arts}</div>
+      <div class="comp-content-col"><p class="comp-col-hd">FAQ</p>${fqs}</div>
+    </div>`;
+}
+
+// Build the static-per-profile shell once when the profile changes.
+function buildCompositeShell(){
+  const s = SEGS.find(x=>x.id===activeSeg);
+  const r = rateLabel(s);
+  const freqShort = s.defaultContribFreq==='monthly'?'/mo':'/yr';
+  const badge = s.badge?`<span class="comp-track" style="background:rgba(255,255,255,.22)">${s.badgeText}</span>`:'';
+  $('comp-card').innerHTML = `
+    <div class="comp-head" style="background:${s.grad}">
+      <div class="comp-persona">
+        <div class="comp-avatar">${s.avatar}</div>
+        <div class="comp-id">
+          <h3>${s.en} <span class="comp-track">${s.track}</span>${badge}</h3>
+          <div class="comp-role">${s.role}</div>
+        </div>
+      </div>
+      <p class="comp-quote">${s.quote}</p>
+    </div>
+    <div class="comp-body">
+      <div class="comp-main">
+        <div class="comp-earn-row">
+          <div>
+            <p class="comp-earn-lbl">You could earn</p>
+            <p class="comp-earn-amt" id="cx-gain" style="color:${s.color}">+$0</p>
+          </div>
+          <span class="comp-vs" id="cx-vs"></span>
+        </div>
+        <p class="comp-earn-sub" id="cx-sub"></p>
+        <div class="duel">
+          <div class="duel-row"><span class="duel-lbl">${s.en}</span><div class="duel-track"><div class="duel-fill" id="cx-fill-strat" style="background:${s.color}"></div></div></div>
+          <div class="duel-row"><span class="duel-lbl">Bank Saver</span><div class="duel-track"><div class="duel-fill" id="cx-fill-bank" style="background:#94a3b8">bank</div></div></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="s-ico">🎯</div><div class="s-val" style="color:${s.color}">${s.rate}%/mo</div><div class="s-lbl">${r.yr.replace('≈ ','≈')}</div></div>
+          <div class="stat"><div class="s-ico">⏱</div><div class="s-val">${s.time}</div><div class="s-lbl">${s.timeNote}</div></div>
+          <div class="stat"><div class="s-ico">🛡</div><div class="s-val">${s.risk}</div><div class="s-lbl">${s.riskNote}</div></div>
+        </div>
+      </div>
+      <div class="comp-aside">
+        <div class="comp-trade">
+          <p class="comp-trade-hd">What you trade</p>
+          <p class="comp-trade-txt">${s.trade}</p>
+          <p class="comp-contrib" style="color:${s.color}"><span class="ci">+</span>${s.defaultContrib}% of deposit${freqShort} <span class="cn">${s.contribNote}</span></p>
+        </div>
+        ${mediaCols(s)}
+        <a class="comp-cta" href="${s.ctaUrl}" target="_blank" rel="noopener" style="background:${s.id==='saver'?'#64748b':''}">
+          ${s.cta} →<span class="sub">${s.ctaProd}</span>
+        </a>
+      </div>
+    </div>`;
+  updateComposite();
+}
+
+// Update only the slider-driven numbers (cheap, runs on every drag).
+function updateComposite(){
+  const s = SEGS.find(x=>x.id===activeSeg);
+  const {dep,months} = getInputs();
+  const {contrib} = getInputs();
+  const segDep = dep*(allocPct/100);
+  const segContrib = contrib*(allocPct/100);
+  const invested = segDep + segContrib*contribCount(months,contribFreq);
+
+  const balances = calcSeriesMonthly(segDep,s.rate,months,segContrib,contribFreq);
+  const finalBal = balances[balances.length-1];
+  const gain = finalBal-invested;
+  const gainPct = invested>0?Math.round(gain/invested*100):0;
+  const bankFinal = depositFinal(segDep,months,segContrib,contribFreq);
+  const bankGain = bankFinal-invested;
+
+  const gainEl=$('cx-gain'); if(gainEl) gainEl.textContent='+'+fmtMoney(gain);
+  const subEl=$('cx-sub'); if(subEl) subEl.innerHTML=`<b>${fmtMoney(invested)}</b> in → <b>${fmtMoney(finalBal)}</b> total · <b style="color:${s.color}">+${gainPct}%</b> over ${months} month${months!==1?'s':''}`;
+
+  const vsEl=$('cx-vs');
+  if(vsEl){
+    if(s.id==='saver'||bankGain<=0){vsEl.style.display='none';}
+    else{vsEl.style.display='';vsEl.textContent=fmtMultiple(gain/bankGain)+' a bank deposit';}
+  }
+  // duel bars scaled so the winner fills the track
+  const fs=$('cx-fill-strat'), fb=$('cx-fill-bank');
+  if(fs&&fb){
+    const max=Math.max(finalBal,bankFinal)||1;
+    fs.style.width=Math.max(14,(finalBal/max)*100)+'%'; fs.textContent=fmtMoney(finalBal);
+    fb.style.width=Math.max(14,(bankFinal/max)*100)+'%'; fb.textContent=fmtMoney(bankFinal);
+  }
+}
+
+// =====================================================================
+//  CHART HEADLINE + ALLOCATION BAND
+// =====================================================================
+function updateChartTotal(){
+  const {dep,months,contrib,rate} = getInputs();
+  const balances = calcSeriesRate(dep,rate,months,contrib,contribFreq,compoundFreq);
+  const finalBal = balances[balances.length-1];
+  $('chart-balance').textContent = fmtMoney(finalBal);
+  $('chart-balance-sub').textContent = 'after '+months+' month'+(months!==1?'s':'');
+
+  const gapEl = $('chart-gap');
+  const more = finalBal - depositFinal(dep,months,contrib,contribFreq);
+  if(more>0){
+    gapEl.className = 'chart-gap';
+    gapEl.innerHTML = '🚀 <b>'+fmtMoney(more)+' more</b> than a bank deposit over '+months+' month'+(months!==1?'s':'');
+  } else {
+    gapEl.className = 'chart-gap is-deposit';
+    gapEl.innerHTML = "That's around a bank deposit — raise the rate of return to see the upside ↑";
+  }
+}
+
+function updateAllocate(){
+  const {dep} = getInputs();
+  const frac = allocPct / 100;
+  const invest = fmtMoney(dep * frac);
+  $('alloc-invest').textContent = invest;
+  $('alloc-invest2').textContent = invest;
+  $('alloc-total').textContent = fmtMoney(dep);
+  $('alloc-keep').textContent = fmtMoney(dep * (1 - frac));
+}
+function visualInvestPct(pct){ return Math.min(75, Math.max(12, 10 + pct * 1.2)); }
+function setAllocPct(pct){
+  allocPct = Math.min(50, Math.max(5, Math.round(pct)));
+  const vis = visualInvestPct(allocPct);
+  const investBar = $('split-invest-bar'); if(investBar) investBar.style.flex = `0 0 ${vis}%`;
+  const keepPct = $('split-keep-pct'); if(keepPct) keepPct.textContent = (100 - allocPct) + '% stays put';
+  const investPct = $('split-invest-pct'); if(investPct) investPct.textContent = allocPct + '%';
+  const allocPctEl = $('alloc-pct'); if(allocPctEl) allocPctEl.textContent = allocPct + '%';
+  const ctaPct = $('alloc-cta-pct'); if(ctaPct) ctaPct.textContent = allocPct + '%';
+  const handle = $('split-handle'); if(handle) handle.setAttribute('aria-valuenow', allocPct);
+  // Allocation governs only how much is put to work in the profile card below —
+  // it must NOT touch the first-screen chart/calculator, which model the full deposit.
+  updateComposite();
+  updateAllocate();
+}
+
+// =====================================================================
+//  SELECT A PROFILE
+// =====================================================================
+function setActive(segId){
+  activeSeg = segId;
+  const seg = SEGS.find(s=>s.id===segId);
+  if(seg){
+    // Load the profile into the calculator, exactly as production does.
+    $('inp-rate').value = Math.round(annualFromMonthly(seg.rate));
+    $('inp-compound').value = 'monthly';
+    compoundFreq = 'monthly';
+    $('inp-contrib').value = seg.defaultContrib;
+    contribFreq = seg.defaultContribFreq;
+    $('inp-freq').value = seg.defaultContribFreq;
+    document.querySelectorAll('.freq-btn').forEach(btn=>{
+      const on = btn.dataset.freq === seg.defaultContribFreq;
+      btn.classList.toggle('on', on);
+      btn.setAttribute('aria-pressed', String(on));
+    });
+  }
+  syncPills();
+  buildCompositeShell();
+  updateChartTotal();
+  updateAllocate();
+  renderChart();
+}
+
+function fullUpdate(){
+  updateChartTotal();
+  updateComposite();
+  updateAllocate();
+  renderChart();
+}
+
+// =====================================================================
+//  INIT
+// =====================================================================
+document.addEventListener('DOMContentLoaded',()=>{
+  buildPills();
+  setActive(activeSeg);   // 'parttime'
+
+  ['inp-deposit','inp-months','inp-contrib','inp-rate'].forEach(id=>{
+    $(id).addEventListener('input',fullUpdate);
+  });
+
+  $('alloc-cta').addEventListener('click',()=>{
+    document.querySelector('.composite').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  $('inp-compound').addEventListener('change',e=>{ compoundFreq = e.target.value; fullUpdate(); });
+
+  const depEl = $('inp-deposit');
+  depEl.addEventListener('blur',()=>{const n=parseMoney(depEl.value);if(n>0)depEl.value=fmtNum(n);});
+  depEl.addEventListener('focus',()=>{const n=parseMoney(depEl.value);if(n>0)depEl.value=String(n);});
+
+  const contribEl = $('inp-contrib');
+  contribEl.addEventListener('blur',()=>{
+    const n=parseFloat(contribEl.value)||0;
+    if(n>0) contribEl.value = (n%1===0) ? String(n) : parseFloat(n.toFixed(2)).toString();
+  });
+
+  document.querySelectorAll('.freq-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.freq-btn').forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false');});
+      btn.classList.add('on');btn.setAttribute('aria-pressed','true');
+      contribFreq = btn.dataset.freq;
+      fullUpdate();
+    });
+  });
+
+  // ---- Allocation slider drag ----
+  (function initAllocSlider(){
+    const handle = $('split-handle');
+    const bar    = $('split-bar');
+    if(!handle||!bar) return;
+    let dragging = false;
+    function pctFromPointer(clientX){
+      const rect = bar.getBoundingClientRect();
+      const rightOffset = rect.right - clientX;
+      const visualPct   = (rightOffset / rect.width) * 100;
+      return (visualPct - 10) / 1.2;
+    }
+    handle.addEventListener('pointerdown', e=>{
+      dragging = true; handle.classList.add('dragging');
+      handle.setPointerCapture(e.pointerId); e.preventDefault();
+    });
+    handle.addEventListener('pointermove', e=>{ if(dragging) setAllocPct(pctFromPointer(e.clientX)); });
+    handle.addEventListener('pointerup', ()=>{ dragging=false; handle.classList.remove('dragging'); });
+    handle.addEventListener('pointercancel', ()=>{ dragging=false; handle.classList.remove('dragging'); });
+    handle.addEventListener('keydown', e=>{
+      if(e.key==='ArrowLeft')  { setAllocPct(allocPct+1); e.preventDefault(); }
+      if(e.key==='ArrowRight') { setAllocPct(allocPct-1); e.preventDefault(); }
+      if(e.key==='Home')       { setAllocPct(5);          e.preventDefault(); }
+      if(e.key==='End')        { setAllocPct(50);         e.preventDefault(); }
+    });
+    const investBar = $('split-invest-bar');
+    if(investBar) investBar.style.flex = `0 0 ${visualInvestPct(allocPct)}%`;
+  })();
+});
+</script>
+</body>
+</html>
