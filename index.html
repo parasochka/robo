@@ -1,102 +1,84 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Compound Calculator — Concepts</title>
+<title>Проекты и прототипы</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--blue:#183E8C;--blue-mid:#1361A1;--green:#74B129;--green-d:#5F951F;--muted:#5d6b7d;--border:#dbe3ee;--bg:#eef3fa;}
+:root{--blue:#183E8C;--blue-mid:#1361A1;--green:#74B129;--green-d:#5F951F;--violet:#4757C9;--muted:#5d6b7d;--border:#dbe3ee;--bg:#eef3fa;}
 html{scroll-behavior:smooth;}
 body{font-family:'Open Sans',-apple-system,sans-serif;background:var(--bg);color:#16233a;line-height:1.55;padding:40px 20px 72px;}
 .wrap{max-width:1080px;margin:0 auto;}
-.head{max-width:720px;}
+.head{max-width:760px;}
 .eyebrow{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1.4px;color:var(--blue-mid);}
 h1{font-size:30px;font-weight:800;color:var(--blue);line-height:1.15;margin-top:8px;letter-spacing:-.4px;}
 .lead{color:var(--muted);font-size:15.5px;margin:12px 0 32px;}
 .grid{display:grid;gap:18px;grid-template-columns:1fr;}
-.card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);border-radius:18px;padding:24px;text-decoration:none;color:inherit;box-shadow:0 4px 16px rgba(9,44,80,.06);transition:transform .15s,box-shadow .15s,border-color .15s;}
+.card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--border);border-radius:18px;padding:26px;text-decoration:none;color:inherit;box-shadow:0 4px 16px rgba(9,44,80,.06);transition:transform .15s,box-shadow .15s,border-color .15s;}
 .card:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(9,44,80,.14);border-color:#c3d3ea;}
-.num{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--blue);color:#fff;font-weight:800;font-size:16px;margin-bottom:14px;}
-.card.prod .num{background:var(--green);}
-.card h2{font-size:19px;font-weight:800;}
-.card .tag{font-size:12px;font-weight:700;color:var(--green-d);margin:4px 0 10px;}
-.card.prod .tag{color:var(--blue-mid);}
+.card .icon{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;font-size:20px;margin-bottom:16px;background:var(--blue);color:#fff;}
+.card.report .icon{background:var(--violet);}
+.card h2{font-size:20px;font-weight:800;}
+.meta{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px;}
+.chip{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;border-radius:999px;padding:3px 10px;background:#eef3fa;color:var(--blue-mid);border:1px solid var(--border);}
+.chip.kind{background:var(--green);color:#fff;border-color:transparent;}
+.card.report .chip.kind{background:var(--violet);}
 .card p{font-size:13.5px;color:var(--muted);}
 .card ul{margin:12px 0 0 18px;font-size:12.5px;color:var(--muted);}
 .card ul li{margin-bottom:3px;}
-.card .go{margin-top:auto;padding-top:16px;font-size:13px;font-weight:800;color:var(--blue-mid);}
-.sep{display:flex;align-items:center;gap:14px;margin:14px 2px 2px;color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;}
-.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--border);}
+.card .go{margin-top:auto;padding-top:18px;font-size:13px;font-weight:800;color:var(--blue-mid);}
+.hint{margin-top:34px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--border);padding-top:16px;}
+.hint code{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;background:#fff;border:1px solid var(--border);border-radius:6px;padding:2px 6px;}
 @media(min-width:760px){
   h1{font-size:36px;}
-  .grid{grid-template-columns:1fr 1fr 1fr;}
-  .card.wide,.sep,.card.prod{grid-column:1 / -1;}
-  .card.prod{flex-direction:row;align-items:center;gap:24px;}
-  .card.prod .num{margin-bottom:0;}
-  .card.prod .go{padding-top:0;margin-left:auto;white-space:nowrap;}
-  .card.prod-text{flex:1;}
+  .grid{grid-template-columns:1fr 1fr;}
 }
-.card.featured{border-color:var(--green);box-shadow:0 0 0 1.5px var(--green),0 8px 26px rgba(9,44,80,.12);}
-.card.featured .num{background:var(--green);}
-.latest{display:inline-block;vertical-align:middle;margin-left:8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#fff;background:var(--green);border-radius:999px;padding:3px 9px;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="head">
-    <div class="eyebrow">Compound calculator</div>
-    <h1>Four directions to react to</h1>
-    <p class="lead">Pulled from the working session and the doc notes, plus the current production page. Each is a live, self-contained prototype — drag the sliders. Built mobile-first (~80% of traffic) and laid out for desktop too.</p>
+    <div class="eyebrow">Рабочее пространство</div>
+    <h1>Проекты и прототипы</h1>
+    <p class="lead">Мультипроектная площадка: прототипы интерфейсов, отчёты, аналитика — каждая задача живёт в своей папке и открывается со своей карточки. Новые проекты добавляются сюда же.</p>
   </div>
   <div class="grid">
-    <a class="card prod featured" href="concepts/concept-4-composite.html">
-      <span class="num">4</span>
-      <div class="prod-text">
-        <h2>One Composite Card <span class="latest">Latest</span></h2>
-        <div class="tag">A lighter production — one card, assembled from your choice</div>
-        <p>The production page, simplified. Every edit from the earlier releases carried over, but the six stacked profile cards collapse into <em>one</em> composite card. Pick a profile, move the sliders — its numbers, its blog and its FAQ are all built on the fly from what you chose.</p>
+    <a class="card report" href="roboforex-organic-analytics/">
+      <span class="icon">📊</span>
+      <h2>RoboForex — органический трафик</h2>
+      <div class="meta">
+        <span class="chip kind">Отчёт</span>
+        <span class="chip">2022-01 → 2026-07</span>
+        <span class="chip">5,27 млн сессий</span>
       </div>
-      <div class="go">Open prototype →</div>
+      <p>Интерактивный дашборд помесячной аналитики органики из BigQuery: какие страны, разделы и страницы упали или выросли и когда. 8 вкладок — обзор, тепловая карта, события, сравнение периодов, гео×раздел, оценка возврата трафика, страницы, методика.</p>
+      <ul>
+        <li>Глобальная панель периода: пресеты + перетаскиваемая шкала</li>
+        <li>Контрфактическая оценка возврата снятых разделов</li>
+        <li>Данные вшиты внутрь — работает без интернета</li>
+      </ul>
+      <div class="go">Открыть отчёт →</div>
     </a>
-    <div class="sep">Earlier directions</div>
-    <a class="card" href="concepts/concept-1-live-duel.html">
-      <span class="num">1</span>
-      <h2>Live Duel</h2>
-      <div class="tag">Instant, controllable, no reading</div>
-      <p>Radically simplified. The whole answer fits the first screen; a two-line chart (your strategy vs. the bank) redraws as you drag. Text-free sliders, allocation slider, a “why this number” drawer.</p>
-      <ul><li>Notes #1 confusing → simplest possible</li><li>#3 comparison on screen 1, slider without text</li><li>#4 two lines: strategy vs bank saver</li></ul>
-      <div class="go">Open prototype →</div>
-    </a>
-    <a class="card" href="concepts/concept-2-characters.html">
-      <span class="num">2</span>
-      <h2>Pick Your Character</h2>
-      <div class="tag">Identify with a persona</div>
-      <p>The “человечки” idea. Instead of six static cards, a scroll row of characters — Grandma Saver, Copy Trader, Robo, the Investor, the Briefcase Trader, the Rolex Trader — feeding <em>one</em> adaptive card that becomes their money story.</p>
-      <ul><li>Personas instead of abstract type-cards</li><li>One adaptive card (the end-of-meeting idea)</li><li>Mini bar-duel vs the bank</li></ul>
-      <div class="go">Open prototype →</div>
-    </a>
-    <a class="card" href="concepts/concept-3-do-nothing.html">
-      <span class="num">3</span>
-      <h2>Do Nothing</h2>
-      <div class="tag">Organised by time-cost</div>
-      <p>Leads with note #6 — the hands-off tier (Robo · Copy · Investor). One “how much time can you give it?” slider drives everything, plus the ✓/✗ comparison table from the sketch.</p>
-      <ul><li>#6 “graph where nothing needs doing”</li><li>Effort slider as the main control</li><li>✓/✗ comparison grid from the notes</li></ul>
-      <div class="go">Open prototype →</div>
-    </a>
-    <div class="sep">Current live version</div>
-    <a class="card prod" href="concepts/production.html">
-      <span class="num">0</span>
-      <div class="prod-text">
-        <h2>Production</h2>
-        <div class="tag">What ships today</div>
-        <p>The current production compound calculator — six investor profiles ordered by how much time each one asks of you. These three concepts don’t replace it — they’re directions to react to.</p>
+    <a class="card" href="compound-calculator/">
+      <span class="icon">🧮</span>
+      <h2>Compound Calculator</h2>
+      <div class="meta">
+        <span class="chip kind">Прототипы</span>
+        <span class="chip">4 концепта + продакшен</span>
       </div>
-      <div class="go">Open page →</div>
+      <p>Четыре живых направления редизайна калькулятора сложного процента плюс текущая продакшен-страница. Каждый концепт — самостоятельный интерактивный прототип: тяните слайдеры, сравнивайте подачу.</p>
+      <ul>
+        <li>Концепт 4 «Composite Card» — последняя итерация</li>
+        <li>Live Duel, Pick Your Character, Do Nothing</li>
+        <li>Mobile-first (~80% трафика), с десктоп-раскладкой</li>
+      </ul>
+      <div class="go">Открыть проект →</div>
     </a>
   </div>
+  <p class="hint">Чтобы добавить новый проект: положите его в свою папку с <code>index.html</code> внутри и добавьте карточку в эту сетку.</p>
 </div>
 </body>
 </html>
